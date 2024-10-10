@@ -10,8 +10,8 @@
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "mpt3sas" "usbhid" "sd_mod" ];
   boot.initrd.kernelModules = [ ];
-  boot.kernelModules = [ "kvm-amd" ];
-  boot.extraModulePackages = [ ];
+  boot.kernelModules = [ "kvm-amd" "wl" ];
+  boot.extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
 
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/c9b07de5-8509-43a9-add8-912d66be0ea8";
@@ -21,11 +21,7 @@
   fileSystems."/boot" =
     { device = "/dev/disk/by-uuid/CC5E-3F02";
       fsType = "vfat";
-    };
-
-  fileSystems."/srv/vault" =
-    { device = "mordor/vault";
-      fsType = "zfs";
+      options = [ "fmask=0022" "dmask=0022" ];
     };
 
   fileSystems."/srv/data" =
@@ -33,8 +29,8 @@
       fsType = "zfs";
     };
 
-  fileSystems."/srv/share/sam" =
-    { device = "mordor/share/sam";
+  fileSystems."/srv/vault" =
+    { device = "mordor/vault";
       fsType = "zfs";
     };
 
@@ -53,6 +49,57 @@
       fsType = "zfs";
     };
 
+  fileSystems."/srv/share/sam" =
+    { device = "mordor/share/sam";
+      fsType = "zfs";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay" =
+    { device = "/var/lib/containers/storage/overlay";
+      fsType = "none";
+      options = [ "bind" ];
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay-containers/6cf19ca5fa1e025b8a9f574dffe58cd2dcff89f635df771e8fe645cf964052fb/userdata/shm" =
+    { device = "shm";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay/3e50be3112cf70c3a9576b8bffe3d8461681948f3840d448a1a33e34ecd1befe/merged" =
+    { device = "overlay";
+      fsType = "overlay";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay-containers/9a3de9eaafe9b61ede75a524d6b760cbdba211704b5396605993b7e5098b7833/userdata/shm" =
+    { device = "shm";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay/01bd868e3c99fa910ae40dd3112af3444df1f31f07535447a87025019f886419/merged" =
+    { device = "overlay";
+      fsType = "overlay";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay-containers/78c8894c21d348888b7de6ea194aeeb548a10c73004ab26926571fa7f1804bea/userdata/shm" =
+    { device = "shm";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay/ff1491328b6b3d7aba9c7bc447a725a07ec1686bb78ec6e0c6baf97b50b39ad8/merged" =
+    { device = "overlay";
+      fsType = "overlay";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay-containers/3c7c518370cb43e895148daac9ce309b239224043021b2cd3d5df9a583f7fa41/userdata/shm" =
+    { device = "shm";
+      fsType = "tmpfs";
+    };
+
+  fileSystems."/var/lib/containers/storage/overlay/7fb2778fa98fbed075ab9842375a0dcf903d07bee88776fcf4f6a3ea408a5e87/merged" =
+    { device = "overlay";
+      fsType = "overlay";
+    };
+
   swapDevices = [ ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
@@ -60,8 +107,16 @@
   # still possible to use this option, but it's recommended to use it in conjunction
   # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
   networking.useDHCP = lib.mkDefault true;
+  # networking.interfaces.docker0.useDHCP = lib.mkDefault true;
   # networking.interfaces.eno1.useDHCP = lib.mkDefault true;
   # networking.interfaces.eno2.useDHCP = lib.mkDefault true;
+  # networking.interfaces.podman0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.tailscale0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.veth0.useDHCP = lib.mkDefault true;
+  # networking.interfaces.veth1.useDHCP = lib.mkDefault true;
+  # networking.interfaces.veth2.useDHCP = lib.mkDefault true;
+  # networking.interfaces.wlp97s0.useDHCP = lib.mkDefault true;
 
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
