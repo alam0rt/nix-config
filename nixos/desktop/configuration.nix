@@ -13,6 +13,7 @@
     ];
 
   networking.hostName = "desktop"; # Define your hostname.
+  networking.hostId = "cc74da59";
   # Pick only one of the below networking options.
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
 
