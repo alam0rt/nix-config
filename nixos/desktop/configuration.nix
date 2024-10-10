@@ -7,8 +7,8 @@
 {
   imports =
     [
-      ./zfs.nix
-      ./nvidia.nix
+      ../config/zfs.nix
+      ../config/nvidia.nix
       ./hardware-configuration.nix
     ];
 

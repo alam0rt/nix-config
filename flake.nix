@@ -62,7 +62,7 @@
         modules = [
           # > Our main nixos configuration file <
           ./nixos/configuration.nix
-	  ./nixos/desktop.nix
+	  ./nixos/desktop/configuration.nix
         ];
       };
     };
