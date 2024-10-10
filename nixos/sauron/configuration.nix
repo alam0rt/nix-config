@@ -491,7 +491,7 @@
       folders = {
         "vault" = {        # Name of folder in Syncthing, also the folder ID
            path = "/srv/vault";    # Which folder to add to Syncthing
-           devices = [ "banshee" "Pixel 6" "sanic" "wangblowz" ];      # Which devices to share the folder with
+           devices = [ "banshee" "Pixel 6" "sanic" "desktop" ];      # Which devices to share the folder with
         };
       };
     };
