@@ -570,9 +570,15 @@
       '')
   ];
 
+  age.secrets.transmission-credentials = {
+    file = ../../secrets/transmission-credentials.age;
+    owner = "transmission";
+    group = "transmission";
+  };
 
   services.transmission = {
     enable = true;
+    credentialsFile = config.age.secrets.transmission-credentials.path;
     settings = {
       home = "/srv/data/transmission";
       download-dir = "/srv/media/downloads";
@@ -582,8 +588,6 @@
       trash-original-torrent-files = true;
       rpc-bind-address = "0.0.0.0";
       rpc-whitelist = "127.0.0.1,192.168.0.*,100.64.0.*";
-      rpc-username = "omar";
-      rpc-password = "woofwoof";
       rpc-authentication-required = true;
       ratio-limit = "0.0";
       ratio-limit-enabled = true;
@@ -625,6 +629,13 @@
     enable = true;
   };
 
+  age.secrets.tailscale-server = {
+    file = ../../secrets/tailscale-server.age;
+  };
+
+  age.secrets.tailscale-authkey = {
+    file = ../../secrets/tailscale-authkey.age;
+  };
   systemd.services.tailscale-autoconnect = {
     description = "Automatic connection to Tailscale";
 
@@ -648,7 +659,7 @@
       fi
 
       # otherwise authenticate with tailscale
-      ${tailscale}/bin/tailscale up -authkey ${config.age.secrets.tailscale.authkey} --login-server=${config.age.secrets.tailscale.server}
+      ${tailscale}/bin/tailscale up -authkey $(cat ${config.age.secrets.tailscale-authkey.path}) --login-server=$(cat ${config.age.secrets.tailscale-server.path})
     '';
   };
 
