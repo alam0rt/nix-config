@@ -1,4 +1,7 @@
+{ config, pkgs, ... }:
+
 {
+  users.groups.sam = {};
   users.users = {
     sam = {
       isNormalUser = true;

@@ -1,8 +1,10 @@
+{ config, pkgs, ... }:
+
 {
   boot = {
     initrd.supportedFilesystems = [ "zfs" ];
     supportedFilesystems = [ "zfs" ];
-    zfs.package = pkgs.zfs_unstable;
+    zfs.package = pkgs.zfsUnstable;
   };
 
   services.udev.extraRules = ''

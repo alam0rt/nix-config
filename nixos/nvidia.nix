@@ -1,4 +1,9 @@
+{ config, pkgs, ... }:
 {
+  nixpkgs.config = {
+    nvidia.acceptLicense = true;
+  };
+
   # Enable OpenGL
   hardware.opengl = {
     enable = true;

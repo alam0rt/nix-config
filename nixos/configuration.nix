@@ -68,12 +68,6 @@
     nixPath = lib.mapAttrsToList (n: _: "${n}=flake:${n}") flakeInputs;
   };
 
-  # Allow unfree
-  nixpkgs.config = {
-    allowUnfree = true;
-    nvidia.acceptLicense = true;
-  };
-
   # Use the systemd-boot EFI boot loader.
   boot = {
     loader = {
@@ -84,10 +78,6 @@
       };
     };
   };
-
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-
-  networking.hostName = "desktop";
 
   # Set your time zone.
   time.timeZone = "Australia/Melbourne";
