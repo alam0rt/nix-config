@@ -5,5 +5,6 @@ let
   users = [ sam ];
 in
 {
-  "secret.age".publicKeys = [ users ];
+  "tailscale-authkey.age".publicKeys = users;
+  "tailscale-server.age".publicKeys = users;
 }
