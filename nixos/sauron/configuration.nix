@@ -486,7 +486,7 @@
         "banshee"   = { id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2"; };
         "Pixel 6"   = { id = "OR72TPR-WG5BLKK-SNQGHEG-SEFVF5U-R4SSWWC-WO4EVTE-6DZ6GCZ-3SMARA7"; };
         "sanic"     = { id = "AAIAFMS-YQUTFOU-OYA7SKU-HLRDNIH-MB7XKNF-RPHT2GN-ZEIFHYC-U7NYGQ5"; };
-        "wangblowz" = { id = "47ZIXVK-4YVGSSX-WPYPABR-CGFAKIT-Q4IQTQH-BGH4WAU-V5EQLQZ-ZBVV7QD"; };
+        "desktop"   = { id = "F7G62MY-FWFWFNY-PYVBZQE-S4EXYDX-IIPF4AQ-YAKJVP3-4TZXCKT-NAUTJQU"; };
       };
       folders = {
         "vault" = {        # Name of folder in Syncthing, also the folder ID
