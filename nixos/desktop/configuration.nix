@@ -9,6 +9,7 @@
     [
       ../config/zfs.nix
       ../config/nvidia.nix
+      ../config/home-manager.nix
       ./hardware-configuration.nix
     ];
 
