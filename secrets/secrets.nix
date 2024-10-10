@@ -8,4 +8,5 @@ in
   "tailscale-authkey.age".publicKeys = users;
   "tailscale-server.age".publicKeys = users;
   "transmission-credentials.age".publicKeys = users;
+  "borg.age".publicKeys = users;
 }

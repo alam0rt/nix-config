@@ -505,7 +505,7 @@
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
-        passCommand = "cat /srv/data/secrets/borg";
+        passCommand = "cat ${config.age.secrets.borg.path}";
       };
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
@@ -517,7 +517,7 @@
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
-        passCommand = "cat /srv/data/secrets/borg";
+        passCommand = "cat ${config.age.secrets.borg.path}";
       };
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
@@ -529,7 +529,7 @@
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
-        passCommand = "cat /srv/data/secrets/borg";
+        passCommand = "cat ${config.age.secrets.borg.path}";
       };
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
@@ -541,7 +541,7 @@
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
-        passCommand = "cat /srv/data/secrets/borg";
+        passCommand = "cat ${config.age.secrets.borg.path}";
       };
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
@@ -570,11 +570,6 @@
       '')
   ];
 
-  age.secrets.transmission-credentials = {
-    file = ../../secrets/transmission-credentials.age;
-    owner = "transmission";
-    group = "transmission";
-  };
 
   services.transmission = {
     enable = true;
@@ -629,13 +624,28 @@
     enable = true;
   };
 
-  age.secrets.tailscale-server = {
-    file = ../../secrets/tailscale-server.age;
+  # secrets
+  age = {
+    identityPaths = ["/srv/vault/ssh_keys/id_rsa"];
+    secrets = {
+      borg = {
+        file = ../../secrets/borg.age;
+      };
+      tailscale-server = {
+        file = ../../secrets/tailscale-server.age;
+      };
+      tailscale-authkey = {
+        file = ../../secrets/tailscale-authkey.age;
+      };
+      transmission-credentials = {
+        file = ../../secrets/transmission-credentials.age;
+        owner = "transmission";
+        group = "transmission";
+        mode = "700";
+      };
+    };
   };
 
-  age.secrets.tailscale-authkey = {
-    file = ../../secrets/tailscale-authkey.age;
-  };
   systemd.services.tailscale-autoconnect = {
     description = "Automatic connection to Tailscale";
 
