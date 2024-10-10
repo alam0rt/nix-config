@@ -94,6 +94,9 @@
       function ka() { 
           kubectl "$1" --as admin --as-group system:masters "''${@:2}";
       }
+      if [[ -f "/home/sam/vault/kube" ]]; then
+        export KUBECONFIG="/home/sam/vault/kube"
+      fi
     '';
     shellAliases = {
       gst = "git status -s -b";

@@ -40,6 +40,13 @@
     };
   };
 
+  services.tailscale = {
+    enable = true;
+    openFirewall = true;
+    extraUpFlags = ["--login-server=https://hs.samlockart.com"];
+  };
+
+
   fileSystems."/mnt/share/sam" = {
     device = "sauron:/srv/share/sam";
     fsType = "nfs";
@@ -89,6 +96,8 @@
   # $ nix search wget
   environment.systemPackages = with pkgs; [
     vim
+    firefox
+    gnupg
   ];
 
   # enable docker support
@@ -109,10 +118,6 @@
   };
 
   services.smartd = {
-    enable = true;
-  };
-
-  services.tailscale = {
     enable = true;
   };
 }
