@@ -17,6 +17,7 @@
     # inputs.nix-colors.homeManagerModules.default
 
     ./config/firefox.nix
+    ./config/emacs.nix
   ];
 
   nixpkgs = {
@@ -155,6 +156,7 @@
     qemu
     shellcheck
     jsonnet
+    rust-analyzer
 
     # graphical
     keepassxc
