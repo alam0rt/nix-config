@@ -95,19 +95,26 @@
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
+    # core
     vim
     firefox
+    kitty
+    
+    # social
+    mumble
     gnupg
+
+    # dev
+    ghidra
+
+    # fun
+    lutris
   ];
 
-  # enable docker support
-  virtualisation.docker = {
-    enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
-  };
+  # bluetooth
+  services.blueman.enable = true;
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
   # steam
   programs.steam = {
