@@ -40,10 +40,22 @@
     };
   };
 
+  # networking
   services.tailscale = {
     enable = true;
     openFirewall = true;
     extraUpFlags = ["--login-server=https://hs.samlockart.com"];
+  };
+
+  programs.wireshark = {
+    enable = true;
+  };
+
+  services.avahi = {
+    enable = true;
+    reflector = true;
+    allowInterfaces = ["tailscale0" "enp4s0" ];
+    allowPointToPoint = true;
   };
 
 
@@ -98,18 +110,22 @@
     # core
     vim
     firefox
-    kitty
     
     # social
     mumble
+    element
     gnupg
 
     # dev
     ghidra
+    wireshark
+    wineWowPackages.stable
 
     # fun
-    lutris
+    unstable.lutris
   ];
+
+
 
   # bluetooth
   services.blueman.enable = true;

@@ -145,6 +145,8 @@
     kustomize
     kubecolor
     direnv
+    kitty
+    wireshark
   ];
 
   programs.vscode = {
@@ -154,6 +156,45 @@
         vscodevim.vim
         golang.go
     ];
+  };
+
+
+  # terminal
+  programs.kitty = {
+    enable = true;
+    #themeFile = "Ocean";
+    shellIntegration = {
+      enableZshIntegration = true;
+    };
+    settings = {
+      window_padding_width = 10;
+    };
+    extraConfig = ''
+      # Ocean
+      # Theme ported from the Mac Terminal application.
+
+      background #214fbc
+      foreground #ffffff
+      cursor #7f7f7f
+      selection_background #216dff
+      color0 #000000
+      color8 #666666
+      color1 #990000
+      color9 #e50000
+      color2 #00a600
+      color10 #00d900
+      color3 #999900
+      color11 #e5e500
+      color4 #0000b2
+      color12 #0000ff
+      color5 #b200b2
+      color13 #e500e5
+      color6 #00a6b2
+      color14 #00e5e5
+      color7 #bebebe
+      color15 #e5e5e5
+      selection_foreground #214fbc
+    '';
   };
 
   # Enable home-manager and git
