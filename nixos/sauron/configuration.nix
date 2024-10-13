@@ -468,7 +468,11 @@
     exports = ''
       /srv/share/sam         192.168.0.0/255.255.255.0(rw,fsid=0,no_subtree_check) 100.64.0.0/255.255.255.0(rw,fsid=0,no_subtree_check)
       /srv/share/emma         192.168.0.0/255.255.255.0(rw,fsid=0,no_subtree_check) 100.64.0.0/255.255.255.0(rw,fsid=0,no_subtree_check)
+<<<<<<< HEAD
       /srv/share/public      192.168.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check) 100.64.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check)
+=======
+      /srv/share/public      192.168.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check)
+>>>>>>> origin/main
   '';
   };
 

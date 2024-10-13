@@ -66,7 +66,7 @@
         modules = [
           # > Our main nixos configuration file <
           ./nixos/configuration.nix
-	  ./nixos/sauron/configuration.nix
+          ./nixos/sauron/configuration.nix
         ];
       };
       desktop = nixpkgs.lib.nixosSystem {
@@ -74,7 +74,7 @@
         modules = [
           # > Our main nixos configuration file <
           ./nixos/configuration.nix
-	  ./nixos/desktop/configuration.nix
+          ./nixos/desktop/configuration.nix
         ];
       };
     };

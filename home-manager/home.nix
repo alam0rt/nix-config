@@ -16,7 +16,10 @@
     # Or modules exported from other flakes (such as nix-colors):
     # inputs.nix-colors.homeManagerModules.default
 
-    # ./firefox.nix # get working on darwin
+    ./config/firefox.nix
+    ./config/emacs.nix
+    ./config/vscode.nix
+    ./config/vim.nix
   ];
 
   nixpkgs = {
@@ -51,27 +54,6 @@
     nix-direnv.enable = true;
     };
 
-  programs.neovim = {
-    enable = true;
-    viAlias = true;
-    vimAlias = true;
-    extraConfig = ''
-      set number
-
-      set tabstop     =4
-      set softtabstop =4
-      set shiftwidth  =4
-      set expandtab
-
-    '';
-    plugins = [
-        {
-            plugin = pkgs.vimPlugins.vim-sneak;
-            config = "let g:sneak#label = 1";
-        }
-    ];
-  };
-
   home = {
     username = "sam";
     homeDirectory = "/home/sam";
@@ -97,6 +79,12 @@
       if [[ -f "/home/sam/vault/kube" ]]; then
         export KUBECONFIG="/home/sam/vault/kube"
       fi
+<<<<<<< HEAD
+=======
+
+     # Load session vars
+     . ${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh
+>>>>>>> origin/main
     '';
     shellAliases = {
       gst = "git status -s -b";
@@ -114,7 +102,9 @@
         "GITHUB_TOKEN"
       ];
     };
-    enableAutosuggestions = true;
+    autosuggestion = {
+      enable = true;
+    };
   };
 
   programs.fzf = {
@@ -128,17 +118,32 @@
   };
 
   home.packages = with pkgs; [
+    # k8s
+    kubectl
+    kubectx
+    kustomize
+    kubecolor
+    stern
+
+    # core
     jq
     git
     gh
     yq
-    kubectl
-    kubectx
     ripgrep
-    keepassxc
+    direnv
+
+    # encryption
+    gnupg
+    sops
+
+    # dev
+    unstable.go
     podman
     qemu
+    shellcheck
     jsonnet
+<<<<<<< HEAD
     stern
     fzf
     unstable.go
@@ -158,6 +163,13 @@
       jnoortheen.nix-ide
     ];
   };
+=======
+    rust-analyzer
+
+    # graphical
+    keepassxc
+  ];
+>>>>>>> origin/main
 
 
   # terminal
@@ -203,6 +215,7 @@
   programs.git = {
     enable = true;
     userName = "alam0rt";
+    userEmail = "sam@samlockart.com";
     aliases = {
       "new" = "!git checkout -b sam.lockart/$1 && :";
       "pl" = "!git fetch; git pull -r";
