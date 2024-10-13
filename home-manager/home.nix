@@ -79,12 +79,9 @@
       if [[ -f "/home/sam/vault/kube" ]]; then
         export KUBECONFIG="/home/sam/vault/kube"
       fi
-<<<<<<< HEAD
-=======
 
      # Load session vars
      . ${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh
->>>>>>> origin/main
     '';
     shellAliases = {
       gst = "git status -s -b";
@@ -143,7 +140,6 @@
     qemu
     shellcheck
     jsonnet
-<<<<<<< HEAD
     stern
     fzf
     unstable.go
@@ -152,6 +148,10 @@
     direnv
     kitty
     nil # nix lsp
+    rust-analyzer
+
+    # graphical
+    keepassxc
   ];
 
   programs.vscode = {
@@ -163,14 +163,6 @@
       jnoortheen.nix-ide
     ];
   };
-=======
-    rust-analyzer
-
-    # graphical
-    keepassxc
-  ];
->>>>>>> origin/main
-
 
   # terminal
   programs.kitty = {
