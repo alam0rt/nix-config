@@ -146,15 +146,16 @@
     kubecolor
     direnv
     kitty
-    wireshark
+    nil # nix lsp
   ];
 
   programs.vscode = {
     enable = true;
-      extensions = with pkgs.vscode-extensions; [
-        dracula-theme.theme-dracula
-        vscodevim.vim
-        golang.go
+    extensions = with pkgs.vscode-extensions; [
+      dracula-theme.theme-dracula
+      vscodevim.vim
+      golang.go
+      jnoortheen.nix-ide
     ];
   };
 

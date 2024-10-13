@@ -22,6 +22,14 @@
     enable = true;
     trustedInterfaces = [ "tailscale0" ];
     checkReversePath = "loose";
+    allowedTCPPorts = [
+      8384 22000 # syncthing
+      22 # ssh via tailscale
+      6112 # wc3
+    ];
+    allowedUDPPorts = [
+      6112
+    ];
   };
 
   # Syncthing

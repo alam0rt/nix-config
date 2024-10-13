@@ -6,7 +6,6 @@
     sam = {
       group = "sam";
       extraGroups = [ "wireshark" "wheel" "docker" ]; # Enable ‘sudo’ for the user.
-      shell = "/bin/zsh";
       isNormalUser = true;
       initialHashedPassword = "$y$j9T$NPAB.7arQ/BIqdovYTfY6/$506oYwegRg3oO9jTmMTssszCB.VKKTvbvBSOaXuNqB0"; # mkpasswd
       packages = with pkgs; [
