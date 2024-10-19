@@ -127,11 +127,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1728953813,
-        "narHash": "sha256-RxF9Gz3Ae/Al9Pd+ADodIfiOn8PeW+diJRHr3v7XkTc=",
+        "lastModified": 1729212977,
+        "narHash": "sha256-jt9iR8QmHlgKMhpLkM6beE9KR5Ws3rIe4n1OcKiNihw=",
         "owner": "bandithedoge",
         "repo": "nixpkgs-firefox-darwin",
-        "rev": "f1a01259e1e08e8f4aa633847429f7152bb5c86a",
+        "rev": "9db8fed0d375537e9623f26197df995e6f107553",
         "type": "github"
       },
       "original": {
@@ -142,11 +142,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1728492678,
-        "narHash": "sha256-9UTxR8eukdg+XZeHgxW5hQA9fIKHsKCdOIUycTryeVw=",
+        "lastModified": 1729070438,
+        "narHash": "sha256-KOTTUfPkugH52avUvXGxvWy8ibKKj4genodIYUED+Kc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "5633bcff0c6162b9e4b5f1264264611e950c8ec7",
+        "rev": "5785b6bb5eaae44e627d541023034e1601455827",
         "type": "github"
       },
       "original": {
@@ -158,11 +158,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1728740863,
-        "narHash": "sha256-u+rxA79a0lyhG+u+oPBRtTDtzz8kvkc9a6SWSt9ekVc=",
+        "lastModified": 1729044727,
+        "narHash": "sha256-GKJjtPY+SXfLF/yTN7M2cAnQB6RERFKnQhD8UvPSf3M=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "a3f9ad65a0bf298ed5847629a57808b97e6e8077",
+        "rev": "dc2e0028d274394f73653c7c90cc63edbb696be1",
         "type": "github"
       },
       "original": {
@@ -196,17 +196,14 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1728972329,
-        "narHash": "sha256-xGA09dGNce352/fmjWtItt3XDepdwSofhuGRCwlTpnM=",
-        "owner": "alam0rt",
-        "repo": "pvpgnix",
-        "rev": "f342d3cb8be2130d50a6683238988848626aa492",
-        "type": "github"
+        "lastModified": 1729029540,
+        "narHash": "sha256-JrNa5LgTsqrmARltDHoWSE2AIp9k8mel0wqbSJyryog=",
+        "path": "/home/sam/pvpgnix",
+        "type": "path"
       },
       "original": {
-        "owner": "alam0rt",
-        "repo": "pvpgnix",
-        "type": "github"
+        "path": "/home/sam/pvpgnix",
+        "type": "path"
       }
     },
     "root": {
