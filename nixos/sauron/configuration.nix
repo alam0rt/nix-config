@@ -170,6 +170,14 @@
         proxyPass = "http://127.0.0.1:8096";
       };
     };
+    virtualHosts."pass.iced.cool" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}";
+        recommendedProxySettings = true;
+      };
+    };
     virtualHosts."www.iced.cool" = {
       # catch all
       forceSSL = true;
@@ -526,6 +534,16 @@
       /srv/share/public      192.168.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check) 100.64.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check)
   '';
   };
+  services.vaultwarden = {
+    enable = true;
+    backupDir = "/srv/data/vaultwarden";
+    config = {
+      ROCKET_ADDRESS = "127.0.0.1";
+      ROCKET_PORT = 8222;
+      DOMAIN = "https://pass.iced.cool";
+      SIGNUPS_ALLOWED = false; # sorry lads :^)
+    };
+  };
 
   # Syncthing
   services.syncthing = {
@@ -633,10 +651,9 @@
       home = "/srv/data/transmission";
       download-dir = "/srv/media/downloads";
       incomplete-dir = "/srv/media/downloads/.incomplete";
-      watch-dir = "/srv/share/public";
-      watch-dir-enable = true;
       trash-original-torrent-files = true;
       rpc-bind-address = "0.0.0.0";
+      rpc-port = 9091;
       rpc-whitelist = "127.0.0.1,192.168.0.*,100.64.0.*";
       rpc-authentication-required = true;
       ratio-limit = "0.0";
