@@ -715,7 +715,6 @@
         file = ../../secrets/transmission-credentials.age;
         owner = "transmission";
         group = "transmission";
-        mode = "700";
       };
     };
   };
