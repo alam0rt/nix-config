@@ -22,8 +22,8 @@
     agenix.url = "github:ryantm/agenix";
 
     # pvpgn
-#    pvpgnix.url = "github:alam0rt/pvpgnix";
-    pvpgnix.url = "path:/home/sam/pvpgnix";
+    pvpgnix.url = "github:alam0rt/pvpgnix";
+#    pvpgnix.url = "path:/home/sam/pvpgnix";
     pvpgnix.inputs.nixpkgs.follows = "nixpkgs";
   };
 

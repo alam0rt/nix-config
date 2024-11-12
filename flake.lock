@@ -92,11 +92,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1731153869,
-        "narHash": "sha256-3Ftf9oqOypcEyyrWJ0baVkRpvQqroK/SVBFLvU3nPuc=",
+        "lastModified": 1728901530,
+        "narHash": "sha256-I9Qd0LnAsEGHtKE9+uVR0iDFmsijWSy7GT0g3jihG4Q=",
         "owner": "lnl7",
         "repo": "nix-darwin",
-        "rev": "5c74ab862c8070cbf6400128a1b56abb213656da",
+        "rev": "a60ac02f9466f85f092e576fd8364dfc4406b5a6",
         "type": "github"
       },
       "original": {
@@ -127,11 +127,11 @@
         "nixpkgs": "nixpkgs_3"
       },
       "locked": {
-        "lastModified": 1731372896,
-        "narHash": "sha256-GvIawX8iqpt+ANh3GYxFg97fXoRmnX0wqkli853v7Cs=",
+        "lastModified": 1728953813,
+        "narHash": "sha256-RxF9Gz3Ae/Al9Pd+ADodIfiOn8PeW+diJRHr3v7XkTc=",
         "owner": "bandithedoge",
         "repo": "nixpkgs-firefox-darwin",
-        "rev": "f48297bf6ffaff81b15b747a8bbbb197c745dbdc",
+        "rev": "f1a01259e1e08e8f4aa633847429f7152bb5c86a",
         "type": "github"
       },
       "original": {
@@ -142,11 +142,11 @@
     },
     "nixpkgs-unstable": {
       "locked": {
-        "lastModified": 1731139594,
-        "narHash": "sha256-IigrKK3vYRpUu+HEjPL/phrfh7Ox881er1UEsZvw9Q4=",
+        "lastModified": 1728492678,
+        "narHash": "sha256-9UTxR8eukdg+XZeHgxW5hQA9fIKHsKCdOIUycTryeVw=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "76612b17c0ce71689921ca12d9ffdc9c23ce40b2",
+        "rev": "5633bcff0c6162b9e4b5f1264264611e950c8ec7",
         "type": "github"
       },
       "original": {
@@ -158,11 +158,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1731239293,
-        "narHash": "sha256-q2yjIWFFcTzp5REWQUOU9L6kHdCDmFDpqeix86SOvDc=",
+        "lastModified": 1728740863,
+        "narHash": "sha256-u+rxA79a0lyhG+u+oPBRtTDtzz8kvkc9a6SWSt9ekVc=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "9256f7c71a195ebe7a218043d9f93390d49e6884",
+        "rev": "a3f9ad65a0bf298ed5847629a57808b97e6e8077",
         "type": "github"
       },
       "original": {
@@ -196,14 +196,17 @@
         "utils": "utils"
       },
       "locked": {
-        "lastModified": 1729029540,
-        "narHash": "sha256-JrNa5LgTsqrmARltDHoWSE2AIp9k8mel0wqbSJyryog=",
-        "path": "/home/sam/pvpgnix",
-        "type": "path"
+        "lastModified": 1728972329,
+        "narHash": "sha256-xGA09dGNce352/fmjWtItt3XDepdwSofhuGRCwlTpnM=",
+        "owner": "alam0rt",
+        "repo": "pvpgnix",
+        "rev": "f342d3cb8be2130d50a6683238988848626aa492",
+        "type": "github"
       },
       "original": {
-        "path": "/home/sam/pvpgnix",
-        "type": "path"
+        "owner": "alam0rt",
+        "repo": "pvpgnix",
+        "type": "github"
       }
     },
     "root": {
