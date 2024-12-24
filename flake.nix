@@ -25,6 +25,10 @@
     pvpgnix.url = "github:alam0rt/pvpgnix";
 #    pvpgnix.url = "path:/home/sam/pvpgnix";
     pvpgnix.inputs.nixpkgs.follows = "nixpkgs";
+
+    # nvidia-patch
+    nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";  
+    nvidia-patch.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = {
