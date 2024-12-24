@@ -9,7 +9,6 @@
     [
       ../config/zfs.nix
       ../config/nvidia-patch.nix
-      ../config/nvidia.nix
       ../config/home-manager.nix
       ./hardware-configuration.nix
     ];
@@ -162,11 +161,9 @@
     
   };
 
-
   services.smartd = {
     enable = true;
   };
-
 
   nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];
 
