@@ -10,6 +10,20 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
+    # example = prev.example.overrideAttrs (oldAttrs: rec {
+    # ...
+    # });
+    #  shadps4 = prev.shadps4.overrideAttrs (oldAttrs: {
+    #    pname = "shadps4";
+    #    version = "0.5.0-unstable-2024-12-26";
+    #    src = prev.fetchFromGitHub {
+    #      owner = "shadps4-emu";
+    #      repo = "shadPS4";
+    #      rev = "a1a98966eee07e7ecf3a5e3836b5f2ecde5664b0";
+    #      hash = "";
+    #      fetchSubmodules = true;
+    #    };
+    #  });
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will
