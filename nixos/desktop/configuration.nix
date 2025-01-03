@@ -108,10 +108,6 @@
   };
  # services.displayManager.defaultSession = "xfce";
 
-  # Enable sound.
-  sound.enable = true;
-  hardware.pulseaudio.enable = true;
-
   # List packages installed in system profile. To search, run:
   # $ nix search wget
   environment.systemPackages = with pkgs; [
@@ -131,7 +127,7 @@
 
     # fun
     unstable.lutris
-    unstable.shadps4
+    shadps4
 
     # 3d
     super-slicer-latest
@@ -169,6 +165,6 @@
 
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.05"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Did you read the comment?
 }
 
