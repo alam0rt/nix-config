@@ -430,19 +430,19 @@
     enable = true;
     securityType = "user";
     openFirewall = true;
-    settings = ''
-      workgroup = WORKGROUP
-      server string = sauron
-      netbios name = sauron
-      security = user 
-      #use sendfile = yes
-      #max protocol = smb2
-      # note: localhost is the ipv6 localhost ::1
-      hosts allow = 100.64. 192.168.0. 192.168.1. 127.0.0.1 localhost
-      hosts deny = 0.0.0.0/0
-      guest account = nobody
-      map to guest = bad user
-    '';
+    settings = {
+      global = {
+        workgroup = "WORKGROUP";
+        "server string" = "sauron";
+        "netbios name" = "sauron";
+        security = "user";
+        "hosts allow" = "100.64. 192.168.0. 127.0.0.1 localhost ::1";
+        "hosts deny" = "0.0.0.0/0";
+        "guest account" = "nobody";
+        "map to guest" = "bad user";
+      }
+
+    };
     shares = {
       public = {
         path = "/srv/share/public";
@@ -769,6 +769,6 @@
 
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "22.05"; # Did you read the comment?
+  system.stateVersion = "24.11"; # Did you read the comment?
 }
 
