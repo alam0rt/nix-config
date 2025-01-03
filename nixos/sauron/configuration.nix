@@ -430,7 +430,7 @@
     enable = true;
     securityType = "user";
     openFirewall = true;
-    extraConfig = ''
+    settings = ''
       workgroup = WORKGROUP
       server string = sauron
       netbios name = sauron
