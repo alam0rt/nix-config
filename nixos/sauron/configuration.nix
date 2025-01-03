@@ -428,7 +428,6 @@
   # ];
   services.samba = {
     enable = true;
-    securityType = "user";
     openFirewall = true;
     settings = {
       global = {
@@ -441,8 +440,6 @@
         "guest account" = "nobody";
         "map to guest" = "bad user";
       };
-    };
-    shares = {
       public = {
         path = "/srv/share/public";
         browseable = "yes";
