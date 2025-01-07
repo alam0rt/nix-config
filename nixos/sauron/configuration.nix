@@ -171,6 +171,7 @@
       };
     };
     virtualHosts."pass.iced.cool" = {
+      # https://github.com/dani-garcia/vaultwarden/wiki/Deployment-examples#nixos-by-tklitschi
       forceSSL = true;
       enableACME = true;
       locations."/" = {
