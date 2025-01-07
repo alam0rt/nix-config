@@ -44,8 +44,6 @@ in {
     package = pkgs.nvidia-patch.patch-nvenc (pkgs.nvidia-patch.patch-fbc package);
   };
 
-
-
   # Enable the X11 windowing system.
   services.xserver = {
     videoDrivers = ["nvidia"];

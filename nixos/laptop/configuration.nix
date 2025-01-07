@@ -38,9 +38,8 @@
     guiAddress = "http://127.0.0.1:8384";
     settings = {
       devices = {
-        "banshee"   = { id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2"; };
-        "Pixel 6"   = { id = "OR72TPR-WG5BLKK-SNQGHEG-SEFVF5U-R4SSWWC-WO4EVTE-6DZ6GCZ-3SMARA7"; };
-        "sanic"     = { id = "AAIAFMS-YQUTFOU-OYA7SKU-HLRDNIH-MB7XKNF-RPHT2GN-ZEIFHYC-U7NYGQ5"; };
+        "laptop"   = { id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2"; };
+        "desktop"   = { id = "F7G62MY-FWFWFNY-PYVBZQE-S4EXYDX-IIPF4AQ-YAKJVP3-4TZXCKT-NAUTJQU"; };
       };
     };
   };
@@ -90,12 +89,19 @@
   services.xserver = {
     enable = true;
     xkb.layout = "us";
+    videoDrivers = ["i915"];
     desktopManager = {
       xterm.enable = false;
       xfce.enable = true;
     };
   };
- # services.displayManager.defaultSession = "xfce";
+  services.displayManager.defaultSession = "xfce";
+
+  hardware.nvidia.prime = {
+    nvidiaBusId = "PCI:1:0:0";
+    intelBusId = "PCI:0:2:0";
+    sync.enable = true;
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -122,8 +128,6 @@
     super-slicer-latest
   ];
 
-
-
   # bluetooth
   services.blueman.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
@@ -147,4 +151,3 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
 }
-
