@@ -2,7 +2,7 @@
 {config, pkgs, lib, ...}: let
 	# Set to {id}-{branch}-{password} for betas.
 	steam-app = "222860";
-        group-id = "3246406";
+  group-id = "3246406";
   config = ''
     hostname "Wanky Server"
     rcon_password woofwoof
@@ -107,9 +107,9 @@ in {
 		./steam.nix
 	];
 
-        environment.systemPackages = with pkgs; [
-                steam-run
-        ];
+  environment.systemPackages = with pkgs; [
+    steam-run
+  ];
 
 	systemd.services.left4dead2 = {
 		wantedBy = [ "multi-user.target" ];
@@ -126,7 +126,7 @@ in {
 				"-game" "left4dead2"
 				"-ip" "0.0.0.0"
 				"-port" "27015"
-				"+exec" "server.cfg"
+				"+exec" "${configFile.destination}"
 			];
 			Nice = "-5";
 			PrivateTmp = true;
