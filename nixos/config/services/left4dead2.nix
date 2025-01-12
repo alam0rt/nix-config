@@ -126,7 +126,7 @@ in {
 				"-game" "left4dead2"
 				"-ip" "0.0.0.0"
 				"-port" "27015"
-				"+exec" "${configFile.destination}"
+				"+exec" "${configFile}/cfg/server.cfg"
 			];
 			Nice = "-5";
 			PrivateTmp = true;
