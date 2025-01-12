@@ -158,6 +158,7 @@ in {
 				"+exec" "${configFile}/cfg/server.cfg"
         "+map" "c1m1_hotel"
         "-debug"
+        "-autoupdate"
 			];
 			Nice = "-5";
 			PrivateTmp = true;
