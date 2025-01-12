@@ -5,7 +5,6 @@
   group-id = "3246406";
   config = ''
     hostname "Wanky Server"
-    rcon_password woofwoof
 
     // This states how players should contact you
     sv_contact sam@samlockart.com
