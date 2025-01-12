@@ -149,7 +149,7 @@ in {
 
 		serviceConfig = {
 			ExecStart = lib.escapeShellArgs [
-				"/var/lib/steam-app-${steam-app}/srcds_run"
+				"${pkgs.steam-run}/bin/steam-run"
 				"-console"
 				"-game" "left4dead2"
 				"-ip" "0.0.0.0"
