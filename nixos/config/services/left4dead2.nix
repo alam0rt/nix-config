@@ -157,6 +157,7 @@ in {
 				"-port" "27015"
 				"+exec" "${configFile}/cfg/server.cfg"
         "+map" "c1m1_hotel"
+        "-debug"
 			];
 			Nice = "-5";
 			PrivateTmp = true;
