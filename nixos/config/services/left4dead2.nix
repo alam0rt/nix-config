@@ -154,9 +154,8 @@ in {
 				"-console"
 				"-game" "left4dead2"
 				"-ip" "0.0.0.0"
-				"+port" "27015"
+				"-port" "27015"
         "+map" "helms_deep_r26"
-        "-debug"
 				"+exec" "server.cfg" # copied manually from nix/store above
 			];
 			Nice = "-5";
