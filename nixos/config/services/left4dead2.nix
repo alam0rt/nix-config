@@ -47,12 +47,12 @@
     sv_allow_lobby_connect_only 0
 
     //BEBOP
-    //l4d_maxplayers "8"
-    //sv_maxplayers "8"
-    //sm_cvar l4d_maxplayers "8"
-    //sv_visiblemaxplayers "-1"
-    //sm_cvar l4d_survivor_limit "8"
-    //sm_cvar sv_removehumanlimit "1"
+    l4d_maxplayers "8"
+    sv_maxplayers "8"
+    sm_cvar l4d_maxplayers "8"
+    sv_visiblemaxplayers "-1"
+    sm_cvar l4d_survivor_limit "8"
+    sm_cvar sv_removehumanlimit "1"
 
     //Game Settings
 
@@ -155,7 +155,7 @@ in {
 				"-game" "left4dead2"
 				"-ip" "0.0.0.0"
 				"-port" "27015"
-        "+map" "c1m1_hotel"
+        "+map" "helms_deep_r26"
         "-debug"
 				"+exec" "server.cfg" # copied manually from nix/store above
 			];
