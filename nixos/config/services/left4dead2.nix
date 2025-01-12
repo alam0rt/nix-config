@@ -156,6 +156,7 @@ in {
 				"-ip" "0.0.0.0"
 				"-port" "27015"
 				"+exec" "${configFile}/cfg/server.cfg"
+        "+map" "c1m1_hotel"
 			];
 			Nice = "-5";
 			PrivateTmp = true;
