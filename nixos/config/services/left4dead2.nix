@@ -95,6 +95,35 @@
     sv_maxrate 30000   //default "0";  Max bandwidth rate allowed on server, 0 = unlimited
     sv_mincmdrate 20   //default 0; This sets the minimum value for cl_cmdrate. 0 = unlimited [cevo=67]
     sv_maxcmdrate 33    //default 40; (If sv_mincmdrate is > 0), this sets the maximum value for cl_cmdrate. [cevo=101]
+
+    // Source: https://steamcommunity.com/app/550/discussions/0/2568690592375159630/
+    //Infected improvement
+    sm_cvar tank_stuck_time_suicide 30  //seconds before tank suicide if stuck
+    sm_cvar director_tank_force_offer 1
+    sm_cvar director_force_witch 1
+    sm_cvar director_force_tank 1
+    sm_cvar director_tank_max_interval 600
+    sm_cvar director_tank_min_interval 200 //default 500
+    sm_cvar director_threat_max_separation 5000
+    sm_cvar director_threat_min_separation 500 //default 5000
+    sm_cvar director_threat_radius 500 //default 1000
+    sm_cvar director_max_threat_areas 8 //default 4
+    sm_cvar versus_tank_flow_team_variation 0.0
+
+    // Survivors bot improvement
+    sm_cvar sb_friend_immobilized_reaction_time_normal 0 //bot reaction time when human get caught normal
+    sm_cvar sb_friend_immobilized_reaction_time_hard 0 //bot reaction time when human get caught hard
+    sm_cvar sb_friend_immobilized_reaction_time_expert 0 //bot reaction time when human get caught expert
+    sm_cvar sb_friend_immobilized_reaction_time_vs 0 //bot reaction time when human get caught vs
+    sm_cvar sb_max_team_melee_weapons 2 //bot take melee
+    sm_cvar sb_melee_approach_victim 1 //bot use melee
+    sm_cvar sb_sidestep_for_horde 1 //allow bot to seek better position for shooting infected
+    sm_cvar sb_battlestation_human_hold_time 1 //How long the nearest human must hold their place before SurvivorBots will re-evaluate their Battlestations
+    sm_cvar sb_normal_saccade_speed 115 //Better Aimbot
+    sm_cvar sb_combat_saccade_speed 350 //Better Aimbot
+    sm_cvar sb_toughness_buffer 30 //How much hp before a bot heal himself
+    sm_cvar sb_separation_range 100 //distance between each survivors
+    sm_cvar sb_max_scavenge_separation 750 //SurvivorBots wont scavenge items farther away from the group than this
   '';
   configFile = pkgs.writeTextFile {
     name = "config";
