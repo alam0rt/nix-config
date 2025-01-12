@@ -11,6 +11,7 @@
       ../config/zfs.nix
       ../config/nvidia.nix
       ../config/users.nix
+      ../config/services/left4dead2.nix
     ];
 
   # Use the systemd-boot EFI boot loader.
