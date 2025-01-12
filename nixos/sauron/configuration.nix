@@ -49,6 +49,7 @@
       23916 # maubot
       51413 # torrent
       8191 # flaresolverr
+      27015 # steam
     ];
     allowedUDPPorts = [
       111 2049 4000 4001 4002 20048 # nfs
@@ -60,6 +61,7 @@
       51413 # torrent
       3478 # unifi
       1900 7359 # dlna jellyfin
+      27015 # steam
     ];
     # always allow traffic from your Tailscale network
     trustedInterfaces = [ "tailscale0" ];
@@ -558,7 +560,7 @@
     guiAddress = "http://0.0.0.0:8384";
     settings = {
       devices = {
-        "laptop"   = { id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2"; };
+        "laptop"   = { id = "5ATZ7LD-C3AYIMS-EXQZILG-2A743HY-4Y7ULQY-RODJR7F-GO43W6X-CLXDAAA"; };
         "desktop"   = { id = "F7G62MY-FWFWFNY-PYVBZQE-S4EXYDX-IIPF4AQ-YAKJVP3-4TZXCKT-NAUTJQU"; };
       };
       folders = {
