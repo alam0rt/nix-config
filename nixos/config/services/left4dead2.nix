@@ -150,11 +150,10 @@ in {
 		serviceConfig = {
 			ExecStart = lib.escapeShellArgs [
 				"${pkgs.steam-run}/bin/steam-run"
-				"/var/lib/steam-app-${steam-app}/srcds_run"
 				"-console"
 				"-game" "left4dead2"
 				"-ip" "0.0.0.0"
-				"-port" "27015"
+				"+port" "27015"
         "+map" "helms_deep_r26"
         "-debug"
 				"+exec" "server.cfg" # copied manually from nix/store above
