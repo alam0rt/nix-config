@@ -37,11 +37,11 @@
     motd_enabled 1
 
     //GAME MODE
-    sv_gametypes "coop, versus, mutation"
-    sm_cvar mp_gamemode versus
+    //sv_gametypes "coop, versus"
+    //sm_cvar mp_gamemode versus
 
     //DIFFICULTY
-    //z_difficulty Normal
+    z_difficulty Normal
 
     //LOBBY CONNECT
     sv_allow_lobby_connect_only 0
