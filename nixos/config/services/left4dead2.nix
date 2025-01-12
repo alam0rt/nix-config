@@ -157,7 +157,7 @@ in {
 				"-port" "27015"
         "+map" "c1m1_hotel"
         "-debug"
-				"+exec" "${configFile}/cfg/server.cfg"
+				"+exec" "server.cfg" # copied manually from nix/store above
 			];
 			Nice = "-5";
 			PrivateTmp = true;
