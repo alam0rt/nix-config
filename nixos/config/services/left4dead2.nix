@@ -83,8 +83,8 @@
 
     // Bans
     //  execute banned.cfgs at server start. Optimally at launch commandline.
-    exec banned_user.cfg  //loads banned users' ids
-    exec banned_ip.cfg      //loads banned users' ips
+    //exec banned_user.cfg  //loads banned users' ids
+    //exec banned_ip.cfg      //loads banned users' ips
     writeip          // Save the ban list to banned_ip.cfg.
     writeid          // Wrties a list of permanently-banned user IDs to banned_user.cfg.
 
