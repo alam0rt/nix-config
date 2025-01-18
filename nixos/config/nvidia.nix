@@ -9,6 +9,9 @@
     enable = true;
   };
 
+  # Load nvidia driver for Xorg and Wayland
+  services.xserver.videoDrivers = ["nvidia"];
+
   ## nvidia
   # Load nvidia driver for Xorg and Wayland
   hardware.nvidia = {

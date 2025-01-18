@@ -106,6 +106,7 @@
     };
   };
  # services.displayManager.defaultSession = "xfce";
+  programs.nix-ld.enable = true;
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -160,14 +161,19 @@
   };
 
   # VR streaming
-  programs.alvr = {
+  programs.alvr = with pkgs; {
     enable = true;
     openFirewall = true;
+    package = unstable.alvr;
   };
 
   services.smartd = {
     enable = true;
   };
+
+  services.flatpak.enable = true;
+  xdg.portal.enable = true;
+  xdg.portal.extraPortals = [pkgs.xdg-desktop-portal-gtk];
 
   nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];
 

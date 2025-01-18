@@ -10,6 +10,15 @@
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
+    botamusique = prev.botamusique.overrideAttrs (oldAttrs: rec {
+      version = "7.2.3";
+      src = prev.fetchFromGitHub {
+        owner = "azlux";  # Replace with the actual owner
+        repo = "botamusique";
+        rev = "2760a14f01004216ec1411c33f953b10c51bca09";  # Replace with the commit SHA of the new version
+        sha256 = "";  # Replace with the actual SHA256 hash
+      };
+    });
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will
