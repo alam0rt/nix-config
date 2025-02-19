@@ -4,10 +4,11 @@ pkgs: {
   # example = pkgs.callPackage ./example { };
 
   my-custom-vscode-extension = pkgs.vscode-utils.buildVscodeExtension {
-    pname = "my-custom-plugin";
-    version = "0.1.0";
-    src = pkgs.fetchurl {
-      url = "https://example.com/my-plugin.vsix";
+    pname = "cline";
+    version = "azureopenai-o3mini";
+    src = pkgs.fetchGit {
+      url = "https://github.com/yt3trees/cline.git";
+      rev = "azureopenai-o3mini";
       sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     };
   };
