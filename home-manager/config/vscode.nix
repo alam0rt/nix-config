@@ -34,6 +34,7 @@
         github.copilot
         github.copilot-chat
         ms-vscode.makefile-tools
+        (pkgs.my-custom-vscode-extension)
     ];
   };
 }
