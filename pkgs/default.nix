@@ -6,6 +6,7 @@ pkgs: {
   my-custom-vscode-extension = pkgs.vscode-utils.buildVscodeExtension {
     name = "cline";
     vscodeExtPublisher = "yt3trees";
+    vscodeExtUniqueId = "yt3trees.cline";
     version = "azureopenai-o3mini";
     src = pkgs.fetchGit {
       url = "https://github.com/yt3trees/cline.git";
