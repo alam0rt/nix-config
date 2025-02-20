@@ -4,8 +4,7 @@ pkgs: {
   # example = pkgs.callPackage ./example { };
 
   my-custom-vscode-extension = pkgs.vscode-utils.buildVscodeExtension {
-    name = "cline";
-    publisher = "yt3trees";
+    name = "yt3trees.cline";
     version = "azureopenai-o3mini";
     src = pkgs.fetchGit {
       url = "https://github.com/yt3trees/cline.git";
