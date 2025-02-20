@@ -11,6 +11,7 @@ pkgs: {
     version = "azureopenai-o3mini";
     src = pkgs.fetchgit {
       url = "https://github.com/yt3trees/cline.git";
+      ref = "azureopenai-o3mini";
       rev = "azureopenai-o3mini";
       sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
     };
