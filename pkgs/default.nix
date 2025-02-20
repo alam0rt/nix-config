@@ -9,7 +9,7 @@ pkgs: {
     vscodeExtUniqueId = "yt3trees.cline";
     vscodeExtName = "cline";
     version = "azureopenai-o3mini";
-    src = pkgs.fetchGit {
+    src = pkgs.fetchgit {
       url = "https://github.com/yt3trees/cline.git";
       rev = "azureopenai-o3mini";
       sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
