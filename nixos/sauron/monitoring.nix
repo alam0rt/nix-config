@@ -16,6 +16,9 @@ in {
           http_addr = "127.0.0.1";
           serve_from_sub_path = false;
         };
+        security = {
+          cookie_secure`= true;
+        };
     };
   };
 
