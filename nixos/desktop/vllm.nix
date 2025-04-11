@@ -28,7 +28,7 @@ in {
       cmd = [
         "--model" cfg.model
         "--max-model-len" "2048" # default is 4096
-        "--gpu-memory-utilization=0.85"
+        "--gpu-memory-utilization=0.80"
         "--dtype=float16"
       ];
       image = cfg.image;
