@@ -13,8 +13,7 @@ in {
   age.secrets.hugging-face-ro-token.file = ../../secrets/hugging-face-ro-token.age;
   virtualisation.oci-containers.containers = {
     vllm = {
-      # disable for now
-      autoStart = false;
+      autoStart = true;
       preRunExtraOptions = [
         "--storage-driver=overlay" # not sure why, but this gets blanked out
       ];
@@ -28,7 +27,7 @@ in {
       ];
       cmd = [
         "--model" cfg.model
-        "--max-model-len" "4096"
+        "--max-model-len" "2048" # default is 4096
         "--gpu-memory-utilization=0.85"
         "--dtype=float16"
       ];
