@@ -28,7 +28,7 @@ in {
     locations = {
       "/" = {
         proxyPass = "${toString config.services.grafana.settings.server.protocol}://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
-        recommendedProxySettings = false;
+        recommendedProxySettings = true;
         proxyWebsockets = true;
         extraConfig = ''
         proxy_cookie_path / "/; HttpOnly; SameSite=strict";
