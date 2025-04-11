@@ -17,7 +17,7 @@ in {
           serve_from_sub_path = false;
         };
         security = {
-          cookie_secure = true; # serving via https proxy
+          cookie_secure = false; # serving via https proxy
         };
     };
   };
