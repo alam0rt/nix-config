@@ -5,6 +5,8 @@
 let cfg = config.server;
 in {
 
+  users.users.grafana.extraGroups = ["mail"]; # allow mail cred reading
+
   services.grafana = {
     enable = true;
     settings = {
