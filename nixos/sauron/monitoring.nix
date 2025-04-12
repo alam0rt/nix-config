@@ -19,6 +19,13 @@ in {
         security = {
           cookie_secure = false; # serving via https proxy
         };
+        smtp = {
+          enabled = true;
+          host = "$__file{${config.age.secrets.smtp-addr.path}}:465";
+          user = "$__file{${config.age.secrets.smtp-user.path}}";
+          password = "$__file{${config.age.secrets.smtp-pass.path}}";
+          from_address = "bot@iced.cool";
+        };
     };
   };
 
