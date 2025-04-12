@@ -4,8 +4,21 @@
 , ... }:
 let cfg = config.server;
 in {
-  # remove once setup with reverse proxy
-  networking.firewall.allowedTCPPorts = [ 8123 ];
+  networking.firewall.allowedTCPPorts = [
+    8123 # remove once setup with reverse proxy
+    1883 # mosquitto
+  ];
+
+  services.mosquitto = {
+    enable = true;
+    listeners = [
+      {
+        acl = [ "pattern readwrite #" ];
+        omitPasswordAuth = true;
+        settings.allow_anonymous = true; # TODO: lock down
+      }
+    ];
+  };
 
   services.home-assistant = {
     enable = true;
