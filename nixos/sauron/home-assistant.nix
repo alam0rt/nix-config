@@ -31,10 +31,7 @@ in {
       "jellyfin"
     ];
     config = {
-      mqtt = {
-        broker = "127.0.0.1";
-        port = 1883;
-      };
+      mqtt = {};
       # Includes dependencies for a basic setup
       # https://www.home-assistant.io/integrations/default_config/
       default_config = {};
