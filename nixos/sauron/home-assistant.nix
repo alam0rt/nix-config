@@ -29,6 +29,7 @@ in {
       "radio_browser"
       "mqtt"
       "jellyfin"
+      "unifi"
     ];
     config = {
       mqtt = {};
