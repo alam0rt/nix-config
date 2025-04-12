@@ -11,6 +11,11 @@ in {
   #   enable = true;
   #   enableSSHSupport = true;
   # };
+  age.secrets = {
+    smtp-addr.file = ../../secrets/smtp-addr.age;
+    smtp-user.file = ../../secrets/smtp-user.age;
+    smtp-pass.file = ../../secrets/smtp-pass.age;
+  };
   programs.msmtp = {
     enable = true;
     setSendmail = true;
@@ -24,11 +29,11 @@ in {
     };
     accounts = {
       default = {
-        host = "smtp.sendgrid.com";
-	tls_fingerprint = "3F:C8:AD:FE:3F:20:7F:D9:90:F4:9D:56:14:64:DE:97:A4:64:F7:3B:2F:AE:FD:0D:74:94:22:CF:A2:F5:A8:01";
-        passwordeval = "cat /srv/data/secrets/sendgrid";
-        user = "apikey";
-        from = "sauron@samlockart.com";
+        host = builtins.readFile config.age.secrets.smtp-addr.path; # stored in store but that's okay
+        tls_fingerprint = "5C:72:F6:4D:A9:CE:79:1A:B5:2C:60:E7:CB:7C:DF:C4:D2:63:AA:CB:97:EA:1E:18:8A:D6:C4:C5:C0:5F:4F:A1";
+        passwordeval = config.age.secrets.smtp-pass.path;
+        user = builtins.readFile config.age.secrets.smtp-user.path; # stored in store but that's okay
+        from = "sauron@iced.cool";
       };
     };
   };

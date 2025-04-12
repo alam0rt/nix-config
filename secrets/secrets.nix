@@ -11,4 +11,7 @@ in
   "borg.age".publicKeys = users;
   "maubot-secret-config.age".publicKeys = users;
   "hugging-face-ro-token.age".publicKeys = users;
+  "smtp-user.age".publicKeys = users;
+  "smtp-pass.age".publicKeys = users;
+  "smtp-addr.age".publicKeys = users;
 }
