@@ -27,6 +27,7 @@ in {
       "esphome"
       "met"
       "radio_browser"
+      "mqtt"
     ];
     config = {
       # Includes dependencies for a basic setup
