@@ -13,6 +13,7 @@
       ../config/home-manager.nix
       ../config/amd.nix
       ../config/llm.nix
+      ./hardware-configuration.nix
     ];
 
   networking.hostName = "desktop"; # Define your hostname.
