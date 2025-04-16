@@ -11,17 +11,26 @@
       ../config/common
       ../config/network
       ../config/home-manager.nix
-      ../config/amd.nix
       ../config/llm.nix
       ./hardware-configuration.nix
     ];
 
   networking.hostName = "desktop"; # Define your hostname.
   networking.hostId = "cc74da59";
-
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
-
   networking.firewall.enable = false;
+
+  # 9070 xt requires >= 6.13.5
+  # latest currently points to 6.13.11
+  # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # Enable OpenGL
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
   # secrets
   age = {
     # TODO: will cause issues as syncthing needs to sync this before we can decrypt
