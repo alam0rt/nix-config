@@ -67,6 +67,9 @@
     # core
     vim
     firefox
+
+    # temporary
+    unstable.xorg.xorgserver
     
     # social
     mumble
