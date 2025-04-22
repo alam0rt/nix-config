@@ -33,6 +33,7 @@
   hardware.graphics = with pkgs; {
     enable = true;
     enable32Bit = true;
+    # mesa 25 at time of comment
     package = unstable.mesa;
     package32 = unstable.driversi686Linux.mesa;
   };
