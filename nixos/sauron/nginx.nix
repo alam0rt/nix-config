@@ -78,8 +78,8 @@ in {
     # May be unnecessary when CSP is configured properly (see above)
     add_header X-XSS-Protection "1; mode=block";
 
-    # This might create errors
-    proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
+    # This might create errors - might be breaking Grafana
+    # proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
     '';
 
     virtualHosts."www.iced.cool" = {

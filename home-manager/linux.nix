@@ -28,6 +28,22 @@
     };
   };
 
+  xdg = {
+    configFile =  {
+      "containers/policy.json" = {
+        enable = true;
+        text = builtins.toJSON({
+          # https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
+          default = [
+            {
+              type = "insecureAcceptAnything";
+            }
+          ];
+        });
+      };
+    };
+  };
+
   home.packages = with pkgs; [
     # CAD / 3d
     super-slicer-latest # doesn't build on darwin

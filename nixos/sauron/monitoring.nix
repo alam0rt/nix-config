@@ -5,6 +5,8 @@
 let cfg = config.server;
 in {
 
+  users.users.grafana.extraGroups = ["mail"]; # allow mail cred reading
+
   services.grafana = {
     enable = true;
     settings = {
@@ -16,16 +18,31 @@ in {
           http_addr = "127.0.0.1";
           serve_from_sub_path = false;
         };
+        security = {
+          cookie_secure = false; # serving via https proxy
+        };
+        smtp = {
+          enabled = true;
+          host = "$__file{${config.age.secrets.smtp-addr.path}}:465";
+          user = "$__file{${config.age.secrets.smtp-user.path}}";
+          password = "$__file{${config.age.secrets.smtp-pass.path}}";
+          from_address = "bot@iced.cool";
+        };
     };
   };
 
   services.nginx.virtualHosts.${toString config.services.grafana.settings.server.domain} = {
     forceSSL = false;
     enableACME = false;
-    locations."/" = {
-      proxyPass = "${toString config.services.grafana.settings.server.protocol}://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
-      recommendedProxySettings = true;
-      proxyWebsockets = true;
+    locations = {
+      "/" = {
+        proxyPass = "${toString config.services.grafana.settings.server.protocol}://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
+        recommendedProxySettings = true;
+        proxyWebsockets = true;
+        extraConfig = ''
+        proxy_cookie_path / "/; HttpOnly; SameSite=strict";
+        '';
+      };
     };
   };
 

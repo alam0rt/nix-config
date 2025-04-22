@@ -25,7 +25,9 @@
       ./nginx.nix
       ./syncthing.nix
       ./openwebui.nix
+      ./matrix.nix
       ./monitoring.nix
+      ./home-assistant.nix
 #      ../config/home-manager.nix # get working
     ];
 
@@ -123,6 +125,8 @@
     "aspnetcore-runtime-6.0.36"
     # maubot
     "olm-3.2.16"
+    # home-assistant
+    "openssl-1.1.1w"
   ];
 
   # Before changing this value read the documentation for this option
