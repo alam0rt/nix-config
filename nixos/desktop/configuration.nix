@@ -35,8 +35,8 @@
     enable32Bit = true;
     # mesa 25 at time of comment
     # https://translate.kagi.com/translate/https://www.overclockers.at/grafikkarten/probleme-mit-9070-xt-ubuntu-24-04_264796
-    package = unstable.mesa;
-    package32 = unstable.driversi686Linux.mesa;
+    #package = unstable.mesa;
+    #package32 = unstable.driversi686Linux.mesa;
   };
 
   # secrets
