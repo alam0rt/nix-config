@@ -27,7 +27,7 @@
 
   # https://nixos.wiki/wiki/AMD_GPU
   boot.initrd.kernelModules = [ "amdgpu" ];
-  services.xserver.videoDrivers = [ "modesetting" ];
+  services.xserver.videoDrivers = [ "amdgpu" ];
 
   # Enable OpenGL
   hardware.graphics = with pkgs; {
