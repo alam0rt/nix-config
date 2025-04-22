@@ -23,7 +23,7 @@
   # 9070 xt requires >= 6.13.5
   # latest currently points to 6.13.11
   # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
-  boot.kernelPackages = pkgs.unstable.linuxPackages_6_14;
+  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
 
   # https://nixos.wiki/wiki/AMD_GPU
   boot.initrd.kernelModules = [ "amdgpu" ];
