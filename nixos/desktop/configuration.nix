@@ -30,9 +30,11 @@
   services.xserver.videoDrivers = [ "amdgpu" ];
 
   # Enable OpenGL
-  hardware.graphics = {
+  hardware.graphics = with pkgs; {
     enable = true;
     enable32Bit = true;
+    package = unstable.mesa;
+    package32 = unstable.driversi686Linux.mesa;
   };
 
   # secrets
