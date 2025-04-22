@@ -27,13 +27,14 @@
 
   # https://nixos.wiki/wiki/AMD_GPU
   boot.initrd.kernelModules = [ "amdgpu" ];
-  services.xserver.videoDrivers = [ "amdgpu" ];
+  services.xserver.videoDrivers = [ "modesetting" ];
 
   # Enable OpenGL
   hardware.graphics = with pkgs; {
     enable = true;
     enable32Bit = true;
     # mesa 25 at time of comment
+    # https://translate.kagi.com/translate/https://www.overclockers.at/grafikkarten/probleme-mit-9070-xt-ubuntu-24-04_264796
     package = unstable.mesa;
     package32 = unstable.driversi686Linux.mesa;
   };
