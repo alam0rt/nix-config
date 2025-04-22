@@ -77,4 +77,21 @@ in {
       }
     ];
   };
+
+  #\\\\\\\
+  # element
+  #\\\\\\\\\
+    services.nginx.virtualHosts."x.${fqdn}" = {
+    enableACME = true;
+    forceSSL = true;
+    serverAliases = [
+      "x.${config.networking.domain}"
+    ];
+
+    root = pkgs.element-web.override {
+      conf = {
+        default_server_config = clientConfig; # see `clientConfig` from the snippet above.
+      };
+    };
+  };
 }
