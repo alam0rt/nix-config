@@ -98,7 +98,9 @@
           ./nixos/configuration.nix
           ./nixos/desktop/configuration.nix
           # > Bleeding-Edge mesa-git
-          chaotic.nixosModules.default
+          chaotic.nixosModules.nyx-cache
+          chaotic.nixosModules.nyx-overlay
+          chaotic.nixosModules.nyx-registry
         ];
       };
       laptop = nixpkgs.lib.nixosSystem {
