@@ -25,3 +25,4 @@
     };
     nyx.cache.enable = true;
   };
+}
