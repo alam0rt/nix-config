@@ -20,6 +20,9 @@
   networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
   networking.firewall.enable = false;
 
+  # Fixing time sync when dualbooting with Windows
+  time.hardwareClockInLocalTime = true;
+
   # 9070 xt requires >= 6.13.5
   # latest currently points to 6.13.11
   # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
