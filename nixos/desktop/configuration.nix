@@ -12,6 +12,7 @@
       ../config/network
       ../config/home-manager.nix
       ../config/llm.nix
+      ../config/overclocking.nix
       ./hardware-configuration.nix
     ];
 
