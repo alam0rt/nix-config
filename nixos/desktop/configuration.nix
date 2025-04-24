@@ -26,7 +26,7 @@
   # 9070 xt requires >= 6.13.5
   # latest currently points to 6.13.11
   # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
-  boot.kernelPackages = pkgs.unstable.linuxPackages_latest;
+  boot.kernelPackages = pkgs.linuxPackages_6_14;
 
   # https://nixos.wiki/wiki/AMD_GPU
   boot.initrd.kernelModules = [ "amdgpu" ];
@@ -38,8 +38,8 @@
     enable32Bit = true;
     # mesa 25 at time of comment
     # https://translate.kagi.com/translate/https://www.overclockers.at/grafikkarten/probleme-mit-9070-xt-ubuntu-24-04_264796
-    package = unstable.mesa;
-    package32 = unstable.driversi686Linux.mesa;
+    #package = unstable.mesa;
+    #package32 = unstable.driversi686Linux.mesa;
   };
 
   # secrets
