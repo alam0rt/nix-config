@@ -3,11 +3,11 @@
 {
   # ollama / LLM
   services.ollama = {
-    enable = false;
-    package = pkgs.unstable.ollama-cuda;
+    enable = true;
+    package = pkgs.unstable.ollama-rocm;
     port = 11434;
     host = "0.0.0.0";
-    acceleration = "cuda"; # switch to amd
+    acceleration = "rocm";
     openFirewall = true;
     loadModels = [
       "deepseek-r1:14b"
