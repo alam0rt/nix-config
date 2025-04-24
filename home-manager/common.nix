@@ -60,6 +60,9 @@
     homeDirectory = "/home/sam";
   };
 
+  # Required when using unstable branch
+  home.enableNixpkgsReleaseCheck = false;
+
   programs.zsh = {
     enable = true; # must also be enabled in nixos
     initExtra = ''
