@@ -13,6 +13,11 @@
   boot.kernelModules = [ "kvm-intel" ];
   boot.extraModulePackages = [ ];
 
+  boot.kernelParams = [
+    "video=DP-3:2560x1440@59.95,rotate=270" # left
+    "video=HDMI-A-1:2560x1440" # right
+  ];
+
   fileSystems."/" =
     { device = "/dev/disk/by-uuid/83f19ff7-2a29-414d-9153-7e45458eb0ab";
       fsType = "ext4";
