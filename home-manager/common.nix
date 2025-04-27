@@ -247,6 +247,7 @@
       "shell.nix"
       ".envrc"
       ".direnv/"
+      ".DS_Store"
     ];
     extraConfig = {
       url = {
