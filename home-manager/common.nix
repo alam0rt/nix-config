@@ -95,6 +95,16 @@
         . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
       fi
     '';
+    history = {
+      extended = true;
+      share = true;
+      append = true;
+      save = 100000000;
+      size = 100000000;
+      ignoreSpace = true;
+      ignoreDups = true;
+      expireDuplicatesFirst = true;
+    };
     shellAliases = {
       gst = "git status -s -b";
       gco = "git checkout";
