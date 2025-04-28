@@ -17,6 +17,7 @@
 
       " Set this variable to 1 to fix files when you save them.
       let g:ale_fix_on_save = 1
+      let g:go_fmt_fail_silently = 1 " https://github.com/dense-analysis/ale/issues/609
 
       " NERDTree
       nnoremap <leader>n :NERDTreeFocus<CR>
@@ -44,6 +45,7 @@
         vim-better-whitespace
         vim-fugitive
         vim-surround
+        nvim-cmp
         ale
         vim-indent-guides
     ];
