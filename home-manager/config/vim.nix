@@ -2,6 +2,13 @@
   home.packages = with pkgs; [
     nerdfonts # for devicons
     nixd # nix-lsp
+    gofumpt # stricter gofmt
+    yaml-language-server
+    bash-language-server
+    dockerfile-language-server-nodejs
+    nodePackages.vscode-json-languageserver # json
+    ruby-lsp
+    openscad-lsp
   ];
   programs.neovim = {
     enable = true;
@@ -15,39 +22,150 @@
       set shiftwidth  =4
       set expandtab
 
-      " Set this variable to 1 to fix files when you save them.
-      let g:ale_fix_on_save = 1
-      let g:go_fmt_fail_silently = 1 " https://github.com/dense-analysis/ale/issues/609
+      " FZF
+      nnoremap <C-f> :FZF<CR>
+
+      " vim-go
+      let g:go_fmt_command="gopls"
+      let g:go_gopls_gofumpt=1
 
       " NERDTree
       nnoremap <leader>n :NERDTreeFocus<CR>
       nnoremap <C-n> :NERDTree<CR>
       nnoremap <C-t> :NERDTreeToggle<CR>
-      nnoremap <C-f> :NERDTreeFind<CR>
       autocmd VimEnter * NERDTree | wincmd p
 
       " SOPS
       nnoremap <leader>ef :SopsEncrypt<CR>
       nnoremap <leader>df :SopsDecrypt<CR>
+
+      " Custom
+      nnoremap <leader>t :split term://zsh<CR>
+
+      " leap.nvim
+      " https://github.com/ggandor/leap.nvim?tab=readme-ov-file#installation
+      lua <<EOF
+        vim.keymap.set({'n', 'x', 'o'}, 's', '<Plug>(leap)')
+        vim.keymap.set('n',             'S', '<Plug>(leap-from-window)')
+      EOF
+
+      " nvim-cmp
+      lua <<EOF
+        -- Set up nvim-cmp.
+        local cmp = require'cmp'
+
+        cmp.setup({
+          snippet = {
+            expand = function(args)
+              vim.fn["vsnip#anonymous"](args.body) -- For `vsnip` users.
+            end,
+          },
+          window = {
+            completion = cmp.config.window.bordered(),
+            documentation = cmp.config.window.bordered(),
+          },
+          mapping = cmp.mapping.preset.insert({
+            ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+            ['<C-f>'] = cmp.mapping.scroll_docs(4),
+            ['<C-Space>'] = cmp.mapping.complete(),
+            ['<C-e>'] = cmp.mapping.abort(),
+            ['<CR>'] = cmp.mapping.confirm({ select = true }), -- Accept currently selected item. Set `select` to `false` to only confirm explicitly selected items.
+          }),
+          sources = cmp.config.sources({
+            { name = 'nvim_lsp' },
+            { name = 'vsnip' }, -- For vsnip users.
+          }, {
+            { name = 'buffer' },
+          })
+        })
+
+        -- Use buffer source for `/` and `?` (if you enabled `native_menu`, this won't work anymore).
+        cmp.setup.cmdline({ '/', '?' }, {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = {
+            { name = 'buffer' }
+          }
+        })
+
+        -- Use cmdline & path source for ':' (if you enabled `native_menu`, this won't work anymore).
+        cmp.setup.cmdline(':', {
+          mapping = cmp.mapping.preset.cmdline(),
+          sources = cmp.config.sources({
+            { name = 'path' }
+          }, {
+            { name = 'cmdline' }
+          }),
+          matching = { disallow_symbol_nonprefix_matching = false }
+        })
+
+        -- Set up lspconfig.
+        local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+        require('lspconfig')['nixd'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['gopls'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['yamlls'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['ruby_lsp'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['rust_analyzer'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['bashls'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['dockerls'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['jsonls'].setup {
+          capabilities = capabilities
+        }
+        require('lspconfig')['openscad_lsp'].setup {
+          capabilities = capabilities
+        }
+      EOF
     '';
     plugins = with pkgs.vimPlugins; [
+        # navigation
         leap-nvim
+
+        # languages
         vim-nix
         vim-go
         vim-ruby
-        vim-startify
+
+        # core
         nerdtree
         nerdtree-git-plugin
-        vim-devicons
-        nvim-sops
         fzfWrapper
         which-key-nvim
-        vim-better-whitespace
         vim-fugitive
         vim-surround
-        nvim-cmp
-        ale
+        vim-startify
+
+        # secretz
+        nvim-sops
+
+        # visual
+        vim-devicons
         vim-indent-guides
+        vim-better-whitespace
+
+        # lsp / cmp
+        nvim-lspconfig
+        nvim-cmp
+        cmp-path
+        cmp-buffer
+        cmp-cmdline
+        cmp-nvim-lsp
+        # snippet support
+        vim-vsnip
+        cmp-vsnip
     ];
   };
 }
