@@ -123,7 +123,8 @@
           capabilities = capabilities
         }
         require('lspconfig')['jsonls'].setup {
-          capabilities = capabilities
+          capabilities = capabilities,
+          cmd = {'vscode-json-languageserver'},
         }
         require('lspconfig')['openscad_lsp'].setup {
           capabilities = capabilities
