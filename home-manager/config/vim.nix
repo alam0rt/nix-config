@@ -33,7 +33,6 @@
       nnoremap <leader>n :NERDTreeFocus<CR>
       nnoremap <C-n> :NERDTree<CR>
       nnoremap <C-t> :NERDTreeToggle<CR>
-      autocmd VimEnter * NERDTree | wincmd p
 
       " SOPS
       nnoremap <leader>ef :SopsEncrypt<CR>
