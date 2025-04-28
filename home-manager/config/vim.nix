@@ -124,7 +124,8 @@
         }
         require('lspconfig')['jsonls'].setup {
           capabilities = capabilities,
-          cmd = {'vscode-json-languageserver'},
+          -- Use correct binary as per Nix
+          cmd = {'vscode-json-languageserver', '--stdio'},
         }
         require('lspconfig')['openscad_lsp'].setup {
           capabilities = capabilities
@@ -167,6 +168,18 @@
         # snippet support
         vim-vsnip
         cmp-vsnip
+
+        # treesitter
+        nvim-treesitter
+        nvim-treesitter-parsers.go
+        nvim-treesitter-parsers.gomod
+        nvim-treesitter-parsers.gosum
+        nvim-treesitter-parsers.ruby
+        nvim-treesitter-parsers.rust
+        nvim-treesitter-parsers.yaml
+        nvim-treesitter-parsers.jsonnet
+        nvim-treesitter-parsers.json
+        nvim-treesitter-parsers.bash
     ];
   };
 }
