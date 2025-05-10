@@ -17,7 +17,7 @@
       OLLAMA_ORIGINS = "http://sauron.middleearth.samlockart.com";
       OLLAMA_DEBUG = "true";
       OLLAMA_FLASH_ATTENTION = "1";
-      HCC_AMDGPU_TARGET = "gfx1201"; # 9070 xt
     };
+    rocmOverrideGfx = "12.0.1";
   };
 }
