@@ -24,7 +24,7 @@
       ./nginx.nix
       ./syncthing.nix
       ./openwebui.nix
-      ./matrix.nix
+      #./matrix.nix
       ./monitoring.nix
       ./home-assistant.nix
 #      ../config/home-manager.nix # get working

@@ -51,7 +51,7 @@
     # core
     vim
     firefox
-    
+
     # social
     mumble
     element
