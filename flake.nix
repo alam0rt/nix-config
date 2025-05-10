@@ -30,7 +30,7 @@
     pcsx-redux.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     # nvidia-patch
-    nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";  
+    nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";
     nvidia-patch.inputs.nixpkgs.follows = "nixpkgs";
 
     # hardware modules
@@ -41,10 +41,7 @@
     self,
     nixpkgs,
     home-manager,
-    agenix,
-    pvpgnix,
     nixos-hardware,
-    pcsx-redux,
     ...
   } @ inputs: let
     inherit (self) outputs;

@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../config/common
+      ../config/zfs.nix
       ../config/network
       ../config/nvidia.nix
       ./maubot.nix
