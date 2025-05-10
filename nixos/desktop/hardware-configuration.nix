@@ -15,7 +15,7 @@
 
   # https://mjmwired.net/kernel/Documentation/fb/fbcon.txt#128
   boot.kernelParams = [
-    "video=DP-3:2560x1440@60 fbcon=rotate:3" # left
+    "video=DP-3:2560x1440@60" # left
     "video=HDMI-A-1:2560x1440" # right
   ];
 
