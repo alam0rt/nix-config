@@ -29,7 +29,9 @@
   boot.kernelPackages = pkgs.linuxPackages_6_14;
 
   hardware.amdgpu.amdvlk.enable = true;
+  hardware.amdgpu.amdvlk.package = pkgs.unstable.amdvlk;
   hardware.amdgpu.amdvlk.support32Bit.enable = true;
+  hardware.amdgpu.amdvlk.support32Bit.package = pkgs.unstable.driversi686Linux.amdvlk;
   hardware.amdgpu.initrd.enable = true;
 
   # https://nixos.wiki/wiki/AMD_GPU
