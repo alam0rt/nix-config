@@ -2,7 +2,7 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ inputs, pkgs, ... }:
+{ pkgs, ... }:
 
 {
   imports =
@@ -25,7 +25,6 @@
   time.hardwareClockInLocalTime = true;
 
   # 9070 xt requires >= 6.13.5
-  # latest currently points to 6.13.11
   # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
   boot.kernelPackages = pkgs.linuxPackages_6_14;
 
@@ -37,10 +36,8 @@
   hardware.graphics = with pkgs; {
     enable = true;
     enable32Bit = true;
-    # mesa 25 at time of comment
-    # https://translate.kagi.com/translate/https://www.overclockers.at/grafikkarten/probleme-mit-9070-xt-ubuntu-24-04_264796
-    #package = unstable.mesa;
-    #package32 = unstable.driversi686Linux.mesa;
+    package = unstable.mesa;
+    package32 = unstable.driversi686Linux.mesa;
   };
 
   # secrets

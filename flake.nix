@@ -3,8 +3,7 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    # nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
     # You can access packages and modules from different nixpkgs revs
     # at the same time. Here's an working example:
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
@@ -31,25 +30,18 @@
     pcsx-redux.inputs.nixpkgs.follows = "nixpkgs-unstable";
 
     # nvidia-patch
-    nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";  
+    nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";
     nvidia-patch.inputs.nixpkgs.follows = "nixpkgs";
 
     # hardware modules
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
-
-    # chaotic / bleeding-edge mesa-git
-    chaotic.url = "github:chaotic-cx/nyx/nyxpkgs-unstable";
   };
 
   outputs = {
     self,
     nixpkgs,
     home-manager,
-    agenix,
-    pvpgnix,
     nixos-hardware,
-    pcsx-redux,
-    chaotic,
     ...
   } @ inputs: let
     inherit (self) outputs;
@@ -98,8 +90,6 @@
           # > Our main nixos configuration file <
           ./nixos/configuration.nix
           ./nixos/desktop/configuration.nix
-          # > Bleeding-Edge mesa-git
-          chaotic.nixosModules.default
         ];
       };
       laptop = nixpkgs.lib.nixosSystem {

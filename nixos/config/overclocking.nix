@@ -17,12 +17,4 @@
     };
     enable = true;
   };
-
-  chaotic = {
-    # For mesa 25
-    mesa-git = {
-      enable = true;
-    };
-    nyx.cache.enable = true;
-  };
 }
