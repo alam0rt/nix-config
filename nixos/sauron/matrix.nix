@@ -57,7 +57,7 @@ in {
 
   age = {
     secrets = {
-      registration-secret = {
+      matrix-registration-secret = {
         file = ../../secrets/matrix-registration-secret.age;
         owner = "matrix-synapse";
         group = "matrix-synapse";
