@@ -1,5 +1,5 @@
 # This file defines overlays
-{inputs, ...}: {
+{inputs, python3Packages, ...}: {
   # This one brings our custom packages from the 'pkgs' directory
   additions = final: _prev: import ../pkgs final.pkgs;
 
@@ -7,7 +7,7 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    python312Packages.pymumble = prev.python312Packages.pymumble.overrideAttrs (old: rec {
+    python3Packages.pymumble = prev.python3Packages.pymumble.overrideAttrs (old: rec {
       version = "2.0.0-nightly";
       src = prev.fetchFromGitHub {
         owner = "oopsbagel";
