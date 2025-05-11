@@ -9,7 +9,6 @@
     [
       ../config/common
       ../config/network
-      ../config/home-manager.nix
       ./hardware-configuration.nix
     ];
 
