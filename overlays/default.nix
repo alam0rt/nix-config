@@ -7,6 +7,15 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
+    python3Packages.pymumble = prev.python3Packages.pymumble.overrideAttrs (old: rec {
+      src = prev.fetchFromGitHub {
+        owner = "oopsbagel";
+        repo = "pymumble";
+        rev = "285031ea77cab954a239256469783fb725357b30";
+        hash = "";
+      };
+
+    });
     botamusique = prev.botamusique.overrideAttrs (old: rec {
       src = prev.fetchFromGitHub {
         repo = "botamusique";
