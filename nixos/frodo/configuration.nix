@@ -44,9 +44,7 @@
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
-
-
-  
+  networking.hostId = "79432b3c";
 
   # Configure keymap in X11
   # services.xserver.xkb.layout = "us";
