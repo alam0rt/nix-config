@@ -7,6 +7,13 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
+    botamusique = prev.botamusique.overrideAttrs (old: rec {
+      src = prev.fetchFromGitHub {
+        repo = "botamusique";
+        owner = "alam0rt";
+        rev = "a1e9994f5cc325a647a9df9984eec623a4b57b01";
+      };
+    });
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
     # });
