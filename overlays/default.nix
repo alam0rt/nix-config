@@ -14,6 +14,10 @@
         rev = "285031ea77cab954a239256469783fb725357b30";
         hash = "";
       };
+      pythonImportsCheck = [
+        "mumble"
+        "mumble.constants"
+      ];
 
     });
     botamusique = prev.botamusique.overrideAttrs (old: rec {
