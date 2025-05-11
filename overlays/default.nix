@@ -14,7 +14,7 @@
         rev = "aa0b8f65847d0ac37e2bf5e11f07213751ebfdb0";
         sha256 = "sha256-CSXmAMSVdv2G1VquHmL/28gfTWoQOpuWvaOqOmJgonk=";
       };
-      npmDeps = fetchNpmDeps {
+      npmDeps = prev.fetchNpmDeps {
         src = "${src}/web";
       };
       patches = [];
