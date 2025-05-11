@@ -1,6 +1,9 @@
 { pkgs, ... }:
 
 {
+  users.motd = ''
+    ANYONE FOR SOME TEA?!
+'';
   users.groups.sam = {};
   users.users = {
     sam = {
