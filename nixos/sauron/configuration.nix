@@ -11,6 +11,7 @@
       ../config/common
       ../config/network
       ../config/nvidia.nix
+      ../config/zfs.nix
       ./maubot.nix
       ./mumble.nix
       ./borg.nix
