@@ -16,6 +16,7 @@
       };
       npmDeps = prev.fetchNpmDeps {
         src = "${src}/web";
+        hash = "sha256-Pq+2L28Zj5/5RzbgQ0AyzlnZIuRZz2/XBYuSU+LGh3I=";
       };
       patches = [];
       version = "7.2.3";
