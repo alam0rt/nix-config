@@ -11,10 +11,11 @@
       src = prev.fetchFromGitHub {
         repo = "botamusique";
         owner = "alam0rt";
-        rev = "a1e9994f5cc325a647a9df9984eec623a4b57b01";
+        rev = "aa0b8f65847d0ac37e2bf5e11f07213751ebfdb0";
         sha256 = "sha256-CSXmAMSVdv2G1VquHmL/28gfTWoQOpuWvaOqOmJgonk=";
         version = "7.2.3";
       };
+      patches = [];
     });
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
