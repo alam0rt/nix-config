@@ -7,11 +7,13 @@
     bash-language-server
     dockerfile-language-server-nodejs
     nodePackages.vscode-json-languageserver # json
+    jsonnet-language-server
     ruby-lsp
     openscad-lsp
   ];
   programs.neovim = {
     enable = true;
+    package = pkgs.unstable.neovim-unwrapped; # want 0.11+
     viAlias = true;
     vimAlias = true;
     extraConfig = ''
@@ -100,6 +102,14 @@
         -- Set up lspconfig.
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+        vim.lsp.config['jsonnetls'] = {
+          cmd = { 'jsonnet-language-server', '--lint', '-J', 'kubernetes', '-J', 'cicd-toolkit/lib', '-J', 'cicd-toolkit/vendor/cicd-toolkit/jsonnet', '-J', 'cicd-toolkit/vendor' },
+          capabilities = capabilities,
+          filetypes = { 'jsonnet' },
+          root_markers = { '.git' },
+        }
+        vim.lsp.enable('jsonnetls')
+
         require('lspconfig')['nixd'].setup {
           capabilities = capabilities
         }
@@ -148,6 +158,7 @@
         vim-fugitive
         vim-surround
         vim-startify
+        vim-jsonnet
 
         # secretz
         nvim-sops
