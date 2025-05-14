@@ -70,7 +70,7 @@
   };
 
   systemd.slices = with config.users; {
-    "user-${toString raf.uid}" = {
+    "user-${toString users.raf.uid}" = {
       overrideStrategy = "asDropIn";
       # https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
       sliceConfig = {
@@ -93,6 +93,7 @@
     raf = {
       packages = with pkgs; [
         git
+        nano
         zlib
 
         gatk # genotyping
