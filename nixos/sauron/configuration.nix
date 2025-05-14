@@ -69,6 +69,20 @@
     enable = true;
   };
 
+  systemd.slices = with config.users; {
+    "user-${toString raf.uid}" = {
+      overrideStrategy = "asDropIn";
+      # https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
+      sliceConfig = {
+        "CPUWeight" = "20";
+        "CPUQuota" = "50%";
+        "MemoryHigh" = "32G";
+        "MemoryMax" = "40G";
+        "TasksMax" = "2048";
+      };
+    };
+  };
+
   users.groups.emma = {};
   users.groups.raf = {};
   users.users = {
