@@ -76,7 +76,7 @@
       # https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
       sliceConfig = {
         "CPUWeight" = "20";
-        "CPUQuota" = "50%";
+        "CPUQuota" = "3200%"; # out of 6400%
         "MemoryHigh" = "32G";
         "MemoryMax" = "40G";
         "TasksMax" = "2048";
