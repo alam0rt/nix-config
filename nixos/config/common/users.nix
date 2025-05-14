@@ -2,7 +2,47 @@
 
 {
   users.motd = ''
-    ANYONE FOR SOME TEA?!
+    #!/usr/bin/env bash
+    cat <<'EOF'
+    **************************************************************************
+    *                                                                        *
+    *            WELCOME TO THE DARK TOWER MAINFRAME (Barad-dûr)             *
+    *                                                                        *
+    *        Authorized Access Only – All activity is monitored by           *
+    *                         THE EYE OF SAURON                              *
+    *                                                                        *
+    **************************************************************************
+
+    EOF
+
+    echo "Connected to:        $(hostnamectl | grep 'Static hostname' | awk '{print $3}')"
+    echo "Servant identified:  $(whoami)"
+    echo "Domain of shadow:    $(hostname -d 2>/dev/null || echo 'Unknown Realm')"
+    echo "System uptime:       $(uptime -p)"
+    echo "Current load:        $(uptime | awk -F'load average:' '{print $2}' | sed 's/^ //')"
+    echo "Kernel version:      $(uname -r)"
+    echo "Last login:          $(lastlog -u $(whoami) | tail -n 1 | awk '{$1=""; print $0}')"
+
+    cat <<'EOF'
+
+    User authentication logs are relayed directly to:
+            ✦ The Palantír Surveillance Division ✦
+
+    WARNING:
+        ▸ This system is the property of the Dark Lord.
+        ▸ Unauthorized access will be met with swift and fiery retribution.
+        ▸ All commands are recorded in the Scrolls of Gríma for review.
+        ▸ The Nazgûl are standing by.
+
+    REMEMBER:
+        One server to rule them all,
+        One server to find them,
+        One server to bring them all,
+        And in the darkness bind them...
+
+    Proceed only if you serve the will of Sauron.
+
+    EOF
 '';
   users.groups.sam = {};
   users.users = {
