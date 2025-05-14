@@ -89,7 +89,7 @@
         angsd
         hmmer
         muscle
-        # todo: get sickle https://github.com/najoshi/sickle
+        sickle
       ];
       isNormalUser = true;
       group = "raf";
