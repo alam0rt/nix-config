@@ -77,6 +77,20 @@
       group = "emma";
     };
     raf = {
+      packages = with pkgs; [
+        git
+        zlib
+
+        gatk # genotyping
+        trimmomatic
+        samtools
+        picard-tools
+        bamtools
+        angsd
+        hmmer
+        muscle
+        # todo: get sickle https://github.com/najoshi/sickle
+      ];
       isNormalUser = true;
       group = "raf";
       openssh.authorizedKeys.keys = [
