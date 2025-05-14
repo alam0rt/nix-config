@@ -69,9 +69,10 @@
     enable = true;
   };
 
-  systemd.slices = with config.users; {
-    "user-${toString users.raf.uid}" = {
-      overrideStrategy = "asDropIn";
+  systemd.slices = {
+    # todo: use substitution
+    "user-1003" = {
+      overrideStrategy = "asDropin";
       # https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
       sliceConfig = {
         "CPUWeight" = "20";
