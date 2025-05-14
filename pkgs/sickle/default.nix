@@ -10,7 +10,12 @@ stdenv.mkDerivation {
     owner = "najoshi";
     repo = "sickle";
     rev = "v1.33";
-    sha256 = "0wyy2ksxp95vnh71ybj1bbmqd5ggp13x3mk37pzr99ljs9awy8ka";
+    sha256 = "rFVeOZURBOgQ0Q1dK7+IN4KPyQrHB6WdTpj6SwEi2K4=";
   };
+  installPhase = ''
+    make build
+    mkdir -p $out/bin
+    cp sickle $out/bin
+  '';
   buildInputs = [ zlib ];
 }
