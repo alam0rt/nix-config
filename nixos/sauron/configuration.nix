@@ -105,6 +105,7 @@
         hmmer
         muscle
         sickle
+        blast
       ];
       isNormalUser = true;
       group = "raf";
