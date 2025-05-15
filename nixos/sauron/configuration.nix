@@ -71,7 +71,7 @@
 
   systemd.slices = {
     # todo: use substitution
-    "user-1003" = {
+    "user-${toString config.users.users.raf.uid}" = {
       overrideStrategy = "asDropin";
       # https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
       sliceConfig = {
@@ -108,6 +108,7 @@
         sickle
         blast
       ];
+      uid = 1003; # for persistence
       isNormalUser = true;
       group = "raf";
       openssh.authorizedKeys.keys = [
