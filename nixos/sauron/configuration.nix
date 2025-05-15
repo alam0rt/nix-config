@@ -48,21 +48,7 @@
     };
   };
 
-  # firewall
-  networking.firewall = {
-    enable = true;
-    allowedTCPPorts = [
-      22 # ssh via tailscale
-      27015 # steam
-    ];
-    allowedUDPPorts = [
-      config.services.tailscale.port
-      27015 # steam
-    ];
-    # always allow traffic from your Tailscale network
-    trustedInterfaces = [ "tailscale0" ];
-    checkReversePath = "loose";
-  };
+  networking.firewall.enable = true;
 
   ## services
   services.tailscaleAuth = {
@@ -143,7 +129,8 @@
     };
     banner = ''
       speak friend and enter...
-  '';
+    '';
+    openFirewall = true;
     extraConfig = ''
     PubkeyAuthOptions verify-required
   '';
