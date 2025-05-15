@@ -1,9 +1,11 @@
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   boot = {
-    initrd.supportedFilesystems = [ "zfs" ];
-    supportedFilesystems = [ "zfs" ];
+    initrd.supportedFilesystems = ["zfs"];
+    supportedFilesystems = ["zfs"];
     zfs.package = pkgs.zfsUnstable;
   };
 

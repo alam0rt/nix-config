@@ -17,5 +17,5 @@ stdenv.mkDerivation {
     mkdir -p $out/bin
     cp sickle $out/bin
   '';
-  buildInputs = [ zlib ];
+  buildInputs = [zlib];
 }

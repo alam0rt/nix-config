@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   users.motd = ''
     **************************************************************************
     *                                                                        *
@@ -29,7 +27,7 @@
     Proceed only if you serve the will of Sauron.
 
   '';
-  users.groups.sam = { };
+  users.groups.sam = {};
   users.users = {
     sam = {
       group = "sam";

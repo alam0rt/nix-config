@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
+in {
   # NFS
   services.nfs.server = {
     enable = true;
@@ -23,28 +21,26 @@ in
     '';
   };
 
-  networking.firewall =
-    let
-      inherit (config.services.nfs) server;
-    in
-    {
-      allowedTCPPorts = [
-        server.lockdPort
-        server.mountdPort
-        server.statdPort
-        111
-        2049
-        20048
-      ];
-      allowedUDPPorts = [
-        server.lockdPort
-        server.mountdPort
-        server.statdPort
-        111
-        2049
-        20048
-      ];
-    };
+  networking.firewall = let
+    inherit (config.services.nfs) server;
+  in {
+    allowedTCPPorts = [
+      server.lockdPort
+      server.mountdPort
+      server.statdPort
+      111
+      2049
+      20048
+    ];
+    allowedUDPPorts = [
+      server.lockdPort
+      server.mountdPort
+      server.statdPort
+      111
+      2049
+      20048
+    ];
+  };
 
   # Samba
   services.samba-wsdd.enable = true; # make shares visible for windows 10 clients

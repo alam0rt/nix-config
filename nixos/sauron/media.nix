@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
+in {
   environment.systemPackages = with pkgs; [
     unstable.jellyfin
     unstable.jellyfin-web
@@ -31,7 +29,7 @@ in
     };
     tailscaleAuth = {
       enable = true;
-      virtualHosts = [ "jackett.middleearth.samlockart.com" ];
+      virtualHosts = ["jackett.middleearth.samlockart.com"];
     };
     virtualHosts."sonarr.middleearth.samlockart.com" = {
       forceSSL = false;
@@ -76,14 +74,14 @@ in
     dataDir = "/srv/data/radarr";
     openFirewall = true;
   };
-  users.users.radarr.extraGroups = [ "transmission" ];
+  users.users.radarr.extraGroups = ["transmission"];
 
   services.sonarr = {
     enable = true;
     dataDir = "/srv/data/sonarr";
     openFirewall = true;
   };
-  users.users.sonarr.extraGroups = [ "transmission" ];
+  users.users.sonarr.extraGroups = ["transmission"];
 
   services.jackett = {
     enable = true;
@@ -105,20 +103,20 @@ in
     1900
     7359
   ]; # dlna
-  networking.firewall.allowedTCPPorts = [ 8191 ]; # flaresolverr
+  networking.firewall.allowedTCPPorts = [8191]; # flaresolverr
 
   # selfhosted rarbg
   # https://github.com/mgdigital/rarbg-selfhosted
   virtualisation.oci-containers.containers = {
     rarbg = {
       image = "ghcr.io/mgdigital/rarbg-selfhosted:latest";
-      ports = [ "3333:3333" ];
-      volumes = [ "/srv/data/rarbg_db.sqlite:/rarbg_db.sqlite" ];
+      ports = ["3333:3333"];
+      volumes = ["/srv/data/rarbg_db.sqlite:/rarbg_db.sqlite"];
     };
 
     flaresolverr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
-      ports = [ "8191:8191" ];
+      ports = ["8191:8191"];
     };
   };
 }

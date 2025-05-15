@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
+in {
   age.secrets.transmission-credentials = {
     file = ../../secrets/transmission-credentials.age;
     owner = "transmission";
@@ -42,7 +40,7 @@ in
   # lazily get around auth ratelimiting caused by
   # sonarr/friends accessing the UI with incorrect user/pass
   systemd.timers."transmission-restart" = {
-    wantedBy = [ "timers.target" ];
+    wantedBy = ["timers.target"];
     timerConfig = {
       OnBootSec = "1h";
       OnUnitActiveSec = "1h";

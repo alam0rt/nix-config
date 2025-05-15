@@ -1,5 +1,4 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   xdg = {
     # emacs requires XDG_CONFIG_HOME to be set
     # example:
@@ -16,8 +15,8 @@
   ];
   programs.emacs = {
     enable = true;
-    extraPackages =
-      epkgs: with epkgs; [
+    extraPackages = epkgs:
+      with epkgs; [
         doom-themes
         spacemacs-theme
 

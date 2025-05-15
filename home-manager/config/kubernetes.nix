@@ -1,8 +1,7 @@
-{ pkgs, ... }:
-{
+{pkgs, ...}: {
   programs.k9s = {
     enable = true;
-    settings = { };
+    settings = {};
     plugin = {
       plugins = {
         # currently requires launching a new terminal instance
@@ -11,7 +10,7 @@
         ssm-ssh = {
           shortCut = "s";
           description = "SSH into a node (requires AWS auth and kitty)";
-          scopes = [ "node" ];
+          scopes = ["node"];
           background = true;
           command = "sh";
           args = [
@@ -28,7 +27,7 @@
         kube-drain = {
           shortCut = "a";
           description = "Drain and shutdown a node using kube-drain";
-          scopes = [ "node" ];
+          scopes = ["node"];
           background = true;
           command = "sh";
           args = [
@@ -42,7 +41,7 @@
         kubelet-config = {
           shortCut = "Ctrl-l";
           description = "View live kubelet config";
-          scopes = [ "node" ];
+          scopes = ["node"];
           background = true;
           command = "sh";
           args = [
@@ -56,7 +55,7 @@
         ng-pause = {
           shortCut = "p";
           description = "Pause reconciliation";
-          scopes = [ "nodegroups" ];
+          scopes = ["nodegroups"];
           background = true;
           command = "ng";
           args = [
@@ -75,7 +74,7 @@
         ngd-pause = {
           shortCut = "p";
           description = "Pause reconciliation";
-          scopes = [ "nodegroupdeployments" ];
+          scopes = ["nodegroupdeployments"];
           background = true;
           command = "ng";
           args = [
@@ -94,7 +93,7 @@
         ng-resume = {
           shortCut = "m";
           description = "Resume reconciliation";
-          scopes = [ "nodegroups" ];
+          scopes = ["nodegroups"];
           background = true;
           command = "ng";
           args = [
@@ -111,7 +110,7 @@
         ngd-resume = {
           shortCut = "m";
           description = "Resume reconciliation";
-          scopes = [ "nodegroupdeployments" ];
+          scopes = ["nodegroupdeployments"];
           background = true;
           command = "ng";
           args = [
@@ -128,7 +127,7 @@
         ngd-restart = {
           shortCut = "m";
           description = "Resume reconciliation";
-          scopes = [ "nodegroups" ];
+          scopes = ["nodegroups"];
           background = true;
           command = "ng";
           args = [
@@ -145,7 +144,7 @@
         ngd-recreate = {
           shortCut = "Ctrl-O";
           description = "Force recreation of active nodegroup";
-          scopes = [ "nodegroupdeployments" ];
+          scopes = ["nodegroupdeployments"];
           background = true;
           command = "ng";
           args = [

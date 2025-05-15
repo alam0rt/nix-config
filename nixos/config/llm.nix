@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   # ollama / LLM
   services.ollama = {
     enable = true;

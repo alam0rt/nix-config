@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
+in {
   services.syncthing = {
     enable = true;
     user = "syncthing";

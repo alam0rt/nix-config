@@ -1,4 +1,3 @@
 fmt:
-	nix-shell -p nixfmt-rfc-style --run "nixfmt ."
+	nix-shell -p alejandra --run "alejandra ."
 .PHONY: fmt
-

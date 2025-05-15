@@ -3,13 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
-
-  users.users.grafana.extraGroups = [ "mail" ]; # allow mail cred reading
+in {
+  users.users.grafana.extraGroups = ["mail"]; # allow mail cred reading
 
   services.grafana = {
     enable = true;
@@ -55,7 +52,7 @@ in
     enable = true;
     port = 9000;
     # https://github.com/NixOS/nixpkgs/blob/nixos-24.05/nixos/modules/services/monitoring/prometheus/exporters.nix
-    enabledCollectors = [ "systemd" ];
+    enabledCollectors = ["systemd"];
     # /nix/store/zgsw0yx18v10xa58psanfabmg95nl2bb-node_exporter-1.8.1/bin/node_exporter  --help
     extraFlags = [
       "--collector.ethtool"

@@ -3,12 +3,10 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
-  environment.systemPackages = with pkgs; [ borgbackup ];
+in {
+  environment.systemPackages = with pkgs; [borgbackup];
 
   age.secrets.borg.file = ../../secrets/borg.age;
 

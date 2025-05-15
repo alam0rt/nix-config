@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
+in {
   networking.firewall = {
     allowedTCPPorts = [
       80

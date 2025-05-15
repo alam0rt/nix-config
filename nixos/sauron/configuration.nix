@@ -1,10 +1,11 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ config, pkgs, ... }:
-
 {
+  config,
+  pkgs,
+  ...
+}: {
   imports = [
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
@@ -33,12 +34,12 @@
 
   # Use the systemd-boot EFI boot loader.
   boot = {
-    kernelModules = [ "wl" ];
+    kernelModules = ["wl"];
     blacklistedKernelModules = [
       "b43"
       "bcma"
     ];
-    extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
+    extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
   };
 
   networking.hostName = "sauron"; # Define your hostname.
@@ -73,8 +74,8 @@
     };
   };
 
-  users.groups.emma = { };
-  users.groups.raf = { };
+  users.groups.emma = {};
+  users.groups.raf = {};
   users.users = {
     emma = {
       isSystemUser = true;
@@ -143,7 +144,7 @@
 
   # secrets
   age = {
-    identityPaths = [ "/srv/vault/ssh_keys/id_rsa" ]; # requires `/srv/vault` to be mounted before agenix can be used
+    identityPaths = ["/srv/vault/ssh_keys/id_rsa"]; # requires `/srv/vault` to be mounted before agenix can be used
     secrets = {
       tailscale-server = {
         file = ../../secrets/tailscale-server.age;

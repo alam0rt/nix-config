@@ -1,6 +1,4 @@
-{ pkgs, ... }:
-
-{
+{pkgs, ...}: {
   fileSystems."/mnt/share/sam" = {
     device = "sauron:/srv/share/sam";
     fsType = "nfs";
@@ -45,5 +43,4 @@
       "noauto"
     ];
   };
-
 }

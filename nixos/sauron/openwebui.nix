@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
+in {
   services.open-webui = {
     enable = true;
     package = pkgs.unstable.open-webui;

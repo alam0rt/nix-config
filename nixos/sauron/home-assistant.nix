@@ -3,11 +3,9 @@
   lib,
   pkgs,
   ...
-}:
-let
+}: let
   cfg = config.server;
-in
-{
+in {
   networking.firewall.allowedTCPPorts = [
     8123 # remove once setup with reverse proxy
     1883 # mosquitto
@@ -17,7 +15,7 @@ in
     enable = true;
     listeners = [
       {
-        acl = [ "pattern readwrite #" ];
+        acl = ["pattern readwrite #"];
         omitPasswordAuth = true;
         settings.allow_anonymous = true; # TODO: lock down
       }
@@ -36,10 +34,10 @@ in
       "unifi"
     ];
     config = {
-      mqtt = { };
+      mqtt = {};
       # Includes dependencies for a basic setup
       # https://www.home-assistant.io/integrations/default_config/
-      default_config = { };
+      default_config = {};
     };
   };
 }

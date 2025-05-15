@@ -1,8 +1,10 @@
-{ config, lib, ... }:
-let
-  cfg = config.server;
-in
 {
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.server;
+in {
   services.murmur = {
     enable = true;
     registerName = "wankbank";
@@ -26,7 +28,7 @@ in
   services.nginx.virtualHosts."murmur.samlockart.com".enableACME = true;
 
   # required
-  users.users.nginx.extraGroups = [ "murmur" ];
+  users.users.nginx.extraGroups = ["murmur"];
 
   services.botamusique = {
     enable = true;

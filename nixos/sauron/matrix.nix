@@ -3,8 +3,7 @@
   lib,
   config,
   ...
-}:
-let
+}: let
   fqdn = "${config.networking.hostName}.${config.networking.domain}";
   baseUrl = "https://${fqdn}";
   clientConfig."m.homeserver".base_url = baseUrl;
@@ -13,8 +12,7 @@ let
     default_type application/json;
     return 200 '${builtins.toJSON data}';
   '';
-in
-{
+in {
   networking.domain = "iced.cool";
   networking.firewall.allowedTCPPorts = [
     80
@@ -75,7 +73,7 @@ in
     settings.listeners = [
       {
         port = 8008;
-        bind_addresses = [ "::1" ];
+        bind_addresses = ["::1"];
         type = "http";
         tls = false;
         x_forwarded = true;
@@ -98,7 +96,7 @@ in
   services.nginx.virtualHosts."x.${fqdn}" = {
     enableACME = true;
     forceSSL = true;
-    serverAliases = [ "x.${config.networking.domain}" ];
+    serverAliases = ["x.${config.networking.domain}"];
 
     root = pkgs.element-web.override {
       conf = {

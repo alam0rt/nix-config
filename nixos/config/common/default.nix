@@ -1,7 +1,5 @@
-{ pkgs, ... }:
-
-{
-  imports = [ ./users.nix ];
+{pkgs, ...}: {
+  imports = [./users.nix];
 
   # enable zsh integration with nix
   programs.zsh = {
