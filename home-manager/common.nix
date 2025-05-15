@@ -195,6 +195,8 @@
     openscad
     openscad-lsp
     # super-slicer-latest - see linux.nix
+
+    comma
   ];
 
   # terminal
