@@ -97,6 +97,7 @@
         muscle
         sickle
         blast
+        bowtie2
       ];
       uid = 1003; # for persistence
       isNormalUser = true;
