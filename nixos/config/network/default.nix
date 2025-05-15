@@ -1,10 +1,9 @@
 { pkgs, ... }:
 
 {
-  imports =
-    [
-      ./tailscale.nix
-      ./nfs_mounts.nix
-    ];
+  imports = [
+    ./tailscale.nix
+    ./nfs_mounts.nix
+  ];
 
 }

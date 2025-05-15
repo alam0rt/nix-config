@@ -1,15 +1,18 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
   cfg = config.server;
   ports = {
     http = 8081;
     https = 8444;
     udp = 3478;
   };
-in {
+in
+{
   virtualisation.oci-containers.containers.unifi = {
     image = "jacobalberty/unifi";
     ports = [
@@ -18,7 +21,7 @@ in {
       "${toString ports.udp}:${toString ports.udp}/udp"
     ];
     user = "${toString config.users.users.unifi.uid}:${toString config.users.groups.unifi.gid}";
-    volumes = ["/srv/data/unifi:/unifi"];
+    volumes = [ "/srv/data/unifi:/unifi" ];
     environment = {
       TZ = "Australia/Melbourne";
       UNIFI_HTTP_PORT = "${toString ports.http}";
@@ -30,10 +33,13 @@ in {
     isSystemUser = true;
     group = "unifi";
   };
-  users.groups.unifi = {};
+  users.groups.unifi = { };
 
   networking.firewall = {
-    allowedTCPPorts = [ ports.http ports.https ];
+    allowedTCPPorts = [
+      ports.http
+      ports.https
+    ];
     allowedUDPPorts = [ ports.udp ];
   };
 

@@ -1,9 +1,13 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
-in {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.server;
+in
+{
   age.secrets.transmission-credentials = {
     file = ../../secrets/transmission-credentials.age;
     owner = "transmission";

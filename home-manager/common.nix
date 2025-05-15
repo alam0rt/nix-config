@@ -7,7 +7,8 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   # You can import other home-manager modules here
   imports = [
     # If you want to use modules your own flake exports (from modules/home-manager):
@@ -53,7 +54,7 @@
     enableBashIntegration = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;
-    };
+  };
 
   home = {
     username = "sam";
@@ -117,9 +118,7 @@
       projects = "$HOME/projects";
     };
     history = {
-      ignorePatterns = [
-        "GITHUB_TOKEN"
-      ];
+      ignorePatterns = [ "GITHUB_TOKEN" ];
     };
     autosuggestion = {
       enable = true;

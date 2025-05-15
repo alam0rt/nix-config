@@ -5,21 +5,20 @@
 { inputs, pkgs, ... }:
 
 {
-  imports =
-    [
-      ../config/graphical
-      ../config/common
-      ../config/network
-      ../config/nvidia.nix
-      ../config/home-manager.nix
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ../config/graphical
+    ../config/common
+    ../config/network
+    ../config/nvidia.nix
+    ../config/home-manager.nix
+    ./hardware-configuration.nix
+  ];
 
   networking.hostName = "laptop"; # Define your hostname.
   networking.hostId = "deadbabe";
 
   # Pick only one of the below networking options.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   networking.firewall.enable = true;
 
@@ -27,13 +26,17 @@
   services.syncthing = {
     enable = true;
     user = "sam";
-    dataDir = "/home/sam/vault";    # Default folder for new synced folders
-    configDir = "/home/sam/.config/syncthing";   # Folder for Syncthing's settings and keys
+    dataDir = "/home/sam/vault"; # Default folder for new synced folders
+    configDir = "/home/sam/.config/syncthing"; # Folder for Syncthing's settings and keys
     guiAddress = "http://127.0.0.1:8384";
     settings = {
       devices = {
-        "laptop"   = { id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2"; };
-        "desktop"   = { id = "F7G62MY-FWFWFNY-PYVBZQE-S4EXYDX-IIPF4AQ-YAKJVP3-4TZXCKT-NAUTJQU"; };
+        "laptop" = {
+          id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2";
+        };
+        "desktop" = {
+          id = "F7G62MY-FWFWFNY-PYVBZQE-S4EXYDX-IIPF4AQ-YAKJVP3-4TZXCKT-NAUTJQU";
+        };
       };
     };
   };
@@ -43,7 +46,7 @@
   };
 
   # reduce power consumption
-  services.xserver.videoDrivers = ["i915"];
+  services.xserver.videoDrivers = [ "i915" ];
 
   # enable prime
   hardware.nvidia.prime = {
@@ -58,7 +61,7 @@
     # core
     vim
     firefox
-    
+
     # social
     mumble
     element
@@ -90,7 +93,7 @@
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
-  nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];
+  nixpkgs.overlays = [ inputs.nvidia-patch.overlays.default ];
 
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).

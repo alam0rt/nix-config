@@ -1,9 +1,13 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
-in {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.server;
+in
+{
   environment.systemPackages = with pkgs; [
     unstable.jellyfin
     unstable.jellyfin-web
@@ -25,11 +29,9 @@ in {
         proxyPass = "http://127.0.0.1:8096";
       };
     };
-   tailscaleAuth = {
+    tailscaleAuth = {
       enable = true;
-      virtualHosts = [
-        "jackett.middleearth.samlockart.com"
-      ];
+      virtualHosts = [ "jackett.middleearth.samlockart.com" ];
     };
     virtualHosts."sonarr.middleearth.samlockart.com" = {
       forceSSL = false;
@@ -61,7 +63,6 @@ in {
     };
   };
 
-
   services.jellyfin = {
     package = pkgs.unstable.jellyfin;
     enable = true;
@@ -75,14 +76,14 @@ in {
     dataDir = "/srv/data/radarr";
     openFirewall = true;
   };
-  users.users.radarr.extraGroups = ["transmission"];
+  users.users.radarr.extraGroups = [ "transmission" ];
 
   services.sonarr = {
     enable = true;
     dataDir = "/srv/data/sonarr";
     openFirewall = true;
   };
-  users.users.sonarr.extraGroups = ["transmission"];
+  users.users.sonarr.extraGroups = [ "transmission" ];
 
   services.jackett = {
     enable = true;
@@ -95,9 +96,15 @@ in {
     enable = true;
     openFirewall = true;
   };
-  users.users.bazarr.extraGroups = ["sonarr" "radarr"];
+  users.users.bazarr.extraGroups = [
+    "sonarr"
+    "radarr"
+  ];
 
-  networking.firewall.allowedUDPPorts = [ 1900 7359 ]; # dlna
+  networking.firewall.allowedUDPPorts = [
+    1900
+    7359
+  ]; # dlna
   networking.firewall.allowedTCPPorts = [ 8191 ]; # flaresolverr
 
   # selfhosted rarbg
@@ -105,13 +112,13 @@ in {
   virtualisation.oci-containers.containers = {
     rarbg = {
       image = "ghcr.io/mgdigital/rarbg-selfhosted:latest";
-      ports = ["3333:3333"];
-      volumes = ["/srv/data/rarbg_db.sqlite:/rarbg_db.sqlite"];
+      ports = [ "3333:3333" ];
+      volumes = [ "/srv/data/rarbg_db.sqlite:/rarbg_db.sqlite" ];
     };
 
     flaresolverr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
-      ports = ["8191:8191"];
+      ports = [ "8191:8191" ];
     };
   };
 }

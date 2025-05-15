@@ -2,15 +2,19 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
-  imports =
-    [
-      ../config/common
-      ../config/network
-      ./hardware-configuration.nix
-    ];
+  imports = [
+    ../config/common
+    ../config/network
+    ./hardware-configuration.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -91,7 +95,7 @@
   # }; 
   programs.zsh.enable = true;
 
-  nixpkgs.config.allowUnfree = true; 
+  nixpkgs.config.allowUnfree = true;
 
   # List services that you want to enable:
 
@@ -129,4 +133,3 @@
   system.stateVersion = "24.11"; # Did you read the comment?
 
 }
-

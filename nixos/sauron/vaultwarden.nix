@@ -1,7 +1,8 @@
 { config, ... }:
-let 
+let
   domain = "pass.iced.cool";
-in {
+in
+{
   services.nginx.virtualHosts.${domain} = {
     # https://github.com/dani-garcia/vaultwarden/wiki/Deployment-examples#nixos-by-tklitschi
     forceSSL = true;

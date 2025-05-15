@@ -1,8 +1,8 @@
-{ config
-, lib
-, ... }:
-let cfg = config.server;
-in {
+{ config, lib, ... }:
+let
+  cfg = config.server;
+in
+{
   age = {
     secrets = {
       maubot-secret-config = {
@@ -12,20 +12,20 @@ in {
       };
     };
   };
-  services.nginx = let
-    inherit (config.services.maubot) settings;
-  in {
-    virtualHosts."maubot.middleearth.samlockart.com" = {
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString settings.server.port}";
-        proxyWebsockets = true;
+  services.nginx =
+    let
+      inherit (config.services.maubot) settings;
+    in
+    {
+      virtualHosts."maubot.middleearth.samlockart.com" = {
+        locations."/" = {
+          proxyPass = "http://127.0.0.1:${toString settings.server.port}";
+          proxyWebsockets = true;
+        };
       };
     };
-  };
   # provide mbc cli
-  environment.systemPackages = [
-    config.services.maubot.package
-  ];
+  environment.systemPackages = [ config.services.maubot.package ];
 
   services.maubot = {
     enable = true;
@@ -34,8 +34,6 @@ in {
     settings = {
       database = "sqlite:/srv/data/maubot/maubot.db";
     };
-    plugins = with config.services.maubot.package.plugins; [
-      chatgpt
-    ];
+    plugins = with config.services.maubot.package.plugins; [ chatgpt ];
   };
 }

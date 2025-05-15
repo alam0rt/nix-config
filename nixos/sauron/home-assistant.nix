@@ -1,9 +1,13 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
-in {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.server;
+in
+{
   networking.firewall.allowedTCPPorts = [
     8123 # remove once setup with reverse proxy
     1883 # mosquitto
@@ -32,10 +36,10 @@ in {
       "unifi"
     ];
     config = {
-      mqtt = {};
+      mqtt = { };
       # Includes dependencies for a basic setup
       # https://www.home-assistant.io/integrations/default_config/
-      default_config = {};
+      default_config = { };
     };
   };
 }

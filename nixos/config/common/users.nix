@@ -28,13 +28,17 @@
 
     Proceed only if you serve the will of Sauron.
 
-'';
-  users.groups.sam = {};
+  '';
+  users.groups.sam = { };
   users.users = {
     sam = {
       group = "sam";
       shell = pkgs.zsh;
-      extraGroups = [ "wireshark" "wheel" "docker" ]; # Enable ‘sudo’ for the user.
+      extraGroups = [
+        "wireshark"
+        "wheel"
+        "docker"
+      ]; # Enable ‘sudo’ for the user.
       isNormalUser = true;
       initialHashedPassword = "$y$j9T$NPAB.7arQ/BIqdovYTfY6/$506oYwegRg3oO9jTmMTssszCB.VKKTvbvBSOaXuNqB0"; # mkpasswd
       openssh.authorizedKeys.keys = [

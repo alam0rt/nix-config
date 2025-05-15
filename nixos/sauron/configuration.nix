@@ -5,46 +5,49 @@
 { config, pkgs, ... }:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../config/common
-      ../config/network
-      ../config/nvidia.nix
-      ../config/zfs.nix
-      ./maubot.nix
-      ./mumble.nix
-      ./borg.nix
-      ./vaultwarden.nix
-      ./transmission.nix
-      ./nas.nix
-      ./unifi.nix
-      ./mail.nix
-      ./pvpgn.nix
-      ./media.nix
-      ./nginx.nix
-      ./syncthing.nix
-      ./openwebui.nix
-      ./matrix.nix
-      ./monitoring.nix
-      ./home-assistant.nix
-#      ../config/home-manager.nix # get working
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ../config/common
+    ../config/network
+    ../config/nvidia.nix
+    ../config/zfs.nix
+    ./maubot.nix
+    ./mumble.nix
+    ./borg.nix
+    ./vaultwarden.nix
+    ./transmission.nix
+    ./nas.nix
+    ./unifi.nix
+    ./mail.nix
+    ./pvpgn.nix
+    ./media.nix
+    ./nginx.nix
+    ./syncthing.nix
+    ./openwebui.nix
+    ./matrix.nix
+    ./monitoring.nix
+    ./home-assistant.nix
+    #      ../config/home-manager.nix # get working
+  ];
 
   # Use the systemd-boot EFI boot loader.
   boot = {
     kernelModules = [ "wl" ];
-    blacklistedKernelModules = [ "b43" "bcma" ];
+    blacklistedKernelModules = [
+      "b43"
+      "bcma"
+    ];
     extraModulePackages = [ config.boot.kernelPackages.broadcom_sta ];
   };
 
   networking.hostName = "sauron"; # Define your hostname.
   networking.hostId = "acfb04f9"; # head -c 8 /etc/machine-id
 
-  networking.networkmanager.enable = false;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = false; # Easiest to use and most distros use this by default.
   networking.interfaces = {
     eno2 = {
-        mtu = 9000;
+      mtu = 9000;
     };
   };
 
@@ -70,8 +73,8 @@
     };
   };
 
-  users.groups.emma = {};
-  users.groups.raf = {};
+  users.groups.emma = { };
+  users.groups.raf = { };
   users.users = {
     emma = {
       isSystemUser = true;
@@ -98,8 +101,8 @@
       isNormalUser = true;
       group = "raf";
       openssh.authorizedKeys.keys = [
-            "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCWFtj8xaCsRMvu3WE1T+z486LQXvWYRUTpk1V1JS0uZ3N1A6oaDM3NPIcktontQMRnq42b0l5RA2J/B3N/TNHyeoWXkeDD/qinv/KFSChf8WYaEk7VLpFJoxvrTEvETeqIzwDLL+A7/hLGDt9Uq2uVxj1AdKU8oWbYVj5+qHs/yOqTEqngYcc0RSngnz0BySbl9+S4/PTxdnFk6z5cQxGmlGP0CG3KAYgN3YghY+7ykRqQZ8Xi5+v4TOdHx/JYXF5CHdIJjRjT0CEdQYLA+esAfjZ7ZdirHiIrp8+QrcV1E7fOlbiZq5ieYDu6KOD4EOUKiWjLma0VUKLV5Jj/xAy1+P5t3xbXDF+K9Gg3gLTWGg2uaMOw2R+arraN879wVKcmz3QhYd1lnotfUtMslI2QoqSvdnZJSrKeqMpTUOHs57IREvJpOCkybwKXj9LPVeGn4Jg2C1hjHdCksQQmUkbJLYZ77BK6qpb9H3d478yI41TM/XWQPaoRtKspi7goTlU= apomys@edgar"
-          ];
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCWFtj8xaCsRMvu3WE1T+z486LQXvWYRUTpk1V1JS0uZ3N1A6oaDM3NPIcktontQMRnq42b0l5RA2J/B3N/TNHyeoWXkeDD/qinv/KFSChf8WYaEk7VLpFJoxvrTEvETeqIzwDLL+A7/hLGDt9Uq2uVxj1AdKU8oWbYVj5+qHs/yOqTEqngYcc0RSngnz0BySbl9+S4/PTxdnFk6z5cQxGmlGP0CG3KAYgN3YghY+7ykRqQZ8Xi5+v4TOdHx/JYXF5CHdIJjRjT0CEdQYLA+esAfjZ7ZdirHiIrp8+QrcV1E7fOlbiZq5ieYDu6KOD4EOUKiWjLma0VUKLV5Jj/xAy1+P5t3xbXDF+K9Gg3gLTWGg2uaMOw2R+arraN879wVKcmz3QhYd1lnotfUtMslI2QoqSvdnZJSrKeqMpTUOHs57IREvJpOCkybwKXj9LPVeGn4Jg2C1hjHdCksQQmUkbJLYZ77BK6qpb9H3d478yI41TM/XWQPaoRtKspi7goTlU= apomys@edgar"
+      ];
     };
   };
 
@@ -132,15 +135,15 @@
     '';
     openFirewall = true;
     extraConfig = ''
-    PubkeyAuthOptions verify-required
-  '';
+      PubkeyAuthOptions verify-required
+    '';
   };
 
   services.tailscale.authKeyFile = config.age.secrets.tailscale-authkey.path;
 
   # secrets
   age = {
-    identityPaths = ["/srv/vault/ssh_keys/id_rsa"]; # requires `/srv/vault` to be mounted before agenix can be used
+    identityPaths = [ "/srv/vault/ssh_keys/id_rsa" ]; # requires `/srv/vault` to be mounted before agenix can be used
     secrets = {
       tailscale-server = {
         file = ../../secrets/tailscale-server.age;
@@ -166,4 +169,3 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
 }
-

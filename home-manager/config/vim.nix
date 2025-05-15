@@ -1,4 +1,5 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   home.packages = with pkgs; [
     nerdfonts # for devicons
     nixd # nix-lsp
@@ -142,54 +143,54 @@
       EOF
     '';
     plugins = with pkgs.vimPlugins; [
-        # navigation
-        leap-nvim
+      # navigation
+      leap-nvim
 
-        # languages
-        vim-nix
-        vim-go
-        vim-ruby
+      # languages
+      vim-nix
+      vim-go
+      vim-ruby
 
-        # core
-        nerdtree
-        nerdtree-git-plugin
-        fzfWrapper
-        which-key-nvim
-        vim-fugitive
-        vim-surround
-        vim-startify
-        vim-jsonnet
+      # core
+      nerdtree
+      nerdtree-git-plugin
+      fzfWrapper
+      which-key-nvim
+      vim-fugitive
+      vim-surround
+      vim-startify
+      vim-jsonnet
 
-        # secretz
-        nvim-sops
+      # secretz
+      nvim-sops
 
-        # visual
-        vim-devicons
-        vim-indent-guides
-        vim-better-whitespace
+      # visual
+      vim-devicons
+      vim-indent-guides
+      vim-better-whitespace
 
-        # lsp / cmp
-        nvim-lspconfig
-        nvim-cmp
-        cmp-path
-        cmp-buffer
-        cmp-cmdline
-        cmp-nvim-lsp
-        # snippet support
-        vim-vsnip
-        cmp-vsnip
+      # lsp / cmp
+      nvim-lspconfig
+      nvim-cmp
+      cmp-path
+      cmp-buffer
+      cmp-cmdline
+      cmp-nvim-lsp
+      # snippet support
+      vim-vsnip
+      cmp-vsnip
 
-        # treesitter
-        nvim-treesitter
-        nvim-treesitter-parsers.go
-        nvim-treesitter-parsers.gomod
-        nvim-treesitter-parsers.gosum
-        nvim-treesitter-parsers.ruby
-        nvim-treesitter-parsers.rust
-        nvim-treesitter-parsers.yaml
-        nvim-treesitter-parsers.jsonnet
-        nvim-treesitter-parsers.json
-        nvim-treesitter-parsers.bash
+      # treesitter
+      nvim-treesitter
+      nvim-treesitter-parsers.go
+      nvim-treesitter-parsers.gomod
+      nvim-treesitter-parsers.gosum
+      nvim-treesitter-parsers.ruby
+      nvim-treesitter-parsers.rust
+      nvim-treesitter-parsers.yaml
+      nvim-treesitter-parsers.jsonnet
+      nvim-treesitter-parsers.json
+      nvim-treesitter-parsers.bash
     ];
   };
 }

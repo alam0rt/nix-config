@@ -1,9 +1,13 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
-in {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = config.server;
+in
+{
   services.pvpgn = {
     enable = true;
     bnetd = {

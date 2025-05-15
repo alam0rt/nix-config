@@ -1,9 +1,13 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = {};
-in {
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+let
+  cfg = { };
+in
+{
   # ...
   config.services.patroni = {
     enable = true;

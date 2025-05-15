@@ -5,40 +5,41 @@
 { inputs, pkgs, ... }:
 
 {
-  imports =
-    [
-      ../config/graphical
-      ../config/common
-      ../config/network
-      ../config/home-manager.nix
-      ../config/nvidia.nix
-      ../config/llm.nix
-      ./hardware-configuration.nix
-      ./vllm.nix
-    ];
+  imports = [
+    ../config/graphical
+    ../config/common
+    ../config/network
+    ../config/home-manager.nix
+    ../config/nvidia.nix
+    ../config/llm.nix
+    ./hardware-configuration.nix
+    ./vllm.nix
+  ];
 
   networking.hostName = "desktop"; # Define your hostname.
   networking.hostId = "cc74da59";
 
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   networking.firewall.enable = false;
   # secrets
   age = {
     # TODO: will cause issues as syncthing needs to sync this before we can decrypt
-    identityPaths = ["/home/sam/vault/ssh_keys/id_rsa"];
+    identityPaths = [ "/home/sam/vault/ssh_keys/id_rsa" ];
   };
 
   # Syncthing
   services.syncthing = {
     enable = true;
     user = "sam";
-    dataDir = "/home/sam/vault";    # Default folder for new synced folders
-    configDir = "/home/sam/.config/syncthing";   # Folder for Syncthing's settings and keys
+    dataDir = "/home/sam/vault"; # Default folder for new synced folders
+    configDir = "/home/sam/.config/syncthing"; # Folder for Syncthing's settings and keys
     guiAddress = "http://127.0.0.1:8384";
     settings = {
       devices = {
-        "laptop"   = { id = "5ATZ7LD-C3AYIMS-EXQZILG-2A743HY-4Y7ULQY-RODJR7F-GO43W6X-CLXDAAA"; };
+        "laptop" = {
+          id = "5ATZ7LD-C3AYIMS-EXQZILG-2A743HY-4Y7ULQY-RODJR7F-GO43W6X-CLXDAAA";
+        };
       };
     };
   };
@@ -84,10 +85,9 @@
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
-  nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];
+  nixpkgs.overlays = [ inputs.nvidia-patch.overlays.default ];
 
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
 }
-

@@ -7,11 +7,10 @@
   config,
   pkgs,
   ...
-}: {
+}:
+{
   # You can import other home-manager modules here
-  imports = [
-    ./common.nix
-  ];
+  imports = [ ./common.nix ];
 
   nixpkgs = {
     # You can add overlays here
@@ -29,16 +28,12 @@
   };
 
   xdg = {
-    configFile =  {
+    configFile = {
       "containers/policy.json" = {
         enable = true;
-        text = builtins.toJSON({
+        text = builtins.toJSON ({
           # https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
-          default = [
-            {
-              type = "insecureAcceptAnything";
-            }
-          ];
+          default = [ { type = "insecureAcceptAnything"; } ];
         });
       };
     };

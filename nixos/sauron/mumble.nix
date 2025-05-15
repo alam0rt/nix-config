@@ -1,22 +1,22 @@
-{ config
-, lib
-, ... }:
-let cfg = config.server;
-in {
+{ config, lib, ... }:
+let
+  cfg = config.server;
+in
+{
   services.murmur = {
-     enable = true;
-     registerName = "wankbank";
-     registerHostname = "murmur.samlockart.com";
-     registerUrl = "murmur.samlockart.com";
-     welcometext = "speak friend and enter...";
-     bandwidth = 130000;
-     allowHtml = false;
-     autobanTime = 10;
-     openFirewall = true;
-     autobanAttempts = 60;
-     sslKey = "${config.security.acme.certs."murmur.samlockart.com".directory}/key.pem";
-     sslCert = "${config.security.acme.certs."murmur.samlockart.com".directory}/fullchain.pem";
-   };
+    enable = true;
+    registerName = "wankbank";
+    registerHostname = "murmur.samlockart.com";
+    registerUrl = "murmur.samlockart.com";
+    welcometext = "speak friend and enter...";
+    bandwidth = 130000;
+    allowHtml = false;
+    autobanTime = 10;
+    openFirewall = true;
+    autobanAttempts = 60;
+    sslKey = "${config.security.acme.certs."murmur.samlockart.com".directory}/key.pem";
+    sslCert = "${config.security.acme.certs."murmur.samlockart.com".directory}/fullchain.pem";
+  };
 
   security.acme.certs."murmur.samlockart.com" = {
     group = "murmur";
@@ -26,7 +26,7 @@ in {
   services.nginx.virtualHosts."murmur.samlockart.com".enableACME = true;
 
   # required
-  users.users.nginx.extraGroups = ["murmur"];
+  users.users.nginx.extraGroups = [ "murmur" ];
 
   services.botamusique = {
     enable = true;
