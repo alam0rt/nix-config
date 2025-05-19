@@ -1,4 +1,16 @@
-# ruby
+# nix-config
+
+## Debugging
+
+* Load the flake into the repl
+```
+nix repl
+> :lf .
+```
+
+## Misc
+
+### ruby
 
 use [nixpkgs-ruby](https://github.com/bobvanderlinden/nixpkgs-ruby) by executing 
 

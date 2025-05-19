@@ -1,15 +1,15 @@
-{ pkgs, ... }:
-
 {
-  # enable zsh integration with nix
-  programs.zsh = {
-    enable = true;
-  };
-
-  # tailscale
+  config,
+  pkgs,
+  ...
+}: let
+  loginServer = "https://hs.samlockart.com";
+in {
   services.tailscale = {
     enable = true;
     openFirewall = true;
-    extraUpFlags = ["--login-server=https://hs.samlockart.com"];
+    extraUpFlags = ["--login-server=${loginServer}"];
   };
+  networking.firewall.trustedInterfaces = [config.services.tailscale.interfaceName];
+  networking.firewall.checkReversePath = "loose";
 }

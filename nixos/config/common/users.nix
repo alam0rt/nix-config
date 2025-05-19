@@ -1,12 +1,42 @@
-{ pkgs, ... }:
+{pkgs, ...}: {
+  users.motd = ''
+    **************************************************************************
+    *                                                                        *
+    *            WELCOME TO THE DARK TOWER MAINFRAME (Barad-dûr)             *
+    *                                                                        *
+    *        Authorized Access Only – All activity is monitored by           *
+    *                         THE EYE OF SAURON                              *
+    *                                                                        *
+    **************************************************************************
 
-{
+    User authentication logs are relayed directly to:
+            ✦ The Palantír Surveillance Division ✦
+
+    WARNING:
+        ▸ This system is the property of the Dark Lord.
+        ▸ Unauthorized access will be met with swift and fiery retribution.
+        ▸ All commands are recorded in the Scrolls of Gríma for review.
+        ▸ The Nazgûl are standing by.
+
+    REMEMBER:
+        One server to rule them all,
+        One server to find them,
+        One server to bring them all,
+        And in the darkness bind them...
+
+    Proceed only if you serve the will of Sauron.
+
+  '';
   users.groups.sam = {};
   users.users = {
     sam = {
       group = "sam";
       shell = pkgs.zsh;
-      extraGroups = [ "wireshark" "wheel" "docker" ]; # Enable ‘sudo’ for the user.
+      extraGroups = [
+        "wireshark"
+        "wheel"
+        "docker"
+      ]; # Enable ‘sudo’ for the user.
       isNormalUser = true;
       initialHashedPassword = "$y$j9T$NPAB.7arQ/BIqdovYTfY6/$506oYwegRg3oO9jTmMTssszCB.VKKTvbvBSOaXuNqB0"; # mkpasswd
       openssh.authorizedKeys.keys = [

@@ -20,7 +20,6 @@
     inputs.pvpgnix.nixosModules.x86_64-linux.default
   ];
 
-
   nixpkgs = {
     # You can add overlays here
     overlays = [
@@ -83,7 +82,7 @@
   i18n.defaultLocale = "en_US.UTF-8";
 
   # allow interacting with secret store
-  environment.systemPackages = [ inputs.agenix.packages.x86_64-linux.default ];
+  environment.systemPackages = [inputs.agenix.packages.x86_64-linux.default];
 
   # This setups a SSH server. Very important if you're setting up a headless system.
   # Feel free to remove if you don't need it.
@@ -95,7 +94,7 @@
       # Opinionated: use keys only.
       # Remove if you want to SSH using passwords
       PasswordAuthentication = false;
-      X11Forwarding          = true;
+      X11Forwarding = true;
     };
   };
 }

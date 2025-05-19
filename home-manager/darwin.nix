@@ -7,9 +7,7 @@
   ...
 }: {
   # You can import other home-manager modules here
-  imports = [
-    ./common.nix
-  ];
+  imports = [./common.nix];
 
   nixpkgs = {
     # You can add overlays here
@@ -41,9 +39,7 @@
   home = {
     username = lib.mkForce "sam.lockart";
     homeDirectory = lib.mkForce "/Users/sam.lockart";
-    sessionPath = [
-        "$HOME/.local/bin"
-    ];
+    sessionPath = ["$HOME/.local/bin"];
   };
 
   home.packages = with pkgs; [

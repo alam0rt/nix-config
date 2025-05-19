@@ -3,14 +3,14 @@
 
   inputs = {
     # Nixpkgs
-    nixpkgs.url = "github:nixos/nixpkgs/nixos-24.11";
+    nixpkgs.url = "github:nixos/nixpkgs/nixos-25.05";
     # You can access packages and modules from different nixpkgs revs
     # at the same time. Here's an working example:
     nixpkgs-unstable.url = "github:nixos/nixpkgs/nixos-unstable";
     # Also see the 'unstable-packages' overlay at 'overlays/default.nix'.
 
     # Home manager
-    home-manager.url = "github:nix-community/home-manager/release-24.11";
+    home-manager.url = "github:nix-community/home-manager/release-25.05";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
     # darwin
@@ -77,7 +77,9 @@
     # Available through 'nixos-rebuild --flake .#your-hostname'
     nixosConfigurations = {
       sauron = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
+        specialArgs = {
+          inherit inputs outputs;
+        };
         modules = [
           # > Our main nixos configuration file <
           ./nixos/configuration.nix
@@ -85,7 +87,9 @@
         ];
       };
       desktop = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
+        specialArgs = {
+          inherit inputs outputs;
+        };
         modules = [
           # > Our main nixos configuration file <
           ./nixos/configuration.nix
@@ -93,11 +97,22 @@
         ];
       };
       laptop = nixpkgs.lib.nixosSystem {
-        specialArgs = {inherit inputs outputs;};
+        specialArgs = {
+          inherit inputs outputs;
+        };
         modules = [
           ./nixos/configuration.nix
           ./nixos/laptop/configuration.nix
           nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme-gen2
+        ];
+      };
+      frodo = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit inputs outputs;
+        };
+        modules = [
+          ./nixos/configuration.nix
+          ./nixos/frodo/configuration.nix
         ];
       };
     };
@@ -107,10 +122,10 @@
     homeConfigurations = {
       "sam.lockart@FYV2M2TY9X" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages.aarch64-darwin; # Home-manager requires 'pkgs' instance
-        extraSpecialArgs = {inherit inputs outputs;};
-        modules = [
-          ./home-manager/darwin.nix
-        ];
+        extraSpecialArgs = {
+          inherit inputs outputs;
+        };
+        modules = [./home-manager/darwin.nix];
       };
     };
   };

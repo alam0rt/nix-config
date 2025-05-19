@@ -1,24 +1,24 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ pkgs, ... }:
-
 {
-  imports =
-    [
-      ../config/graphical
-      ../config/common
-      ../config/network
-      ../config/home-manager.nix
-      ../config/llm.nix
-      ../config/overclocking.nix
-      ./hardware-configuration.nix
-    ];
+  pkgs,
+  ...
+}: {
+  imports = [
+    ../config/graphical
+    ../config/common
+    ../config/network
+    ../config/home-manager.nix
+    ../config/llm.nix
+    ../config/overclocking.nix
+    ./hardware-configuration.nix
+  ];
 
   networking.hostName = "desktop"; # Define your hostname.
   networking.hostId = "cc74da59";
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   networking.firewall.enable = false;
 
   # Fixing time sync when dualbooting with Windows
@@ -55,12 +55,14 @@
   services.syncthing = {
     enable = true;
     user = "sam";
-    dataDir = "/home/sam/vault";    # Default folder for new synced folders
-    configDir = "/home/sam/.config/syncthing";   # Folder for Syncthing's settings and keys
+    dataDir = "/home/sam/vault"; # Default folder for new synced folders
+    configDir = "/home/sam/.config/syncthing"; # Folder for Syncthing's settings and keys
     guiAddress = "http://127.0.0.1:8384";
     settings = {
       devices = {
-        "laptop"   = { id = "5ATZ7LD-C3AYIMS-EXQZILG-2A743HY-4Y7ULQY-RODJR7F-GO43W6X-CLXDAAA"; };
+        "laptop" = {
+          id = "5ATZ7LD-C3AYIMS-EXQZILG-2A743HY-4Y7ULQY-RODJR7F-GO43W6X-CLXDAAA";
+        };
       };
     };
   };
@@ -111,4 +113,3 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.11"; # Did you read the comment?
 }
-

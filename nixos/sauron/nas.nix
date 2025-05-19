@@ -1,8 +1,10 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.server;
 in {
   # NFS
   services.nfs.server = {
@@ -16,14 +18,28 @@ in {
       /srv/share/emma         192.168.0.0/255.255.255.0(rw,fsid=0,no_subtree_check) 100.64.0.0/255.255.255.0(rw,fsid=0,no_subtree_check)
       /srv/share/public       192.168.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check) 100.64.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check)
       /srv/media              192.168.0.0/255.255.255.0(ro,nohide,insecure,no_subtree_check) 100.64.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check)
-  '';
+    '';
   };
 
   networking.firewall = let
     inherit (config.services.nfs) server;
   in {
-    allowedTCPPorts = [ server.lockdPort server.mountdPort server.statdPort 111 2049 20048 ];
-    allowedUDPPorts = [ server.lockdPort server.mountdPort server.statdPort 111 2049 20048 ];
+    allowedTCPPorts = [
+      server.lockdPort
+      server.mountdPort
+      server.statdPort
+      111
+      2049
+      20048
+    ];
+    allowedUDPPorts = [
+      server.lockdPort
+      server.mountdPort
+      server.statdPort
+      111
+      2049
+      20048
+    ];
   };
 
   # Samba

@@ -1,8 +1,9 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   cfg = config.server;
   ports = {
     http = 8081;
@@ -33,8 +34,11 @@ in {
   users.groups.unifi = {};
 
   networking.firewall = {
-    allowedTCPPorts = [ ports.http ports.https ];
-    allowedUDPPorts = [ ports.udp ];
+    allowedTCPPorts = [
+      ports.http
+      ports.https
+    ];
+    allowedUDPPorts = [ports.udp];
   };
 
   # cannot compile mongo so disabling

@@ -1,12 +1,12 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.server;
 in {
-  environment.systemPackages = with pkgs; [
-    borgbackup
-  ];
+  environment.systemPackages = with pkgs; [borgbackup];
 
   age.secrets.borg.file = ../../secrets/borg.age;
 
@@ -23,7 +23,7 @@ in {
       compression = "auto,zstd";
       startAt = "daily";
     };
-   mordor-srv-data = {
+    mordor-srv-data = {
       paths = "/srv/data";
       repo = "20972@hk-s020.rsync.net:mordor/srv/data";
       doInit = true;
@@ -35,7 +35,7 @@ in {
       compression = "auto,zstd";
       startAt = "daily";
     };
-   mordor-share-sam = {
+    mordor-share-sam = {
       paths = "/srv/share/sam";
       repo = "20972@hk-s020.rsync.net:mordor/share/sam";
       doInit = true;
@@ -47,7 +47,7 @@ in {
       compression = "auto,zstd";
       startAt = "daily";
     };
-   mordor-share-emma = {
+    mordor-share-emma = {
       paths = "/srv/share/emma";
       repo = "20972@hk-s020.rsync.net:mordor/share/emma";
       doInit = true;

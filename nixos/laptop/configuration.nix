@@ -1,25 +1,25 @@
 # Edit this configuration file to define what should be installed on
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
-
-{ inputs, pkgs, ... }:
-
 {
-  imports =
-    [
-      ../config/graphical
-      ../config/common
-      ../config/network
-      ../config/nvidia.nix
-      ../config/home-manager.nix
-      ./hardware-configuration.nix
-    ];
+  inputs,
+  pkgs,
+  ...
+}: {
+  imports = [
+    ../config/graphical
+    ../config/common
+    ../config/network
+    ../config/nvidia.nix
+    ../config/home-manager.nix
+    ./hardware-configuration.nix
+  ];
 
   networking.hostName = "laptop"; # Define your hostname.
   networking.hostId = "deadbabe";
 
   # Pick only one of the below networking options.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   networking.firewall.enable = true;
 
@@ -27,13 +27,17 @@
   services.syncthing = {
     enable = true;
     user = "sam";
-    dataDir = "/home/sam/vault";    # Default folder for new synced folders
-    configDir = "/home/sam/.config/syncthing";   # Folder for Syncthing's settings and keys
+    dataDir = "/home/sam/vault"; # Default folder for new synced folders
+    configDir = "/home/sam/.config/syncthing"; # Folder for Syncthing's settings and keys
     guiAddress = "http://127.0.0.1:8384";
     settings = {
       devices = {
-        "laptop"   = { id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2"; };
-        "desktop"   = { id = "F7G62MY-FWFWFNY-PYVBZQE-S4EXYDX-IIPF4AQ-YAKJVP3-4TZXCKT-NAUTJQU"; };
+        "laptop" = {
+          id = "S5V7OMM-KMCFGTF-DI2X72J-QNY565R-XBWZERU-MH6LCDV-QLTSNYJ-FKJ47A2";
+        };
+        "desktop" = {
+          id = "F7G62MY-FWFWFNY-PYVBZQE-S4EXYDX-IIPF4AQ-YAKJVP3-4TZXCKT-NAUTJQU";
+        };
       };
     };
   };
@@ -58,7 +62,7 @@
     # core
     vim
     firefox
-    
+
     # social
     mumble
     element

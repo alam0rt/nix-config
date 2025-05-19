@@ -1,8 +1,10 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.server;
 in {
   environment.systemPackages = with pkgs; [
     unstable.jellyfin
@@ -25,11 +27,9 @@ in {
         proxyPass = "http://127.0.0.1:8096";
       };
     };
-   tailscaleAuth = {
+    tailscaleAuth = {
       enable = true;
-      virtualHosts = [
-        "jackett.middleearth.samlockart.com"
-      ];
+      virtualHosts = ["jackett.middleearth.samlockart.com"];
     };
     virtualHosts."sonarr.middleearth.samlockart.com" = {
       forceSSL = false;
@@ -60,7 +60,6 @@ in {
       };
     };
   };
-
 
   services.jellyfin = {
     package = pkgs.unstable.jellyfin;
@@ -95,10 +94,16 @@ in {
     enable = true;
     openFirewall = true;
   };
-  users.users.bazarr.extraGroups = ["sonarr" "radarr"];
+  users.users.bazarr.extraGroups = [
+    "sonarr"
+    "radarr"
+  ];
 
-  networking.firewall.allowedUDPPorts = [ 1900 7359 ]; # dlna
-  networking.firewall.allowedTCPPorts = [ 8191 ]; # flaresolverr
+  networking.firewall.allowedUDPPorts = [
+    1900
+    7359
+  ]; # dlna
+  networking.firewall.allowedTCPPorts = [8191]; # flaresolverr
 
   # selfhosted rarbg
   # https://github.com/mgdigital/rarbg-selfhosted

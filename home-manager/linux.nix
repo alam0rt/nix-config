@@ -9,9 +9,7 @@
   ...
 }: {
   # You can import other home-manager modules here
-  imports = [
-    ./common.nix
-  ];
+  imports = [./common.nix];
 
   nixpkgs = {
     # You can add overlays here
@@ -29,17 +27,13 @@
   };
 
   xdg = {
-    configFile =  {
+    configFile = {
       "containers/policy.json" = {
         enable = true;
-        text = builtins.toJSON({
+        text = builtins.toJSON {
           # https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
-          default = [
-            {
-              type = "insecureAcceptAnything";
-            }
-          ];
-        });
+          default = [{type = "insecureAcceptAnything";}];
+        };
       };
     };
   };
@@ -48,7 +42,7 @@
     # CAD / 3d
     super-slicer-latest # doesn't build on darwin
     #inputs.pcsx-redux.packages.${system}.pcsx-redux
-    # nix-shell -p ghidra -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/21808d22b1cda1898b71cf1a1beb524a97add2c4.tar.gz 
+    # nix-shell -p ghidra -I nixpkgs=https://github.com/NixOS/nixpkgs/archive/21808d22b1cda1898b71cf1a1beb524a97add2c4.tar.gz
   ];
 
   # Nicely reload system units when changing configs

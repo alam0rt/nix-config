@@ -53,7 +53,7 @@
     enableBashIntegration = true;
     enableZshIntegration = true;
     nix-direnv.enable = true;
-    };
+  };
 
   home = {
     username = "sam";
@@ -77,7 +77,7 @@
       compdef kubecolor=kubectl
       compdef ka=kubectl
 
-      function ka () { 
+      function ka () {
           kubectl "$1" --as admin --as-group system:masters "''${@:2}";
       }
 
@@ -120,9 +120,7 @@
       projects = "$HOME/projects";
     };
     history = {
-      ignorePatterns = [
-        "GITHUB_TOKEN"
-      ];
+      ignorePatterns = ["GITHUB_TOKEN"];
     };
     autosuggestion = {
       enable = true;
@@ -200,6 +198,8 @@
     openscad
     openscad-lsp
     # super-slicer-latest - see linux.nix
+
+    comma
   ];
 
   # terminal

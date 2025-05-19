@@ -1,8 +1,10 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.server;
 in {
   users.groups.mail = {};
   age.secrets = {

@@ -1,8 +1,4 @@
-{ config
-, lib
-, ... }:
-let 
-  cfg = config.server;
+{config, ...}: let
   domain = "pass.iced.cool";
 in {
   services.nginx.virtualHosts.${domain} = {

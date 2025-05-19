@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{pkgs, ...}: {
   programs.k9s = {
     enable = true;
     settings = {};
@@ -49,7 +49,7 @@
             ''
               kitty --title "kubelet.yaml - $NAME" sh -c 'kubectl get --as admin --as-group system:masters --raw "/api/v1/nodes/$NAME/proxy/configz" | jq .'
             ''
-          ]; 
+          ];
         };
 
         ng-pause = {
@@ -154,13 +154,16 @@
             "admin"
             "--as-group"
             "system:masters"
-          ]; 
+          ];
         };
 
         ng-recreate = {
           shortCut = "Ctrl-O";
           description = "Recreate nodegroup";
-          scopes = ["ng" "nodegroup"];
+          scopes = [
+            "ng"
+            "nodegroup"
+          ];
           background = true;
           command = "bash";
           args = [

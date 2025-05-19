@@ -1,8 +1,9 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let 
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
   cfg = {
     model = "google/gemma-3-12b-pt";
     image = "vllm/vllm-openai:latest";
@@ -25,8 +26,10 @@ in {
         "--device=nvidia.com/gpu=all"
       ];
       cmd = [
-        "--model" cfg.model
-        "--max-model-len" "1024" # default is 4096
+        "--model"
+        cfg.model
+        "--max-model-len"
+        "1024" # default is 4096
         "--gpu-memory-utilization=0.90"
         "--dtype=float16"
       ];

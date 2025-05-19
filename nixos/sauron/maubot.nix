@@ -1,7 +1,9 @@
-{ config
-, lib
-, ... }:
-let cfg = config.server;
+{
+  config,
+  lib,
+  ...
+}: let
+  cfg = config.server;
 in {
   age = {
     secrets = {
@@ -23,9 +25,7 @@ in {
     };
   };
   # provide mbc cli
-  environment.systemPackages = [
-    config.services.maubot.package
-  ];
+  environment.systemPackages = [config.services.maubot.package];
 
   services.maubot = {
     enable = true;
@@ -34,8 +34,6 @@ in {
     settings = {
       database = "sqlite:/srv/data/maubot/maubot.db";
     };
-    plugins = with config.services.maubot.package.plugins; [
-      chatgpt
-    ];
+    plugins = with config.services.maubot.package.plugins; [chatgpt];
   };
 }

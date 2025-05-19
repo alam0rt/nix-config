@@ -1,17 +1,23 @@
-{ pkgs, lib, config, ... }:
-let
+{
+  pkgs,
+  lib,
+  config,
+  ...
+}: let
   fqdn = "${config.networking.hostName}.${config.networking.domain}";
   baseUrl = "https://${fqdn}";
   clientConfig."m.homeserver".base_url = baseUrl;
   serverConfig."m.server" = "${fqdn}:443";
   mkWellKnown = data: ''
     default_type application/json;
-    add_header Access-Control-Allow-Origin *;
     return 200 '${builtins.toJSON data}';
   '';
 in {
   networking.domain = "iced.cool";
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+  ];
 
   services.postgresql.enable = true;
 
@@ -65,15 +71,21 @@ in {
     # in client applications.
     settings.public_baseurl = baseUrl;
     settings.listeners = [
-      { port = 8008;
-        bind_addresses = [ "::1" ];
+      {
+        port = 8008;
+        bind_addresses = ["::1"];
         type = "http";
         tls = false;
         x_forwarded = true;
-        resources = [ {
-          names = [ "client" "federation" ];
-          compress = true;
-        } ];
+        resources = [
+          {
+            names = [
+              "client"
+              "federation"
+            ];
+            compress = true;
+          }
+        ];
       }
     ];
   };
@@ -81,12 +93,10 @@ in {
   #\\\\\\\
   # element
   #\\\\\\\\\
-    services.nginx.virtualHosts."x.${fqdn}" = {
+  services.nginx.virtualHosts."x.${fqdn}" = {
     enableACME = true;
     forceSSL = true;
-    serverAliases = [
-      "x.${config.networking.domain}"
-    ];
+    serverAliases = ["x.${config.networking.domain}"];
 
     root = pkgs.element-web.override {
       conf = {

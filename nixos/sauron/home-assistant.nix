@@ -1,8 +1,10 @@
-{ config
-, lib
-, pkgs
-, ... }:
-let cfg = config.server;
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}: let
+  cfg = config.server;
 in {
   networking.firewall.allowedTCPPorts = [
     8123 # remove once setup with reverse proxy
@@ -13,7 +15,7 @@ in {
     enable = true;
     listeners = [
       {
-        acl = [ "pattern readwrite #" ];
+        acl = ["pattern readwrite #"];
         omitPasswordAuth = true;
         settings.allow_anonymous = true; # TODO: lock down
       }
