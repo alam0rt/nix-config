@@ -100,6 +100,7 @@
       ];
       uid = 1003; # for persistence
       isNormalUser = true;
+      shell = pkgs.zsh;
       group = "raf";
       openssh.authorizedKeys.keys = [
         "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQCWFtj8xaCsRMvu3WE1T+z486LQXvWYRUTpk1V1JS0uZ3N1A6oaDM3NPIcktontQMRnq42b0l5RA2J/B3N/TNHyeoWXkeDD/qinv/KFSChf8WYaEk7VLpFJoxvrTEvETeqIzwDLL+A7/hLGDt9Uq2uVxj1AdKU8oWbYVj5+qHs/yOqTEqngYcc0RSngnz0BySbl9+S4/PTxdnFk6z5cQxGmlGP0CG3KAYgN3YghY+7ykRqQZ8Xi5+v4TOdHx/JYXF5CHdIJjRjT0CEdQYLA+esAfjZ7ZdirHiIrp8+QrcV1E7fOlbiZq5ieYDu6KOD4EOUKiWjLma0VUKLV5Jj/xAy1+P5t3xbXDF+K9Gg3gLTWGg2uaMOw2R+arraN879wVKcmz3QhYd1lnotfUtMslI2QoqSvdnZJSrKeqMpTUOHs57IREvJpOCkybwKXj9LPVeGn4Jg2C1hjHdCksQQmUkbJLYZ77BK6qpb9H3d478yI41TM/XWQPaoRtKspi7goTlU= apomys@edgar"

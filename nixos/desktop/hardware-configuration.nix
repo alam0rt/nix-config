@@ -26,20 +26,20 @@
     "video=HDMI-A-1:2560x1440" # right
   ];
 
-  fileSystems."/" =
-    { device = "/dev/disk/by-uuid/83f19ff7-2a29-414d-9153-7e45458eb0ab";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/83f19ff7-2a29-414d-9153-7e45458eb0ab";
+    fsType = "ext4";
+  };
 
-  fileSystems."/boot" =
-    { device = "/dev/disk/by-uuid/166B-F342";
-      fsType = "vfat";
-      options = [ "fmask=0077" "dmask=0077" ];
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/166B-F342";
+    fsType = "vfat";
+    options = ["fmask=0077" "dmask=0077"];
+  };
 
-  swapDevices =
-    [ { device = "/dev/disk/by-uuid/1e634fa5-1275-4095-a23d-8e2c20b785a0"; }
-    ];
+  swapDevices = [
+    {device = "/dev/disk/by-uuid/1e634fa5-1275-4095-a23d-8e2c20b785a0";}
+  ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
   # (the default) this is the recommended approach. When using systemd-networkd it's

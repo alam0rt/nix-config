@@ -3,7 +3,7 @@
   nix = {
     # Optimisation of the Nix Store
     optimise.automatic = true;
-    optimise.dates = [ "weekly" ];
+    optimise.dates = ["weekly"];
 
     # Garbage colection (Removes Old Snapshots)
     gc = {

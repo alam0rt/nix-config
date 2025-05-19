@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   programs.vscode = {
     enable = true;
-    extensions = with pkgs.vscode-extensions; [
+    profiles.defaults.extensions = with pkgs.vscode-extensions; [
       # core
       dracula-theme.theme-dracula
       vscodevim.vim
