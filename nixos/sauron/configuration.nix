@@ -31,7 +31,6 @@
     ./home-assistant.nix
     #      ../config/home-manager.nix # get working
   ];
-
   # Use the systemd-boot EFI boot loader.
   boot = {
     kernelModules = ["wl"];

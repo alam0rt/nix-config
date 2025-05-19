@@ -10,7 +10,6 @@
     port = 8000;
   };
 in {
-  hardware.nvidia-container-toolkit.enable = true;
   age.secrets.hugging-face-ro-token.file = ../../secrets/hugging-face-ro-token.age;
   virtualisation.oci-containers.containers = {
     vllm = {

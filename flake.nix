@@ -41,10 +41,7 @@
     self,
     nixpkgs,
     home-manager,
-    agenix,
-    pvpgnix,
     nixos-hardware,
-    pcsx-redux,
     ...
   } @ inputs: let
     inherit (self) outputs;

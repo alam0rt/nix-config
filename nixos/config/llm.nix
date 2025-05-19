@@ -2,10 +2,10 @@
   # ollama / LLM
   services.ollama = {
     enable = true;
-    package = pkgs.unstable.ollama-cuda;
+    package = pkgs.unstable.ollama-rocm;
     port = 11434;
     host = "0.0.0.0";
-    acceleration = "cuda";
+    acceleration = "rocm";
     openFirewall = true;
     loadModels = [
       "deepseek-r1:14b"
@@ -16,5 +16,6 @@
       OLLAMA_DEBUG = "true";
       OLLAMA_FLASH_ATTENTION = "1";
     };
+    rocmOverrideGfx = "12.0.1";
   };
 }
