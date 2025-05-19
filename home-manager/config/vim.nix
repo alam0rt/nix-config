@@ -1,6 +1,6 @@
 {pkgs, ...}: {
   home.packages = with pkgs; [
-    nerdfonts # for devicons
+    # nerdfonts # for devicons # broken with 25.05
     nixd # nix-lsp
     gofumpt # stricter gofmt
     yaml-language-server
