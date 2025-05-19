@@ -84,6 +84,8 @@
   # allow interacting with secret store
   environment.systemPackages = [inputs.agenix.packages.x86_64-linux.default];
 
+  environment.localBinInPath = true;
+
   programs.zsh.enable = true;
 
   # Prevent the new user dialog in zsh
