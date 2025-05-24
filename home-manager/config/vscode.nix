@@ -1,6 +1,9 @@
 {pkgs, ...}: {
   programs.vscode = {
     enable = true;
+    package = pkgs.unstable.vscode;
+    enableExtensionUpdateCheck = false;
+    enableUpdateCheck = false;
     profiles.defaults.extensions = with pkgs.vscode-extensions; [
       # core
       dracula-theme.theme-dracula

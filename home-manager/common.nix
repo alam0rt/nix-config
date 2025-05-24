@@ -65,7 +65,7 @@
 
   programs.zsh = {
     enable = true; # must also be enabled in nixos
-    initExtra = ''
+    initContent = ''
       autoload -z edit-command-line
       zle -N edit-command-line
       bindkey "^X^E" edit-command-line
