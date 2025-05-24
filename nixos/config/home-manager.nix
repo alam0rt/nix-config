@@ -8,6 +8,11 @@
     inputs.home-manager.nixosModules.home-manager
   ];
 
+  # required by sway
+  # https://nixos.wiki/wiki/Sway
+  security.polkit.enable = true;
+  programs.light.enable = true;
+
   home-manager = {
     extraSpecialArgs = {
       inherit inputs outputs;

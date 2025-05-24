@@ -26,6 +26,30 @@
     };
   };
 
+  wayland.windowManager.sway = {
+    enable = true;
+    config = rec {
+      modifier = "Mod4";
+      # Use kitty as default terminal
+      terminal = "kitty";
+      startup = [
+        # Launch Firefox on start
+        {command = "firefox";}
+      ];
+      output = {
+        DP-3 = {
+          mode = "3840x2160@240Hz";
+          scale = "2.0";
+        };
+        HDMI-A-1 = {
+          mode = "3840x2160@60Hz";
+          pos = "3840 0";
+          scale = "2.0";
+        };
+      };
+    };
+  };
+
   xdg = {
     configFile = {
       "containers/policy.json" = {

@@ -1,7 +1,7 @@
 {...}: {
   # Enable the X11 windowing system.
   services.xserver = {
-    enable = true;
+    enable = false;
     xkb.layout = "us";
     desktopManager = {
       xterm.enable = false;
@@ -10,5 +10,5 @@
   };
 
   # enable XFCE as the default desktop manager
-  services.displayManager.defaultSession = "xfce";
+  # services.displayManager.defaultSession = "xfce";
 }

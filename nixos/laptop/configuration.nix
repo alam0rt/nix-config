@@ -49,6 +49,8 @@
   # reduce power consumption
   services.xserver.videoDrivers = ["i915"];
 
+  programs.light.enable = true;
+
   # enable prime
   hardware.nvidia.prime = {
     nvidiaBusId = "PCI:1:0:0";
