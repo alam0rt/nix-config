@@ -2,41 +2,43 @@
   programs.vscode = {
     enable = true;
     package = pkgs.unstable.vscode;
-    enableExtensionUpdateCheck = false;
-    enableUpdateCheck = false;
-    profiles.defaults.extensions = with pkgs.vscode-extensions; [
-      # core
-      dracula-theme.theme-dracula
-      vscodevim.vim
+    profiles.defaults = {
+      enableExtensionUpdateCheck = false;
+      enableUpdateCheck = false;
+      extensions = with pkgs.vscode-extensions; [
+        # core
+        dracula-theme.theme-dracula
+        vscodevim.vim
 
-      # golang
-      golang.go
+        # golang
+        golang.go
 
-      # rust
-      rust-lang.rust-analyzer
+        # rust
+        rust-lang.rust-analyzer
 
-      # ruby
-      shopify.ruby-lsp
+        # ruby
+        shopify.ruby-lsp
 
-      # nix
-      jnoortheen.nix-ide
+        # nix
+        jnoortheen.nix-ide
 
-      # terraform
-      hashicorp.hcl
+        # terraform
+        hashicorp.hcl
 
-      # system
-      timonwong.shellcheck
-      coolbear.systemd-unit-file
+        # system
+        timonwong.shellcheck
+        coolbear.systemd-unit-file
 
-      # openscad
-      antyos.openscad
+        # openscad
+        antyos.openscad
 
-      # extras
-      signageos.signageos-vscode-sops
-      ms-vscode-remote.remote-ssh
-      github.copilot
-      github.copilot-chat
-      ms-vscode.makefile-tools
-    ];
+        # extras
+        signageos.signageos-vscode-sops
+        ms-vscode-remote.remote-ssh
+        github.copilot
+        github.copilot-chat
+        ms-vscode.makefile-tools
+      ];
+    };
   };
 }
