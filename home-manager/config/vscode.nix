@@ -2,7 +2,7 @@
   programs.vscode = {
     enable = true;
     package = pkgs.unstable.vscode;
-    profiles.defaults = {
+    profiles.default = {
       enableExtensionUpdateCheck = false;
       enableUpdateCheck = false;
       extensions = with pkgs.vscode-extensions; [

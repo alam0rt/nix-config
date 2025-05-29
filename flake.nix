@@ -35,6 +35,11 @@
 
     # hardware modules
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    nur = {
+      url = "github:nix-community/NUR";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = {
