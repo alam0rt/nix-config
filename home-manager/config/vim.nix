@@ -159,6 +159,7 @@
       vim-surround
       vim-startify
       vim-jsonnet
+      vimagit
 
       # secretz
       nvim-sops
