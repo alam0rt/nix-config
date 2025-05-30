@@ -11,9 +11,9 @@
       owner = "hay-kot";
       repo = pname;
       rev = version;
-      sha256 = "WkllVAPIlWpKFKppsFyEO8x1c0kSD6kw1lsm/h3opu0=";
+      sha256 = "ijjKHbk5bgPuAgYRNwoTaoR9HWXZREXBLpfVzbwnmOs=";
     };
-    vendorHash = "sha256-vZK5bjbvJ2mu4k3uKoTm1nWIKt0L9bAXq6geoHVRt+A=";
+    vendorHash = "sha256-QcGAnfjcka5JxLm/3NAeswAPohCNEUrWCLvajs2lLyw=";
     
     meta = {
       description = "A cookie cutter alternative with in-project scaffolding for generating components, controllers, or other common code patterns";
