@@ -53,6 +53,7 @@
     ssm-session-manager-plugin
     amazon-ecr-credential-helper
     rolecule
+    scaffold
   ];
 
   # Enable home-manager and git

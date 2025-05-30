@@ -4,4 +4,5 @@ pkgs: {
   # example = pkgs.callPackage ./example { };
   sickle = pkgs.callPackage ./sickle {};
   rolecule = pkgs.callPackage ./rolecule {};
+  scaffold = pkgs.callPackage ./scaffold {};
 }
