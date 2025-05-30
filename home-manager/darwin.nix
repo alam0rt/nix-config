@@ -52,6 +52,7 @@
     vendir
     ssm-session-manager-plugin
     amazon-ecr-credential-helper
+    rolecule
   ];
 
   # Enable home-manager and git
