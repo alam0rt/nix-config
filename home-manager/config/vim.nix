@@ -176,9 +176,13 @@
       cmp-buffer
       cmp-cmdline
       cmp-nvim-lsp
+
       # snippet support
       vim-vsnip
       cmp-vsnip
+
+      # ai
+      copilot-vim
 
       # treesitter
       nvim-treesitter
