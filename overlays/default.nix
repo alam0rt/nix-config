@@ -1,5 +1,5 @@
 # This file defines overlays
-{inputs, pkgs, ...}: {
+{inputs, ...}: {
   # This one brings our custom packages from the 'pkgs' directory
   additions = final: _prev: import ../pkgs final.pkgs;
 
@@ -7,10 +7,6 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    # was failing to build with jdk21
-    trimmomatic = prev.trimmomatic.overrideAttrs (old: {
-      jre = pkgs.jdk11;
-    });
     #    botamusique = prev.botamusique.overrideAttrs (old: rec {
     #      src = prev.fetchFromGitHub {
     #        repo = "botamusique";
