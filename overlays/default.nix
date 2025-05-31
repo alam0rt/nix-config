@@ -1,5 +1,5 @@
 # This file defines overlays
-{inputs, ...}: {
+{inputs, pkgs, ...}: {
   # This one brings our custom packages from the 'pkgs' directory
   additions = final: _prev: import ../pkgs final.pkgs;
 
@@ -7,19 +7,10 @@
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev: {
-    #    python312Packages.pymumble = prev.python312Packages.pymumble.overrideAttrs (old: rec {
-    #      version = "2.0.0-nightly";
-    #      src = prev.fetchFromGitHub {
-    #        owner = "oopsbagel";
-    #        repo = "pymumble";
-    #        rev = "285031ea77cab954a239256469783fb725357b30";
-    #      };
-    #      pythonImportsCheck = [
-    #        "mumble"
-    #        "mumble.constants"
-    #      ];
-    #
-    #    });
+    # was failing to build with jdk21
+    trimmomatic = prev.trimmomatic.overrideAttrs (old: {
+      jre = pkgs.jdk11;
+    });
     #    botamusique = prev.botamusique.overrideAttrs (old: rec {
     #      src = prev.fetchFromGitHub {
     #        repo = "botamusique";
