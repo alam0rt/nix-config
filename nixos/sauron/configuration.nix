@@ -87,7 +87,7 @@
         zlib
 
         gatk # genotyping
-        #trimmomatic # causing jdk build issues
+        trimmomatic
         samtools
         picard-tools
         bamtools
