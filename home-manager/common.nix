@@ -159,6 +159,7 @@
     jq
     git
     gh
+    ast-grep
     yq-go
     ripgrep
     direnv
