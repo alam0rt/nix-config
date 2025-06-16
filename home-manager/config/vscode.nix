@@ -5,6 +5,9 @@
     profiles.default = {
       enableExtensionUpdateCheck = false;
       enableUpdateCheck = false;
+      userSettings = {
+        "files.insertFinalNewline" = true;
+      };
       extensions = with pkgs.vscode-extensions; [
         # core
         dracula-theme.theme-dracula
