@@ -5,4 +5,5 @@ pkgs: {
   sickle = pkgs.callPackage ./sickle {};
   rolecule = pkgs.callPackage ./rolecule {};
   scaffold = pkgs.callPackage ./scaffold {};
+  botamusique = pkgs.callPackage ./botamusique {};
 }
