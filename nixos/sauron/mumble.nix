@@ -33,6 +33,7 @@ in {
   # disabled while packge is broken
   services.botamusique = {
     enable = false;
+#    package = foo;
     settings = {
       server = {
         host = config.services.murmur.registerHostname;
