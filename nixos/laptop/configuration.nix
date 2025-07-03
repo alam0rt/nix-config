@@ -11,6 +11,7 @@
     ../config/common
     ../config/network
     ../config/nvidia.nix
+    ./mumble.nix
     ../config/home-manager.nix
     ./hardware-configuration.nix
   ];
