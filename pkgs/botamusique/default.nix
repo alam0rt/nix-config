@@ -31,6 +31,17 @@
     ];
 
     preBuild = ''
+      ls -al
+      cat > launcher.py << 'EOF'
+      import runpy
+      import os
+
+      def main():
+        here = os.path.dirname(__file__)
+        path = os.path.join(here, 'mumbleBot.py')
+        runpy.run_path(path, run_name='__main__')
+      EOF
+
       cat > setup.py << EOF
       from setuptools import setup, find_packages
 
@@ -43,12 +54,12 @@
         version='${version}',
         #author='...',
         packages=find_packages(),
-        py_modules=['mumbleBot', 'variables', 'database', 'util', 'interface', 'command', 'constants'],
+        py_modules=['mumbleBot', 'variables', 'database', 'util', 'interface', 'command', 'constants', 'launcher'],
         #description='...',
         install_requires=install_requires,
         entry_points={
           'console_scripts': [
-            'propagandabot=mumbleBot:__name__',
+            'mumbleBot=launcher:main',
           ],
         },
       )
