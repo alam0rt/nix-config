@@ -3,8 +3,14 @@
   lib,
   python3Packages,
   fetchFromGitHub,
+  ffmpeg-headless,
+  makeWrapper,
+  fetchNpmDeps,
 }:
-  python3Packages.buildPythonApplication rec {
+let 
+  buildPython = python3Packages.python.withPackages (ps: [ ps.jinja2 ]);
+in
+  stdenv.mkDerivation rec {
     pname = "propagandabot";
     version = "v6.5-0";
     src = fetchFromGitHub {
@@ -15,7 +21,11 @@
     };
     vendorHash = "sha256-QcGAnfjcka5JxLm/3NAeswAPohCNEUrWCLvajs2lLyw=";
 
-    dependencies = with python3Packages; [
+    patches = [
+      ./debug.patch
+    ];
+
+    pythonPath = with python3Packages; [
       pymumble
       yt-dlp
       packaging
@@ -26,46 +36,37 @@
       flask
     ];
 
-    build-system = with python3Packages; [
-      setuptools
+    nativeBuildInputs = [
+      makeWrapper
+      python3Packages.wrapPython
     ];
 
-    preBuild = ''
-      ls -al
-      cat > launcher.py << 'EOF'
-      import runpy
-      import os
+    NODE_OPTIONS = "--openssl-legacy-provider";
 
-      def main():
-        here = os.path.dirname(__file__)
-        path = os.path.join(here, 'mumbleBot.py')
-        runpy.run_path(path, run_name='__main__')
-      EOF
+    installPhase = ''
+      runHook preInstall
 
-      cat > setup.py << EOF
-      from setuptools import setup, find_packages
+      mkdir -p $out/share $out/bin
+      cp -r . $out/share/botamusique
+      chmod +x $out/share/botamusique/mumbleBot.py
+      wrapPythonProgramsIn $out/share/botamusique "$out $pythonPath"
 
-      with open('requirements.txt') as f:
-          install_requires = f.read().splitlines()
+      # Convenience binary and wrap with ffmpeg dependency
+      makeWrapper $out/share/botamusique/mumbleBot.py $out/bin/botamusique \
+        --prefix PATH : ${lib.makeBinPath [ ffmpeg-headless ]}
 
-      setup(
-        name='${pname}',
-        #packages=['someprogram'],
-        version='${version}',
-        #author='...',
-        packages=find_packages(),
-        py_modules=['mumbleBot', 'variables', 'database', 'util', 'interface', 'command', 'constants', 'launcher'],
-        #description='...',
-        install_requires=install_requires,
-        entry_points={
-          'console_scripts': [
-            'mumbleBot=launcher:main',
-          ],
-        },
-      )
-      EOF
+      runHook postInstall
     '';
-    
+
+    postPatch = ''
+      # However, the function that's patched above is also used for
+      # configuration.default.ini, which is in the installation directory
+      # after all. So we need to counter-patch it here so it can find it absolutely
+      substituteInPlace mumbleBot.py \
+        --replace "configuration.default.ini" "$out/share/botamusique/configuration.default.ini" \
+        --replace "version = 'git'" "version = '${version}'"
+    '';
+
     meta = {
       description = "Fork of Botamusique to support YT-DLP and modern stream functionality. Intended to be static, with manual updates to YT-DLP.";
       license = lib.licenses.mit;

@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }: let
   cfg = config.server;
@@ -8,8 +9,6 @@ in {
   services.murmur = {
     enable = true;
     registerName = "wankbank";
-    registerHostname = "foobur.samlockart.com";
-    registerUrl = "foobur.samlockart.com";
     welcometext = "speak friend and enter...";
     bandwidth = 130000;
     allowHtml = false;
@@ -18,18 +17,23 @@ in {
     autobanAttempts = 60;
   };
 
-  # disabled while packge is broken
+  # package overridden by ./pkgs/botamusique
   services.botamusique = {
     enable = true;
-    package = pkg.propagandabot;
     settings = {
       server = {
-        host = config.services.murmur.registerHostname;
+        host = "127.0.0.1";
         port = config.services.murmur.port;
       };
       bot = {
         username = "cuckbot";
         comment = "Hi, I'm here to play music and have fun. Please treat me kindly.";
+        database_path = "/var/lib/botamusique/bot.db";
+        music_database_path = "/var/lib/botamusique/music.db";
+      };
+      debug = {
+        ffmpeg = true;
+        mumbleConnection = true;
       };
     };
   };
