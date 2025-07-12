@@ -1,12 +1,34 @@
 diff --git a/mumbleBot.py b/mumbleBot.py
-index d7a434f..1dab61f 100644
+index d7a434f..8d2b1d8 100644
 --- a/mumbleBot.py
 +++ b/mumbleBot.py
-@@ -458,6 +458,7 @@ class MumbleBot:
+@@ -458,7 +458,7 @@ class MumbleBot:
          raw_music = ""
          while not self.exit and self.mumble.is_alive():
  
-+            print self.mumble
-             while self.is_ffmpeg_running() and self.mumble.sound_output.get_buffer_size() > 0.5 and not self.exit:
+-            while self.is_ffmpeg_running() and self.mumble.sound_output.get_buffer_size() > 0.5 and not self.exit:
++            while self.is_ffmpeg_running() and self.mumble.sound_output != None and self.mumble.sound_output.get_buffer_size() > 0.5 and not self.exit:
                  # If the buffer isn't empty, I cannot send new music part, so I wait
                  self._loop_status = f'Wait for buffer {self.mumble.sound_output.get_buffer_size():.3f}'
+                 time.sleep(0.01)
+diff --git a/util.py b/util.py
+index 0102a2c..4637a4e 100644
+--- a/util.py
++++ b/util.py
+@@ -23,15 +23,7 @@ log = logging.getLogger("bot")
+ 
+ 
+ def solve_filepath(path):
+-    if not path:
+-        return ''
+-
+-    if path[0] == '/':
+-        return path
+-    else:
+-        mydir = os.path.dirname(os.path.realpath(__file__))
+-        return mydir + '/' + path
+-
++    return path
+ 
+ def get_recursive_file_list_sorted(path):
+     filelist = []
