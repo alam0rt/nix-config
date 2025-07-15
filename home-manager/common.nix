@@ -189,7 +189,6 @@
 
     # trying out
     duckdb
-    unstable.aider-chat
 
     # graphical
     yubikey-manager
@@ -269,6 +268,7 @@
           insteadOf = "https://github.com/";
         };
       };
+      safe.directory = "/nix/store/*";
       push.autoSetupRemote = true;
       core.excludesfile = "${config.home.homeDirectory}/.gitignore";
     };
