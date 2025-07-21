@@ -10,6 +10,7 @@
     ../config/graphical
     ../config/common
     ../config/network
+    ../config/network/nfs_mounts.nix
     ../config/nvidia.nix
     ../config/home-manager.nix
     ./hardware-configuration.nix

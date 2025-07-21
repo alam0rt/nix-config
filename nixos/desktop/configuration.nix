@@ -6,6 +6,7 @@
     ../config/graphical
     ../config/common
     ../config/network
+    ../config/network/nfs_mounts.nix
     ../config/home-manager.nix
     ../config/llm.nix
     ../config/overclocking.nix
