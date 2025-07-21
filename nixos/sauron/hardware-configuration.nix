@@ -23,7 +23,8 @@
     "kvm-amd"
     "wl"
   ];
-  boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
+  # insecure and wireless is not used
+  # boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/c9b07de5-8509-43a9-add8-912d66be0ea8";
