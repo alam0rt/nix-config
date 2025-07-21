@@ -38,7 +38,8 @@
       "b43"
       "bcma"
     ];
-    extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
+    # insecure and wireless not used
+    # extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
   };
 
   networking.hostName = "sauron"; # Define your hostname.
