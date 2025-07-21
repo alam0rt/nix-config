@@ -75,10 +75,15 @@
 
   users.groups.emma = {};
   users.groups.raf = {};
+  users.groups.chowder = {};
   users.users = {
     emma = {
       isSystemUser = true;
       group = "emma";
+    };
+    chowder = {
+      isSystemUser = true;
+      group = "chowder";
     };
     raf = {
       packages = with pkgs; [
