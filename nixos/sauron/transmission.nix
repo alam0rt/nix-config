@@ -11,6 +11,10 @@ in {
     owner = "transmission";
     group = "transmission";
   };
+
+  networking.firewall.allowedTCPPorts = [ 51413 ];
+  networking.firewall.allowedUDPPorts = [ 51413 ];
+
   services.nginx.virtualHosts."transmission.middleearth.samlockart.com" = {
     forceSSL = false;
     enableACME = false;
