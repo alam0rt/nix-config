@@ -12,8 +12,8 @@ in {
     group = "transmission";
   };
 
-  networking.firewall.allowedTCPPorts = [ 51413 ];
-  networking.firewall.allowedUDPPorts = [ 51413 ];
+  networking.firewall.allowedTCPPorts = [ config.services.transmission.settings.peer-port ];
+  networking.firewall.allowedUDPPorts = [ config.services.transmission.settings.peer-port ];
 
   services.nginx.virtualHosts."transmission.middleearth.samlockart.com" = {
     forceSSL = false;
@@ -41,6 +41,7 @@ in {
       ratio-limit-enabled = true;
       download-queue-size = 15;
       queue-stalled-minutes = 20;
+      peer-port = 51413;
     };
   };
 
