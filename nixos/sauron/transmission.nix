@@ -39,6 +39,8 @@ in {
       rpc-authentication-required = false;
       ratio-limit = "0.0";
       ratio-limit-enabled = true;
+      download-queue-size = 15;
+      queue-stalled-minutes = 20;
     };
   };
 
