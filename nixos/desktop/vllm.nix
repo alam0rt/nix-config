@@ -34,7 +34,6 @@ in {
       cmd = [
         "vllm"
         "serve"
-        "--model"
         cfg.model
         "--max-model-len"
         "1024" # default is 4096
