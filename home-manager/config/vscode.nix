@@ -41,6 +41,9 @@
         github.copilot
         github.copilot-chat
         ms-vscode.makefile-tools
+
+        # gpt
+        rooveterinaryinc.roo-cline
       ];
     };
   };
