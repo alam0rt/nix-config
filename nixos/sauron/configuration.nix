@@ -29,6 +29,7 @@
     ./matrix.nix
     ./monitoring.nix
     ./home-assistant.nix
+    ./k8s.nix
     #      ../config/home-manager.nix # get working
   ];
   # Use the systemd-boot EFI boot loader.
