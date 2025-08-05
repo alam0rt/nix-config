@@ -27,7 +27,7 @@ in {
         "--network=host"
         "--group-add=video"
         "--cap-add=SYS_PTRACE"
-        "--security-opt seccomp=unconfined"
+        "--security-opt" "seccomp=unconfined"
         "--device /dev/kfd"
         "--device /dev/dri"
       ];
