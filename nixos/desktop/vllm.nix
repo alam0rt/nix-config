@@ -25,6 +25,8 @@ in {
         "--ipc=host"
       ];
       cmd = [
+        "vllm"
+        "serve"
         "--model"
         cfg.model
         "--max-model-len"
