@@ -216,8 +216,13 @@
     };
   };
 
+  programs.jujutsu.enable = true;
+  programs.jujutsu.settings.user.name = config.programs.git.userName;
+  programs.jujutsu.settings.user.email = config.programs.git.userEmail;
+
   # Enable home-manager and git
   programs.home-manager.enable = true;
+
   programs.git = {
     enable = true;
     lfs.enable = true;
