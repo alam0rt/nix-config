@@ -28,8 +28,8 @@ in {
         "--group-add=video"
         "--cap-add=SYS_PTRACE"
         "--security-opt" "seccomp=unconfined"
-        "--device /dev/kfd"
-        "--device /dev/dri"
+        "--device" "/dev/kfd"
+        "--device" "/dev/dri"
       ];
       cmd = [
         "vllm"
