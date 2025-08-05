@@ -5,15 +5,15 @@
   ...
 }: let
   cfg = {
-    model = "google/gemma-3-12b-pt";
-    image = "vllm/vllm-openai:latest";
+    model = "Qwen/Qwen3-Coder-30B-A3B-Instruct";
+    image = "rocm/vllm:latest";
     port = 8000;
   };
 in {
   age.secrets.hugging-face-ro-token.file = ../../secrets/hugging-face-ro-token.age;
   virtualisation.oci-containers.containers = {
     vllm = {
-      autoStart = false;
+      autoStart = true;
       preRunExtraOptions = [
         "--storage-driver=overlay" # not sure why, but this gets blanked out
       ];
@@ -23,7 +23,6 @@ in {
       };
       extraOptions = [
         "--ipc=host"
-        "--device=nvidia.com/gpu=all"
       ];
       cmd = [
         "--model"
