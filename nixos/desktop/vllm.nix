@@ -35,10 +35,7 @@ in {
         "vllm"
         "serve"
         cfg.model
-        "--max-model-len"
-        "1024" # default is 4096
-        "--gpu-memory-utilization=0.90"
-        "--dtype=float16"
+        "--gpu-memory-utilization=0.60"
       ];
       image = cfg.image;
       ports = ["${toString cfg.port}:8000"];
