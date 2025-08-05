@@ -21,8 +21,15 @@ in {
       environment = {
         PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True";
       };
+      # https://docs.vllm.ai/en/v0.6.5/getting_started/amd-installation.html
       extraOptions = [
         "--ipc=host"
+        "--network=host"
+        "--group-add=video"
+        "--cap-add=SYS_PTRACE"
+        "--security-opt seccomp=unconfined"
+        "--device /dev/kfd"
+        "--device /dev/dri"
       ];
       cmd = [
         "vllm"
