@@ -198,8 +198,6 @@
     # CAD / 3d
     openscad
     openscad-lsp
-    freecad
-    # super-slicer-latest - see linux.nix
 
     comma
   ];
