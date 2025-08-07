@@ -30,6 +30,7 @@
 
       # You can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
+      inputs.llama-cpp.overlays.default
 
       # Or define it inline, for example:
       # (final: prev: {

@@ -33,6 +33,9 @@
     nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";
     nvidia-patch.inputs.nixpkgs.follows = "nixpkgs";
 
+    # ai
+    llama-cpp.url = "github:ggml-org/llama.cpp";
+
     # hardware modules
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 

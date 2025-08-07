@@ -80,6 +80,8 @@
 
     # 3d
     super-slicer-latest
+
+    llamaPackages.llama-cpp
   ];
 
   # bluetooth

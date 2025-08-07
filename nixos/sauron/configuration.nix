@@ -7,7 +7,6 @@
   ...
 }: {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../config/common
     ../config/network
@@ -29,10 +28,10 @@
     ./matrix.nix
     ./monitoring.nix
     ./home-assistant.nix
-    #./k8s.nix
-    #      ../config/home-manager.nix # get working
+    # ./k8s.nix
+    # ../config/home-manager.nix # get working
   ];
-  # Use the systemd-boot EFI boot loader.
+
   boot = {
     kernelModules = ["wl"];
     blacklistedKernelModules = [
@@ -92,7 +91,6 @@
         git
         nano
         zlib
-
         gatk # genotyping
         (trimmomatic.override { jre = pkgs.jdk11; }) # fails with jdk21
         samtools
@@ -122,6 +120,7 @@
     ipmitool
     steamcmd
     docker # todo - replace with podman
+    llamaPackages.llama-cpp
   ];
 
   # enable docker support
