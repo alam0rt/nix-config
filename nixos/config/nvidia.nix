@@ -1,6 +1,7 @@
 {config, ...}: {
   nixpkgs.config = {
     nvidia.acceptLicense = true;
+    cudaSupport = true;
   };
 
   # Enable OpenGL
