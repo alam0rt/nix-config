@@ -12,9 +12,10 @@ in {
     openFirewall = true;
     port = 11111;
     environment = {
-      #OLLAMA_API_BASE_URL = "http://desktop:11434";
+      # OLLAMA_API_BASE_URL = "http://desktop:11434";
       OPENAI_API_BASE_URL = "http://127.0.0.1:8000";
-      ENABLE_OPENAI_API = "true";
+      # WHISPER_MODEL = "/opt/models/kitten_tts_nano_v0_1.onnx";
+      AUDIO_TTS_OPENAI_API_BASE_URL = "http://127.0.0.1:8001" # whisper.nix
     };
   };
 
