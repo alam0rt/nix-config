@@ -120,7 +120,6 @@
     ipmitool
     steamcmd
     docker # todo - replace with podman
-    llamaPackages.llama-cpp
   ];
 
   # enable docker support

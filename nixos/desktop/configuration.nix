@@ -10,7 +10,7 @@
     ../config/home-manager.nix
     ../config/llm.nix
     ../config/overclocking.nix
-    # ./vllm.nix
+    # ./ollama.nix
     ./hardware-configuration.nix
   ];
 
