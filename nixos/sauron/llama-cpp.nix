@@ -22,7 +22,7 @@ in {
   services.llama-cpp = {
     enable = true;
     package = pkgs.llamaPackages.llama-cpp;
-    port = ${port};
+    port = port;
     host = "0.0.0.0";
     openFirewall = true;
     model = models.${selected}.model;
