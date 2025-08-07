@@ -10,7 +10,7 @@
     ../config/home-manager.nix
     ../config/llm.nix
     ../config/overclocking.nix
-    ./vllm.nix
+    # ./vllm.nix
     ./hardware-configuration.nix
   ];
 
@@ -92,6 +92,9 @@
 
     # misc
     calibre
+
+    # ai
+    llamaPackages.llama-cpp
   ];
 
   # bluetooth
