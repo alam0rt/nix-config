@@ -17,5 +17,6 @@ in {
     uri = "tcp://0.0.0.0:${toString port}";
     device = device;
     model = models.${selected}.model;
+    language = models.${selected}.language;
   };
 }
