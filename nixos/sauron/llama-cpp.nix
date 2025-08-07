@@ -1,6 +1,7 @@
 {pkgs, ...}:
 let 
   selected = "gpt-oss-20b";
+  port = 8000;
   models = {
     gpt-oss-20b = {
       model = "/opt/models/gpt-oss-20b-F16.gguf";
@@ -21,10 +22,10 @@ in {
   services.llama-cpp = {
     enable = true;
     package = pkgs.llamaPackages.llama-cpp;
-    port = 8000;
+    port = ${port};
     host = "0.0.0.0";
     openFirewall = true;
     model = models.${selected}.model;
-    extraArgs = models.${selected}.extraArgs;
+    extraFlags = models.${selected}.extraArgs;
   };
 }
