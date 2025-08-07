@@ -14,7 +14,6 @@ let
 in {
   services.wyoming.faster-whisper.servers."${selected}" = {
     enable = true;
-    port = port;
     uri = "tcp://0.0.0.0:${port}";
     device = device;
     model = models.${selected}.model;
