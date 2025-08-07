@@ -7,7 +7,7 @@ let
       model = "/opt/models/gpt-oss-20b-F16.gguf";
       extraArgs = [
         "--jinja"
-        "-ngl" "99"
+        "-ngl" "10" # default is 99 but 10 fits into 8Gi
         "--threads" "-1"
         "--ctx-size" "16384"
         "--temp" "1.0"
