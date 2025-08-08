@@ -38,7 +38,7 @@
       #  clang: error: unable to execute command: Executable "lld" doesn't exist!
       (final: prev: {
         llama-cpp-rocm = prev.llama-cpp-rocm.overrideAttrs (old: {
-          (buildInputs = (old.buildInputs or []) ++ [ final.lld final.rocmPackages.llvm ]);
+          buildInputs = (old.buildInputs or []) ++ [ final.lld final.rocmPackages.llvm ];
         });
       })
 
