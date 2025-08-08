@@ -1,8 +1,7 @@
 {pkgs, ...}:
 let 
   selected = "kitten-tts";
-  # disabled cuda for now as system crashed with: 'download buffer is full; consider increasing the 'download-buffer-size' setting'
-  device = "cpu";
+  device = "cuda";
   port = 8001;
   models = {
     kitten-tts = {
