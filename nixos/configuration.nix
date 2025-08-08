@@ -34,7 +34,18 @@
       # You can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
       inputs.llama-cpp.overlays.default
-
+      # Patch ROCm variant inside llamaPackages
+      (final: prev: {
+        llamaPackages = prev.llamaPackages // {
+          llama-cpp = prev.llamaPackages.llama-cpp.overrideAttrs (old: {
+            nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ final.lld final.llvm ];
+            preConfigure = (old.preConfigure or "") + ''
+              export PATH=${final.lld}/bin:${final.llvm}/bin:$PATH
+              export HIP_LD=${final.lld}/bin/ld.lld
+            '';
+          });
+        };
+      })
       # Or define it inline, for example:
       # (final: prev: {
       #   hi = final.hello.overrideAttrs (oldAttrs: {
