@@ -20,6 +20,9 @@
     inputs.pvpgnix.nixosModules.x86_64-linux.default
   ];
 
+  # https://github.com/nix-community/nix-ld
+  programs.nix-ld.enable = true;
+
   nixpkgs = {
     # You can add overlays here
     overlays = [

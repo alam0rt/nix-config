@@ -93,9 +93,6 @@
     calibre
   ];
 
-  # https://github.com/nix-community/nix-ld
-  programs.nix-ld.enable = true;
-
   # bluetooth
   services.blueman.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
