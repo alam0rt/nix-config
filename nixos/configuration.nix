@@ -36,8 +36,11 @@
       inputs.llama-cpp.overlays.default
       # fix issue with amdcgn-link
       #  clang: error: unable to execute command: Executable "lld" doesn't exist!
-      (buildInputs = (old.buildInputs or []) ++ [ final.lld final.rocmPackages.llvm ]);
-
+      (final: prev: {
+        llama-cpp-rocm = prev.llama-cpp-rocm.overrideAttrs (old: {
+          (buildInputs = (old.buildInputs or []) ++ [ final.lld final.rocmPackages.llvm ]);
+        });
+      })
 
       # Or define it inline, for example:
       # (final: prev: {
