@@ -34,13 +34,6 @@
       # You can also add overlays exported from other flakes:
       # neovim-nightly-overlay.overlays.default
       inputs.llama-cpp.overlays.default
-      # fix issue with amdcgn-link
-      #  clang: error: unable to execute command: Executable "lld" doesn't exist!
-      (final: prev: {
-        llama-cpp-rocm = prev.llama-cpp-rocm.overrideAttrs (old: {
-          buildInputs = (old.buildInputs or []) ++ [ final.lld final.rocmPackages.llvm ];
-        });
-      })
 
       # Or define it inline, for example:
       # (final: prev: {

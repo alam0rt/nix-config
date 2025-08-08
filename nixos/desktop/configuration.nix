@@ -10,7 +10,6 @@
     ../config/home-manager.nix
     ../config/overclocking.nix
     # ./vllm.nix
-    ../sauron/llama-cpp.nix # trial
     ./hardware-configuration.nix
   ];
 
