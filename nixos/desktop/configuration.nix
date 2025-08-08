@@ -94,16 +94,6 @@
     calibre
   ];
 
-  # fix issue with amdcgn-link
-  #  clang: error: unable to execute command: Executable "lld" doesn't exist!
-  nixpkgs.overlays = [
-    (final: prev: {
-      llama-cpp-rocm = prev.llama-cpp-rocm.overrideAttrs (old: {
-        buildInputs = (old.buildInputs or []) ++ [ final.lld ];
-      });
-    })
-  ];
-
   # bluetooth
   services.blueman.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
