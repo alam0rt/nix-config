@@ -8,12 +8,12 @@ let
       extraArgs = [
         "--cache-type-k" "q4_0"
         "--threads" "-1"
-        "--n-gpu-layers" "32"
+        "--n-gpu-layers" "99"
         "--prio" "3"
         "--temp" "0.6"
         "--top_p" "0.95"
         "--min_p" "0.01"
-        "--ctx-size" "16384"
+        "--ctx-size" "8192"
         "--seed" "3407"
         "-ot" ".ffn_.*_exps.=CPU"
       ];
