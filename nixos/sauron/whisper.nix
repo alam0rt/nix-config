@@ -1,7 +1,8 @@
 {pkgs, ...}:
 let 
   selected = "kitten-tts";
-  device = "cuda";
+  # disabled cuda for now as system crashed with: 'download buffer is full; consider increasing the 'download-buffer-size' setting'
+  device = "cpu";
   port = 8001;
   models = {
     kitten-tts = {
@@ -13,7 +14,7 @@ let
   };
 in {
   services.wyoming.faster-whisper.servers."${selected}" = {
-    enable = false; # disabled for now as system crashed with: 'download buffer is full; consider increasing the 'download-buffer-size' setting'
+    enable = true; 
     uri = "tcp://0.0.0.0:${toString port}";
     device = device;
     model = models.${selected}.model;
