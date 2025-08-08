@@ -91,9 +91,6 @@
 
     # misc
     calibre
-
-    # ai
-    llamaPackages.llama-cpp
   ];
 
   # bluetooth
