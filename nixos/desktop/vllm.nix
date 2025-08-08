@@ -37,6 +37,7 @@ in {
         cfg.model
         "--gpu-memory-utilization=0.8"
         "--cpu-offload-gb=8"
+        "--enable-expert-parallel"
       ];
       image = cfg.image;
       ports = ["${toString cfg.port}:8000"];
