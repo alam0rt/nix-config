@@ -9,7 +9,8 @@
     ../config/network/nfs_mounts.nix
     ../config/home-manager.nix
     ../config/overclocking.nix
-     ./vllm.nix
+    # ./vllm.nix
+    ../sauron/llama-cpp.nix # trial
     ./hardware-configuration.nix
   ];
 
