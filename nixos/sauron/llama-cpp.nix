@@ -1,10 +1,10 @@
 {pkgs, ...}:
 let 
-  selected = "DeepSeek-R1-0528-Qwen3-8B-BF16";
+  selected = "DeepSeek-R1-0528-Qwen3-8B-Q6_K";
   port = 8000;
   models = {
-    DeepSeek-R1-0528-Qwen3-8B-BF16 = {
-      model = "/opt/models/DeepSeek-R1-0528-Qwen3-8B-BF16.gguf";
+    DeepSeek-R1-0528-Qwen3-8B-Q6_K = {
+      model = "/opt/models/DeepSeek-R1-0528-Qwen3-8B-Q6_K.gguf";
       extraArgs = [
         "--cache-type-k" "q4_0"
         "--threads" "-1"
