@@ -6,16 +6,16 @@ let
     DeepSeek-R1-0528-Qwen3-8B-BF16 = {
       model = "/opt/models/DeepSeek-R1-0528-Qwen3-8B-BF16.gguf";
       extraArgs = [
-        "--jinja"
-        # "-ngl" "8"
+        "--cache-type-k" "q4_0"
         "--threads" "-1"
-        "--n-cpu-moe" "6"
-        "--ctx-size" "32684"
-        "--temp" "0.7"
-        "--min-p" "0.0"
-        "--top-p" "0.80"
-        "--top-k" "20"
-        "--repeat-penalty" "1.05"
+        "--n-gpu-layers" "99"
+        "--prio" "3"
+        "--temp" "0.6"
+        "--top_p" "0.95"
+        "--min_p" "0.01"
+        "--ctx-size" "16384"
+        "--seed" "3407"
+        "-ot" ".ffn_.*_exps.=CPU"
       ];
     };
     gpt-oss-20b-F16 = {
