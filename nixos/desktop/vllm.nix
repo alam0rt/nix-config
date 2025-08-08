@@ -13,7 +13,7 @@ in {
   age.secrets.hugging-face-ro-token.file = ../../secrets/hugging-face-ro-token.age;
   virtualisation.oci-containers.containers = {
     vllm = {
-      autoStart = true;
+      autoStart = false;
       preRunExtraOptions = [
         "--storage-driver=overlay" # not sure why, but this gets blanked out
       ];
