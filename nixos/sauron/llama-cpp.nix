@@ -1,15 +1,15 @@
 {pkgs, ...}:
 let 
-  selected = "gpt-oss-20b";
+  selected = "DeepSeek-R1-0528-Qwen3-8B-BF16";
   port = 8000;
   models = {
-    qwen3-coder = {
-      model = "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL";
+    DeepSeek-R1-0528-Qwen3-8B-BF16 = {
+      model = "/opt/models/DeepSeek-R1-0528-Qwen3-8B-BF16.gguf";
       extraArgs = [
         "--jinja"
-        "-ngl" "99"
+        # "-ngl" "8"
         "--threads" "-1"
-        "--n-cpu-moe" "2"
+        "--n-cpu-moe" "6"
         "--ctx-size" "32684"
         "--temp" "0.7"
         "--min-p" "0.0"
@@ -18,7 +18,7 @@ let
         "--repeat-penalty" "1.05"
       ];
     };
-    gpt-oss-20b = {
+    gpt-oss-20b-F16 = {
       model = "/opt/models/gpt-oss-20b-F16.gguf";
       extraArgs = [
         "--jinja"
