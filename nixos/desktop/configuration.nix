@@ -9,8 +9,6 @@
     ../config/network/nfs_mounts.nix
     ../config/home-manager.nix
     ../config/overclocking.nix
-    # ./vllm.nix
-    ../sauron/llama-cpp.nix
     ./hardware-configuration.nix
   ];
 
@@ -25,7 +23,7 @@
 
   # 9070 xt requires >= 6.13.5
   # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
-  boot.kernelPackages = pkgs.linuxPackages_6_14;
+  boot.kernelPackages = pkgs.linuxPackages_6_16;
 
   hardware.amdgpu.amdvlk.enable = true;
   hardware.amdgpu.amdvlk.package = pkgs.unstable.amdvlk;
