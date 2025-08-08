@@ -1,14 +1,28 @@
 {pkgs, ...}:
 let 
-  selected = "gpt-oss-20b";
+  selected = "qwen3-coder";
   port = 8000;
   models = {
+    qwen3-coder = {
+      model = "unsloth/Qwen3-Coder-30B-A3B-Instruct-GGUF:UD-Q4_K_XL";
+      extraArgs = [
+        "--jinja"
+        "-ngl" "99"
+        "--threads" "-1"
+        "--n-cpu-moe" "2"
+        "--ctx-size" "32684"
+        "--temp" "0.7"
+        "--min-p" "0.0"
+        "--top-p" "0.80"
+        "--top-k" "20"
+        "--repeat-penalty" "1.05"
+      ];
+    };
     gpt-oss-20b = {
       model = "/opt/models/gpt-oss-20b-F16.gguf";
       extraArgs = [
         "--jinja"
         "-ngl" "99"
-        "--n-cpu-moe" "2"
         "--threads" "-1"
         "--ctx-size" "16384"
         "--temp" "1.0"
