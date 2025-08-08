@@ -35,7 +35,8 @@ in {
         "vllm"
         "serve"
         cfg.model
-        "--gpu-memory-utilization=0.60"
+        "--gpu-memory-utilization=0.95"
+        "--cpu-offload-gb=8"
       ];
       image = cfg.image;
       ports = ["${toString cfg.port}:8000"];
