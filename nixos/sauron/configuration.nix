@@ -25,7 +25,7 @@
     ./nginx.nix
     ./syncthing.nix
     ./openwebui.nix
-    #./whisper.nix
+    ./whisper.nix
     ./matrix.nix
     ./monitoring.nix
     ./home-assistant.nix
