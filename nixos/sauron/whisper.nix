@@ -12,7 +12,7 @@ let
   };
 in {
   services.wyoming.faster-whisper.servers."${selected}" = {
-    enable = false;  # too much memory to compile cuda ATM
+    enable = true;  # too much memory to compile cuda ATM
     uri = "tcp://0.0.0.0:${toString port}";
     model = models.${selected}.model;
     language = models.${selected}.language;
