@@ -38,6 +38,9 @@ in {
         "--gpu-memory-utilization=0.8"
         "--cpu-offload-gb=8"
         "--enable-expert-parallel"
+        "--tensor-parallel-size=1"
+        "--data-parallel-size=1"
+        "--max-parallel-loading-workers=1"
       ];
       image = cfg.image;
       ports = ["${toString cfg.port}:8000"];
