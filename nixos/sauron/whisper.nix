@@ -13,7 +13,7 @@ let
   };
 in {
   services.wyoming.faster-whisper.servers."${selected}" = {
-    enable = true;
+    enable = false; # disabled for now as system crashed with: 'download buffer is full; consider increasing the 'download-buffer-size' setting'
     uri = "tcp://0.0.0.0:${toString port}";
     device = device;
     model = models.${selected}.model;
