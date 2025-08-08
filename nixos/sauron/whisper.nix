@@ -1,7 +1,6 @@
 {pkgs, ...}:
 let 
   selected = "kitten-tts";
-  device = "cuda";
   port = 8001;
   models = {
     kitten-tts = {
@@ -15,7 +14,6 @@ in {
   services.wyoming.faster-whisper.servers."${selected}" = {
     enable = true; 
     uri = "tcp://0.0.0.0:${toString port}";
-    device = device;
     model = models.${selected}.model;
     language = models.${selected}.language;
   };
