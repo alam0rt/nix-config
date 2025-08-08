@@ -8,7 +8,7 @@ let
       extraArgs = [
         "--cache-type-k" "q4_0"
         "--threads" "-1"
-        "--n-gpu-layers" "99"
+        "--n-gpu-layers" "32"
         "--prio" "3"
         "--temp" "0.6"
         "--top_p" "0.95"
