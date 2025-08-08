@@ -13,7 +13,7 @@ let
         "--temp" "0.6"
         "--top_p" "0.95"
         "--min_p" "0.01"
-        "--ctx-size" "8192"
+        "--ctx-size" "0"
         "--seed" "3407"
         "-ot" ".ffn_.*_exps.=CPU"
       ];
