@@ -19,7 +19,7 @@ in {
       ];
       environmentFiles = [config.age.secrets.hugging-face-ro-token.path];
       environment = {
-        PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True";
+        PYTORCH_HIP_ALLOC_CONF = "expandable_segments:True";
       };
       # https://docs.vllm.ai/en/v0.6.5/getting_started/amd-installation.html
       extraOptions = [
