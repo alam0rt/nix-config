@@ -36,7 +36,7 @@ in {
         "serve"
         cfg.model
         "--gpu-memory-utilization=0.95"
-        "--cpu-offload-gb=8"
+        "--cpu-offload-gb=12"
       ];
       image = cfg.image;
       ports = ["${toString cfg.port}:8000"];
