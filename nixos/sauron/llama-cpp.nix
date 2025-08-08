@@ -22,7 +22,8 @@ let
       model = "/opt/models/gpt-oss-20b-F16.gguf";
       extraArgs = [
         "--jinja"
-        "-ngl" "32"
+        "-ngl" "8" # offload 8 layers to GPU
+        "--n-cpu-moe" "16" # remaining can go to CPU
         "--threads" "-1"
         "--ctx-size" "16384"
         "--temp" "1.0"
