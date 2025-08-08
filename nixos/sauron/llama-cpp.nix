@@ -1,6 +1,6 @@
 {pkgs, ...}:
 let 
-  selected = "qwen3-coder";
+  selected = "gpt-oss-20b";
   port = 8000;
   models = {
     qwen3-coder = {
@@ -22,7 +22,7 @@ let
       model = "/opt/models/gpt-oss-20b-F16.gguf";
       extraArgs = [
         "--jinja"
-        "-ngl" "99"
+        "-ngl" "32"
         "--threads" "-1"
         "--ctx-size" "16384"
         "--temp" "1.0"
