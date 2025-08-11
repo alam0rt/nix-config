@@ -54,6 +54,7 @@
     amazon-ecr-credential-helper
     rolecule
     scaffold
+    argocd
   ];
 
   # Enable home-manager and git
