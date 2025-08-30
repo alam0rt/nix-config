@@ -16,7 +16,7 @@ in {
       proxyPass = "http://${config.services.minio.listenAddress}";
     };
   };
-}
+
   services.nginx.virtualHosts."s3console.iced.cool" = {
     forceSSL = false;
     enableACME = true;
