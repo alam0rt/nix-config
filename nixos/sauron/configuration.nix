@@ -27,6 +27,7 @@
     ./openwebui.nix
     ./whisper.nix
     ./matrix.nix
+    ./minio.nix
     ./monitoring.nix
     ./home-assistant.nix
     # ./llama-cpp.nix
