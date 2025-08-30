@@ -32,10 +32,14 @@ in {
         mode = "repokey-blake2";
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
+      exclude = [
+        "*.db-wal"
+      ];
       extraArgs = [ "--remote-path=borg14" ];
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
-      startAt = "daily";
+      failOnWarnings = true;
+      startAt = "hourly";
     };
     mordor-share-sam = {
       paths = "/srv/share/sam";
