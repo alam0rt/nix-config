@@ -8,7 +8,10 @@ in {
     enable = true;
     listenAddress = "127.0.0.1:9999";
     consoleAddress = "127.0.0.1:9001";
-    rootCredentialsFile = "/srv/data/minio.env";
+    rootCredentialsFile = "/srv/data/minio/creds.env";
+    dataDir = "/srv/data/minio/data";
+    configDir = "/srv/data/minio/config";
+    certificatesDir = "/srv/data/minio/certs";
   };
   services.nginx.virtualHosts."s3.iced.cool" = {
     forceSSL = false;
