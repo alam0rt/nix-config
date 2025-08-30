@@ -95,6 +95,8 @@
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
+  programs.ghidra.enable = true;
+
   nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];
 
   # Before changing this value read the documentation for this option
