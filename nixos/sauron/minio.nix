@@ -6,5 +6,22 @@ let cfg = config.server;
 in {
   services.minio = {
     enable = true;
+    listenAddress = "127.0.0.1:9999";
+    consoleAddress = "127.0.0.1:9001";
+  };
+  services.nginx.virtualHosts."s3.iced.cool" = {
+    forceSSL = false;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://${config.services.minio.listenAddress}";
+    };
+  };
+}
+  services.nginx.virtualHosts."s3console.iced.cool" = {
+    forceSSL = false;
+    enableACME = true;
+    locations."/" = {
+      proxyPass = "http://${config.services.minio.consoleAddress}";
+    };
   };
 }
