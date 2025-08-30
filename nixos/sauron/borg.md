@@ -18,3 +18,9 @@ borg configuration to use directory instead of live files:
 ```bash
 SNAPSHOT_DIR="/path/to/zfs/dataset/.zfs/snapshot/$(find /path/to/zfs/dataset/.zfs/snapshot -name \*hourly\* -maxdepth 1 -print0 | xargs -0 -n 1 basename | sort -n -r | head -n 1)"
 ```
+
+list borg backups:
+
+```bash
+sudo BORG_PASSCOMMAND='cat /run/agenix/borg' BORG_REPO='20972@hk-s020.rsync.net:mordor/srv/data' BORG_RSH='ssh -i /srv/vault/ssh_keys/id_rsa'  borg --remote-path borg14 list
+```
