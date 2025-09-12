@@ -40,6 +40,7 @@ in {
 
     # whitelisting
     commonHttpConfig = ''
+      # TODO: block known bad ranges
       #allow 192.168.0.0/24;
       #allow 10.0.0.0/16;
       #allow 173.245.48.0/20;
