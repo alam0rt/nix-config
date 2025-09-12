@@ -22,7 +22,7 @@ in {
         mode = "repokey-blake2";
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
-      extraArgs = [ "--remote-path=borg14" ];
+      extraArgs = ["--remote-path=borg14"];
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
       startAt = "daily";
@@ -39,7 +39,7 @@ in {
         "*.db-wal" # Exclude SQLite write-ahead log files
         "*.db-shm" # Exclude SQLite shared memory files
       ];
-      extraArgs = [ "--remote-path=borg14" ];
+      extraArgs = ["--remote-path=borg14"];
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
       failOnWarnings = true;
@@ -53,7 +53,7 @@ in {
         mode = "repokey-blake2";
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
-      extraArgs = [ "--remote-path=borg14" ];
+      extraArgs = ["--remote-path=borg14"];
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
       startAt = "daily";
@@ -66,7 +66,7 @@ in {
         mode = "repokey-blake2";
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
-      extraArgs = [ "--remote-path=borg14" ];
+      extraArgs = ["--remote-path=borg14"];
       environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
       compression = "auto,zstd";
       startAt = "daily";

@@ -1,5 +1,4 @@
-{pkgs, ...}:
-let 
+{pkgs, ...}: let
   selected = "kitten-tts";
   port = 8001;
   models = {
@@ -12,7 +11,7 @@ let
   };
 in {
   services.wyoming.faster-whisper.servers."${selected}" = {
-    enable = false;  # too much memory to compile cuda ATM
+    enable = false; # too much memory to compile cuda ATM
     uri = "tcp://0.0.0.0:${toString port}";
     model = models.${selected}.model;
     language = models.${selected}.language;

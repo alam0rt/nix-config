@@ -12,8 +12,8 @@ in {
     group = "transmission";
   };
 
-  networking.firewall.allowedTCPPorts = [ config.services.transmission.settings.peer-port ];
-  networking.firewall.allowedUDPPorts = [ config.services.transmission.settings.peer-port ];
+  networking.firewall.allowedTCPPorts = [config.services.transmission.settings.peer-port];
+  networking.firewall.allowedUDPPorts = [config.services.transmission.settings.peer-port];
 
   services.nginx.virtualHosts."transmission.middleearth.samlockart.com" = {
     forceSSL = false;

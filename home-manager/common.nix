@@ -205,7 +205,7 @@
   # terminal
   programs.kitty = {
     enable = true;
-#    themeFile = "Ocean";
+    #    themeFile = "Ocean";
     shellIntegration = {
       enableZshIntegration = true;
     };
