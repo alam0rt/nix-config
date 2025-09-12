@@ -25,7 +25,8 @@
       set expandtab
 
       " FZF
-      nnoremap <C-f> :FZF<CR>
+      nnoremap <C-f> :Files<CR>
+      nnoremap <C-s> :RG<CR>
 
       " vim-go
       let g:go_fmt_command="gopls"
@@ -153,7 +154,7 @@
       # core
       nerdtree
       nerdtree-git-plugin
-      fzfWrapper
+      fzf-vim
       which-key-nvim
       vim-fugitive
       vim-surround
