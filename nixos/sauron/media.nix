@@ -18,6 +18,7 @@ in {
       enableACME = true;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
+        recommendedProxySettings = true;
       };
     };
     virtualHosts."tv.middleearth.samlockart.com" = {
@@ -25,6 +26,7 @@ in {
       enableACME = false;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
+        recommendedProxySettings = true;
       };
     };
     tailscaleAuth = {
@@ -36,6 +38,7 @@ in {
       enableACME = false;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8989";
+        recommendedProxySettings = true;
       };
     };
     virtualHosts."jackett.middleearth.samlockart.com" = {
@@ -43,6 +46,7 @@ in {
       enableACME = false;
       locations."/" = {
         proxyPass = "http://127.0.0.1:9117";
+        recommendedProxySettings = true;
       };
     };
     virtualHosts."bazarr.middleearth.samlockart.com" = {
@@ -50,6 +54,7 @@ in {
       enableACME = false;
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.bazarr.listenPort}";
+        recommendedProxySettings = true;
       };
     };
     virtualHosts."radarr.middleearth.samlockart.com" = {
@@ -57,6 +62,7 @@ in {
       enableACME = false;
       locations."/" = {
         proxyPass = "http://127.0.0.1:7878";
+        recommendedProxySettings = true;
       };
     };
   };
