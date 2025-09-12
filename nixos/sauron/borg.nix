@@ -5,6 +5,9 @@
   ...
 }: let
   cfg = config.server;
+  user = "hk1068";
+  host = "${user}.rsync.net";
+  repo = "${user}@${host}";
 in {
   environment.systemPackages = with pkgs; [borgbackup];
 
@@ -13,7 +16,7 @@ in {
   services.borgbackup.jobs = {
     mordor-vault = {
       paths = "/srv/vault";
-      repo = "20972@hk-s020.rsync.net:mordor/vault";
+      repo = "${repo}:mordor/vault";
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
@@ -26,7 +29,7 @@ in {
     };
     mordor-srv-data = {
       paths = "/srv/data";
-      repo = "20972@hk-s020.rsync.net:mordor/srv/data";
+      repo = "${repo}:mordor/srv/data";
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
@@ -44,7 +47,7 @@ in {
     };
     mordor-share-sam = {
       paths = "/srv/share/sam";
-      repo = "20972@hk-s020.rsync.net:mordor/share/sam";
+      repo = "${repo}:mordor/share/sam";
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
@@ -57,7 +60,7 @@ in {
     };
     mordor-share-emma = {
       paths = "/srv/share/emma";
-      repo = "20972@hk-s020.rsync.net:mordor/share/emma";
+      repo = "${repo}:mordor/share/emma";
       doInit = true;
       encryption = {
         mode = "repokey-blake2";
