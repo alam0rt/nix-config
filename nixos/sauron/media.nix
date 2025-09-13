@@ -65,6 +65,13 @@ in {
         recommendedProxySettings = true;
       };
     };
+    virtualHosts."lidarr.middleearth.samlockart.com" = {
+      forceSSL = false;
+      enableACME = false;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.lidarr.listenPort}";
+      };
+    };
   };
 
   services.jellyfin = {
@@ -74,6 +81,13 @@ in {
     dataDir = "/srv/data/jellyfin";
     cacheDir = "/var/cache/jellyfin"; # leave on ssd
   };
+
+  services.lidarr = {
+    enable = true;
+    dataDir = "/srv/data/lidarr";
+    openFirewall = true;
+  };
+  users.users.lidarr.extraGroups = ["transmission"];
 
   services.radarr = {
     enable = true;
