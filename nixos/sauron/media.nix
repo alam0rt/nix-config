@@ -69,7 +69,7 @@ in {
       forceSSL = false;
       enableACME = false;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.lidarr.listenPort}";
+        proxyPass = "http://127.0.0.1:${toString config.services.lidarr.settings.server.port}";
       };
     };
   };
