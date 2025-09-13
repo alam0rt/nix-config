@@ -1,13 +1,15 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }: let
-  cfg = config.server;
   user = "hk1068";
   host = "${user}.rsync.net";
   repo = "${user}@${host}";
+  environment = {
+    BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
+    BORG_RELOCATED_REPO_ACCESS_IS_OK = "1";
+  };
 in {
   environment.systemPackages = with pkgs; [borgbackup];
 
@@ -23,7 +25,7 @@ in {
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
       extraArgs = ["--remote-path=borg14"];
-      environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
+      environment = environment;
       compression = "auto,zstd";
       startAt = "daily";
     };
@@ -40,7 +42,7 @@ in {
         "*.db-shm" # Exclude SQLite shared memory files
       ];
       extraArgs = ["--remote-path=borg14"];
-      environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
+      environment = environment;
       compression = "auto,zstd";
       failOnWarnings = true;
       startAt = "hourly";
@@ -54,7 +56,7 @@ in {
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
       extraArgs = ["--remote-path=borg14"];
-      environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
+      environment = environment;
       compression = "auto,zstd";
       startAt = "daily";
     };
@@ -67,7 +69,7 @@ in {
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
       extraArgs = ["--remote-path=borg14"];
-      environment.BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
+      environment = environment;
       compression = "auto,zstd";
       startAt = "daily";
     };
