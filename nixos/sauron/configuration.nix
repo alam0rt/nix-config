@@ -46,6 +46,7 @@
 
   networking.hostName = "sauron"; # Define your hostname.
   networking.hostId = "acfb04f9"; # head -c 8 /etc/machine-id
+  networking.enableIPv6 = true;
 
   networking.networkmanager.enable = false; # Easiest to use and most distros use this by default.
   networking.interfaces = {
