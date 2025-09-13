@@ -1,7 +1,5 @@
 {
   config,
-  lib,
-  pkgs,
   ...
 }: let
   cfg = config.server;
@@ -28,6 +26,8 @@ in {
 
   services.nginx = {
     enable = true;
+
+    logError = "stderr info";
 
     # recommended settings
     recommendedProxySettings = true;
