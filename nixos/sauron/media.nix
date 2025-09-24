@@ -132,11 +132,13 @@ in {
       image = "ghcr.io/mgdigital/rarbg-selfhosted:latest";
       ports = ["3333:3333"];
       volumes = ["/srv/data/rarbg_db.sqlite:/rarbg_db.sqlite"];
+      pull = "always";
     };
 
     flaresolverr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
       ports = ["8191:8191"];
+      pull = "always";
     };
   };
 }
