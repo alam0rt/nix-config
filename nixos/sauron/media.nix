@@ -140,6 +140,7 @@ in {
       ports = ["8191:8191"];
       pull = "always";
       serviceName = "flaresolverr";
+      extraOptions = ["--network=host"];
     };
   };
 }
