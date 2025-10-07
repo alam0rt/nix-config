@@ -42,6 +42,11 @@
         github.copilot-chat
         ms-vscode.makefile-tools
 
+        # embedded
+        platformio.platformio-vscode-ide
+        ms-vscode.cpptools
+        ms-vscode.cpptools-extension-pack
+
         # gpt
         rooveterinaryinc.roo-cline
       ];

@@ -50,6 +50,12 @@
   # reduce power consumption
   services.xserver.videoDrivers = ["i915"];
 
+  # platformio / embedded dev
+  services.udev.packages = with pkgs; [ 
+    platformio-core.udev
+    openocd
+  ];
+
   # enable prime
   hardware.nvidia.prime = {
     nvidiaBusId = "PCI:1:0:0";
