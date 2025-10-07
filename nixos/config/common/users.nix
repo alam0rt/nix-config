@@ -36,6 +36,8 @@
         "wireshark"
         "wheel"
         "docker"
+        "dialout"
+        "uucp"
       ]; # Enable ‘sudo’ for the user.
       isNormalUser = true;
       initialHashedPassword = "$y$j9T$NPAB.7arQ/BIqdovYTfY6/$506oYwegRg3oO9jTmMTssszCB.VKKTvbvBSOaXuNqB0"; # mkpasswd
