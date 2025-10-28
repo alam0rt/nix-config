@@ -29,18 +29,6 @@
   home.userName = "sam";
   home.homeDirectory = "/home/${config.home.username}";
 
-  xdg = {
-    configFile = {
-      "containers/policy.json" = {
-        enable = true;
-        text = builtins.toJSON {
-          # https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
-          default = [{type = "insecureAcceptAnything";}];
-        };
-      };
-    };
-  };
-
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 

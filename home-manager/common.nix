@@ -125,18 +125,6 @@
     };
   };
 
-  xdg = {
-    configFile = {
-      "containers/policy.json" = {
-        enable = true;
-        text = builtins.toJSON {
-          # https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
-          default = [{type = "insecureAcceptAnything";}];
-        };
-      };
-    };
-  };
-
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
@@ -179,6 +167,7 @@
     # dev
     unstable.go
     unstable.podman
+    unstable.podman-compose
 
     qemu
     shellcheck
@@ -249,6 +238,18 @@
 
   # Enable home-manager and git
   programs.home-manager.enable = true;
+
+  xdg = {
+    configFile = {
+      "containers/policy.json" = {
+        enable = true;
+        text = builtins.toJSON {
+          # https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
+          default = [{type = "insecureAcceptAnything";}];
+        };
+      };
+    };
+  };
 
   programs.git = {
     enable = true;
