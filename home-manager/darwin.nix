@@ -42,19 +42,6 @@
     sessionPath = ["$HOME/.local/bin"];
   };
 
-  home.packages = with pkgs; [
-    iterm2
-    obsidian
-    saml2aws
-    awscli2
-    vendir
-    ssm-session-manager-plugin
-    amazon-ecr-credential-helper
-    rolecule
-    scaffold
-    argocd
-  ];
-
   # Enable home-manager and git
   programs.home-manager.enable = true;
   programs.git.enable = true;

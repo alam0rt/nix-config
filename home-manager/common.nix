@@ -55,13 +55,10 @@
     nix-direnv.enable = true;
   };
 
-  home = {
-    username = "sam";
-    homeDirectory = "/home/sam";
-  };
-
   # Required when using unstable branch
   home.enableNixpkgsReleaseCheck = false;
+  home.sessionPath = [ "$HOME/.local/bin" "$HOME/go/bin" ];
+
 
   programs.zsh = {
     enable = true; # must also be enabled in nixos
@@ -128,20 +125,27 @@
     };
   };
 
+  xdg = {
+    configFile = {
+      "containers/policy.json" = {
+        enable = true;
+        text = builtins.toJSON {
+          # https://github.com/containers/image/blob/main/docs/containers-policy.json.5.md
+          default = [{type = "insecureAcceptAnything";}];
+        };
+      };
+    };
+  };
+
   programs.fzf = {
     enable = true;
     enableZshIntegration = true;
   };
 
   home.file = {
-    Docker.source = config.lib.file.mkOutOfStoreSymlink "${pkgs.podman}/bin/podman";
+    Docker.source = config.lib.file.mkOutOfStoreSymlink "${pkgs.unstable.podman}/bin/podman";
     Docker.target = "${config.home.homeDirectory}/.local/bin/docker";
   };
-
-  home.sessionPath = [
-    "$HOME/.local/bin"
-    "$HOME/go/bin"
-  ];
 
   home.sessionVariables = {
     EDITOR = "vim";
@@ -153,8 +157,10 @@
     kubectx
     kustomize
     kubectl-explore
+    kubernetes-helm
     kubecolor
     stern
+    fluxcd
 
     # core
     jq
@@ -168,10 +174,12 @@
     # encryption
     gnupg
     sops
+    yubikey-manager
 
     # dev
     unstable.go
-    podman
+    unstable.podman
+
     qemu
     shellcheck
     go-jsonnet # preferred over jsonnet
@@ -192,7 +200,6 @@
     duckdb
 
     # graphical
-    yubikey-manager
     p7zip-rar
 
     # CAD / 3d
@@ -200,12 +207,33 @@
     openscad-lsp
 
     comma
+  ] ++ lib.optionals stdenv.isDarwin [
+    # macOS only packages
+
+    unstable.vfkit # for podman
+
+    iterm2
+    obsidian
+    saml2aws
+    awscli2
+    vendir
+    ssm-session-manager-plugin
+    amazon-ecr-credential-helper
+    rolecule
+    scaffold
+    argocd
+
+  ] ++ lib.optionals stdenv.isLinux [
+    # Linux only packages
+
+    super-slicer-latest # doesn't build on darwin
+    freecad # also doesn't build on darwin
+    #inputs.pcsx-redux.packages.${system}.pcsx-redux
   ];
 
   # terminal
   programs.kitty = {
     enable = true;
-    #    themeFile = "Ocean";
     shellIntegration = {
       enableZshIntegration = true;
     };
