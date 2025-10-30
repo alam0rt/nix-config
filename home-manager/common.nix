@@ -149,6 +149,7 @@
     kubecolor
     stern
     fluxcd
+    buildah
 
     # core
     jq
