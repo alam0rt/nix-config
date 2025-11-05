@@ -179,6 +179,7 @@
     bat
     unstable.go
     direnv
+    unstable.delve
     nil # nix lsp
     rust-analyzer
     uv
