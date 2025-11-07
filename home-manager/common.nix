@@ -215,11 +215,18 @@
     argocd
 
   ] ++ lib.optionals stdenv.isLinux [
-    # Linux only packages
+    # design and 3d
+    super-slicer-latest
+    freecad
 
-    super-slicer-latest # doesn't build on darwin
-    freecad # also doesn't build on darwin
-    #inputs.pcsx-redux.packages.${system}.pcsx-redux
+    # development
+    gdb
+
+    # embedded development
+    platformio
+    esptool
+    # inputs.pcsx-redux.packages.${system}.pcsx-redux
+
   ];
 
   # terminal
