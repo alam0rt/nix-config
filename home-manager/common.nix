@@ -55,6 +55,8 @@
     nix-direnv.enable = true;
   };
 
+  home.username = "sam";
+  home.homeDirectory = "/home/${config.home.username}";
   # Required when using unstable branch
   home.enableNixpkgsReleaseCheck = false;
   home.sessionPath = [ "$HOME/.local/bin" "$HOME/go/bin" ];

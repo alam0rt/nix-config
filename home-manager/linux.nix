@@ -26,7 +26,7 @@
     };
   };
 
-  home.userName = "sam";
+  home.username = "sam";
   home.homeDirectory = "/home/${config.home.username}";
 
   # Nicely reload system units when changing configs
