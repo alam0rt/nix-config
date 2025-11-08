@@ -224,9 +224,6 @@
     # development
     gdb
     
-    # beer!
-    brewtarget
-
     # embedded development
     platformio
     esptool
