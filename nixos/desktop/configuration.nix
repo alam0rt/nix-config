@@ -21,14 +21,14 @@
   # Fixing time sync when dualbooting with Windows
   time.hardwareClockInLocalTime = true;
 
-  # 9070 xt requires >= 6.13.5
   # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
-  boot.kernelPackages = pkgs.linuxPackages_6_16;
+  # boot.kernelPackages = pkgs.linuxPackages_6_16;
 
-  hardware.amdgpu.amdvlk.enable = true;
-  hardware.amdgpu.amdvlk.package = pkgs.unstable.amdvlk;
-  hardware.amdgpu.amdvlk.support32Bit.enable = true;
-  hardware.amdgpu.amdvlk.support32Bit.package = pkgs.unstable.driversi686Linux.amdvlk;
+  nixpkgs.config.permittedInsecurePackages = [
+    "python3.12-ecdsa-0.19.1"
+  ];
+
+
   hardware.amdgpu.initrd.enable = true;
 
   # https://nixos.wiki/wiki/AMD_GPU
