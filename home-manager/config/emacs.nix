@@ -41,9 +41,9 @@
         slime
         rg
         use-package
-        org
-        org-roam
-        org-roam-ui
+        #org
+        #org-roam
+        #org-roam-ui
         emacsql
         direnv
       ];
