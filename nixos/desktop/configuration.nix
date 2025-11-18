@@ -24,11 +24,6 @@
   # https://github.com/NixOS/nixpkgs/blob/26d499fc9f1d567283d5d56fcf367edd815dba1d/pkgs/os-specific/linux/kernel/kernels-org.json
   # boot.kernelPackages = pkgs.linuxPackages_6_16;
 
-  nixpkgs.config.permittedInsecurePackages = [
-    "python3.12-ecdsa-0.19.1"
-  ];
-
-
   hardware.amdgpu.initrd.enable = true;
 
   # https://nixos.wiki/wiki/AMD_GPU

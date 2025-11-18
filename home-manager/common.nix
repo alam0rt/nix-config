@@ -231,7 +231,7 @@
 
     # embedded development
     platformio
-    esptool
+    unstable.esptool
     # inputs.pcsx-redux.packages.${system}.pcsx-redux
 
   ];
