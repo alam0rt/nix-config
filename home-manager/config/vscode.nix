@@ -27,6 +27,7 @@
 
         # terraform
         hashicorp.hcl
+        hashicorp.terraform
 
         # system
         timonwong.shellcheck

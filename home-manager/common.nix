@@ -115,6 +115,7 @@
       kgp = "kubectl get pods";
       glog = "git log -S";
       s = "kitten ssh";
+      terraform = "tofu";
     };
     dirHashes = {
       projects = "$HOME/projects";
@@ -171,6 +172,7 @@
     unstable.go
     unstable.podman
     unstable.podman-compose
+    opentofu # terraform fork - aliased to terraform
 
     qemu
     shellcheck
