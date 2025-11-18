@@ -9,7 +9,10 @@
   ...
 }: {
   # You can import other home-manager modules here
-  imports = [./common.nix];
+  imports = [
+    ./common.nix
+    ./config/brewing.nix
+  ];
 
   nixpkgs = {
     # You can add overlays here
