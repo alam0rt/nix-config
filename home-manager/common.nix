@@ -217,13 +217,16 @@
     argocd
 
   ] ++ lib.optionals stdenv.isLinux [
+    # misc
+    plasma5Packages.kdeconnect-kde
+
     # design and 3d
     super-slicer-latest
     freecad
 
     # development
     gdb
-    
+
     # embedded development
     platformio
     esptool

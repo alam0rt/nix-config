@@ -7,8 +7,9 @@
         text = ''
           [General]
           LogDirectory=${config.xdg.configHome}/brewtarget
-          check_version=true
-          color_formula=morey
+          BackupDirectory=/mnt/share/${config.home.username}/brewing/brewtarget_backups
+          check_version=false
+          color_formula=ebc
           config_version=1
           date_format=256
           dbType=1
