@@ -153,6 +153,7 @@
     stern
     fluxcd
     buildah
+    gcrane
 
     # core
     jq
