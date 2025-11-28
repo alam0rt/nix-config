@@ -14,6 +14,7 @@
     ../config/nvidia.nix
     ../config/home-manager.nix
     ./hardware-configuration.nix
+    ../sauron/rag.nix
   ];
 
   networking.hostName = "laptop"; # Define your hostname.
