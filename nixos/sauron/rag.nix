@@ -10,12 +10,11 @@
     # llama-7b = { model = "..."; extraArgs = [ ... ]; };
   };
 in {
-
-  environment.systemPackages = with pkgs; [postgresql17Packages.pgvector];
-
+  config.environment.systemPackages = with pkgs; [ pkgs.postgresql_16 ]; # for psql
   config.services.postgresql = {
     enable = true;
-    extensions = [ "pgvector" ];
+    extensions = [ pkgs.postgresql16Packages.pgvector ];
+    package = pkgs.postgresql_16;
     ensureDatabases = [ "vector" ];
     authentication = pkgs.lib.mkOverride 10 ''
       #type database  DBuser  auth-method
