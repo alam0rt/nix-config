@@ -12,18 +12,58 @@
             repo = "botamusique";
             owner = "algielen";
             rev = "190b8e3659ecbae787b0b90a3c3bbf1a4fca494a";
-            sha256 = "sha256-CSXmAMSVdv2G1VquHmL/28gfTWoQOpuWvaOqOmJgonk=";
+            sha256 = "sha256-aDWTk1w9lknB5Vu3azrXzRhA7Q4LsN/xMo3VDL2alLM=";
           };
-    #      npmDeps = prev.fetchNpmDeps {
-    #        src = "${src}/web";
-    #        hash = "sha256-Pq+2L28Zj5/5RzbgQ0AyzlnZIuRZz2/XBYuSU+LGh3I=";
-    #      };
-    #      patches = [];
-    #      version = "7.2.3";
-    #    });
+          patches = [];
+
+          # Remove npm dependencies
+          npmDeps = null;
+          npmRoot = null;
+
+          # Remove NODE_OPTIONS since we're not using Node
+          NODE_OPTIONS = null;
+              # Update Python dependencies to match pyproject.toml
+          pythonPath = with prev.python3Packages; [
+            flask
+            mutagen
+            opuslib
+            packaging
+            pillow
+            protobuf  # Fixed at 3.20.3 in pyproject.toml
+            pycryptodome
+            pyradios
+            python-magic
+            requests
+            yt-dlp
+          ] ++ prev.lib.optionals prev.stdenv.isLinux [
+            # audioop-lts is needed for Python 3.13+ (audioop was removed)
+            # This may need to be packaged separately for Nix if not available
+          ];
+
+          # Replace Node.js with Deno in build inputs
+          nativeBuildInputs = builtins.map 
+            (pkg: if pkg == prev.nodejs then prev. deno else pkg)
+            (builtins.filter 
+              (pkg: pkg != prev.npmHooks.npmConfigHook)
+              old.nativeBuildInputs);
+
+          # Override the build phase to skip the web frontend build
+          buildPhase = ''
+            runHook preBuild
+            runHook postBuild
+          '';
+
+	  postInstall = (old.postInstall or "") + ''
+	    wrapProgram $out/bin/botamusique --set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION python
+	  '';
+
+          # Update meta to note the limitation
+          meta = old.meta // {
+            description = old.meta.description + " (built without web frontend)";
+          };
+        });
     # example = prev.example.overrideAttrs (oldAttrs: rec {
     # ...
-    });
   };
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will
