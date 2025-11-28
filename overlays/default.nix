@@ -24,9 +24,9 @@
           NODE_OPTIONS = null;
               # Update Python dependencies to match pyproject.toml
           pythonPath = with prev.python3Packages; [
+            pkgs.opuslib-next # local
             flask
             mutagen
-            opuslib
             packaging
             pillow
             protobuf  # Fixed at 3.20.3 in pyproject.toml
