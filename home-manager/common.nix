@@ -226,6 +226,7 @@
     # design and 3d
     super-slicer-latest
     freecad
+    gimp
 
     # development
     gdb
