@@ -29,7 +29,9 @@
     ./matrix.nix
     ./monitoring.nix
     ./home-assistant.nix
-    # ./llama-cpp.nix
+
+    ./rag.nix
+    ./llama-cpp.nix
     # ./k8s.nix
     # ../config/home-manager.nix # get working
   ];
