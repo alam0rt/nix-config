@@ -1,4 +1,4 @@
-{ pkgs, lib, setuptools, fetchpatch, python3Packages ? pkgs.python3Packages }:
+{ pkgs, lib, fetchpatch, python3Packages ? pkgs.python3Packages }:
 python3Packages.buildPythonPackage rec {
   pname = "opuslib_next";
   version = "1.1.5";
@@ -11,7 +11,7 @@ python3Packages.buildPythonPackage rec {
   patches = [
     # https://github.com/orion-labs/opuslib/pull/22
     (fetchpatch {
-      name = "opuslib-paths.patch";
+      name = "opuslib-patches.patch";
       url = "https://github.com/NixOS/nixpkgs/blob/9a7b80b6f82a71ea04270d7ba11b48855681c4b0/pkgs/development/python-modules/opuslib/opuslib-paths.patch";
       hash = "sha256-oa1HCFHNS3ejzSf0jxv9NueUKOZgdCtpv+xTrjYW5os=";
     })
@@ -19,7 +19,7 @@ python3Packages.buildPythonPackage rec {
 
   dependencies = [pkgs.libopus];
 
-  build-system = [ setuptools ];
+  build-system = [ python3Packages.setuptools ];
 
   meta = with lib; {
     description = "Python bindings to the libopus, IETF low-delay audio codec";
