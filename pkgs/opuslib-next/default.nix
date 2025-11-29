@@ -1,4 +1,4 @@
-{ pkgs, lib, fetchpatch, python3Packages ? pkgs.python3Packages }:
+{ pkgs, lib, libopus, replaceVars, stdenv, python3Packages ? pkgs.python3Packages }:
 python3Packages.buildPythonPackage rec {
   pname = "opuslib_next";
   version = "1.1.5";
@@ -9,14 +9,10 @@ python3Packages.buildPythonPackage rec {
   };
 
   patches = [
-    # https://github.com/orion-labs/opuslib/pull/22
-    (fetchpatch {
-      name = "opuslib-patches.patch";
-      url = "https://github.com/NixOS/nixpkgs/blob/9a7b80b6f82a71ea04270d7ba11b48855681c4b0/pkgs/development/python-modules/opuslib/opuslib-paths.patch";
-      hash = "sha256-oa1HCFHNS3ejzSf0jxv9NueUKOZgdCtpv+xTrjYW5os=";
+    (replaceVars ./opuslib-paths.patch {
+      opusLibPath = "${libopus}/lib/libopus${stdenv.hostPlatform.extensions.sharedLibrary}";
     })
   ];
-
   dependencies = [pkgs.libopus];
 
   build-system = [ python3Packages.setuptools ];
