@@ -68,16 +68,16 @@ in {
     wantedBy = ["multi-user.target"];
     serviceConfig = {
       ExecStart = "${pkgs.matrix-authentication-service}/bin/mas-cli --config ${config.environment.etc."mas/config.yaml".source}";
-      User = config.services.matrix-synapse.user;
-      Group = config.services.matrix-synapse.group;
+      User = "matrix-synapse";
+      Group = "matrix-synapse";
       Restart = "on-failure";
     };
     enable = true;
   };
 
   environment.etc."mas/config.yaml" = {
-    user = config.services.matrix-synapse.user;
-    gid = config.services.matrix-synapse.group;
+    user = users.groups.matrix-synapse.name;
+    gid = users.groups.matrix-synapse.gid;
     source = (pkgs.formats.yaml {}).generate "config" {
       database = {
         uri = "postgresql://postgres@localhost/mas";
