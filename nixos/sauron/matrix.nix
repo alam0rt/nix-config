@@ -62,6 +62,16 @@ in {
     };
   };
 
+  systemd.services."matrix-authentication-service" = {
+    description = "MAS";
+    after = [ "network.target" "postgresql.service" ];
+    wantedBy = [ "multi-user.target" ];
+    serviceConfig = {
+      ExecStart = "${pkgs.matrix-authentication-service}/bin/mas-cli";
+    };
+    enable = true;
+  };
+
   services.matrix-synapse = {
     enable = true;
     settings.server_name = config.networking.domain;
