@@ -1,9 +1,10 @@
 { pkgs, lib, python3Packages ? pkgs.python3Packages }:
 python3Packages.buildPythonPackage rec {
-  pname = "protobuf3";
-  version = "1.1.5";
+  pname = "protobuf";
+  version = "3.20.3";
   src = python3Packages.fetchPypi {
     inherit pname version;
+    sha256 = "sha256-LjQnQpyc/+vyWUkb4K9wGJYH82XC9Bx8N2SvbzNxBfI=";
   };
 
   meta = with lib; {

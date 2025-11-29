@@ -15,6 +15,7 @@
             rev = "190b8e3659ecbae787b0b90a3c3bbf1a4fca494a";
             sha256 = "sha256-aDWTk1w9lknB5Vu3azrXzRhA7Q4LsN/xMo3VDL2alLM=";
           };
+
           patches = [];
 
           # Remove npm dependencies
@@ -23,15 +24,15 @@
 
           # Remove NODE_OPTIONS since we're not using Node
           NODE_OPTIONS = null;
-              # Update Python dependencies to match pyproject.toml
+
+          # Update Python dependencies to match pyproject.toml
           pythonPath = with prev.python3Packages; [
             final.opuslib-next # local
-	    final.protobuf3
+            final.protobuf3 # local
             flask
             mutagen
             packaging
             pillow
-            protobuf  # Fixed at 3.20.3 in pyproject.toml
             pycryptodome
             pyradios
             python-magic
@@ -41,6 +42,21 @@
             # audioop-lts is needed for Python 3.13+ (audioop was removed)
             # This may need to be packaged separately for Nix if not available
           ];
+
+          installPhase = ''
+            runHook preInstall
+
+            mkdir -p $out/share $out/bin
+            cp -r . $out/share/botamusique
+            chmod +x $out/share/botamusique/mumbleBot.py
+            wrapPythonProgramsIn $out/share/botamusique "$out $pythonPath"
+
+            # Convenience binary and wrap with ffmpeg dependency
+            makeWrapper $out/share/botamusique/mumbleBot.py $out/bin/botamusique # \
+            #  --prefix PATH : ${prev.lib.makeBinPath [ final.ffmpeg-headless ]}
+
+            runHook postInstall
+          '';
 
           #makeWrapperArgs = (old.makeWrapperArgs or []) ++ [
           #  "--set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION python"
