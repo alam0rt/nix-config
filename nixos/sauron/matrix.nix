@@ -69,7 +69,7 @@ in {
     serviceConfig = {
       Environment = "MAS_CONFIG_FILE=${config.environment.etc."mas/config.yaml".source}:/srv/data/matrix-authentication-service/secrets.yaml";
       ExecStart = "${pkgs.matrix-authentication-service}/bin/mas-cli config check";
-      Type = "one-shot";
+      Type = "oneshot";
       RemainAfterExit = true;
       User = "matrix-synapse";
       Group = "matrix-synapse";
