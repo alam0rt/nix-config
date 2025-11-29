@@ -65,7 +65,7 @@
 
             # Create wrapper for the main script with proper Python environment
             makeWrapper ${pythonEnv}/bin/python3 $out/bin/botamusique \
-              --add-flags "$out/share/botamusique/mumbleBot.py" \
+              --add-flags "$out/share/botamusique/main.py" \
               --prefix PYTHONPATH : "$out/share/botamusique" \
               --prefix PATH : ${prev.lib.makeBinPath [ final.ffmpeg-headless ]}
 
