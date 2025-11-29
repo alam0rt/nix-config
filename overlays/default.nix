@@ -30,7 +30,9 @@
             sha256 = "sha256-aDWTk1w9lknB5Vu3azrXzRhA7Q4LsN/xMo3VDL2alLM=";
           };
 
-          patches = [];
+          patches = [
+            ./botamusique-circular-import.patch
+          ];
 
           # Remove npm dependencies
           npmDeps = null;
