@@ -8,7 +8,7 @@
       userSettings = {
         "files.insertFinalNewline" = true;
       };
-      extensions = with pkgs.vscode-extensions; [
+      extensions = with pkgs.unstable.vscode-extensions; [
         # core
         dracula-theme.theme-dracula
         vscodevim.vim
