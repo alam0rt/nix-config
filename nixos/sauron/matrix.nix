@@ -78,6 +78,8 @@ in {
     enable = true;
   };
 
+  # for matrix-authentication-service
+  # the secrets are generated and stored in /srv/data/matrix-authentication-service/secrets.yaml manually
   environment.etc."mas/config.yaml" = {
     user = config.users.groups.matrix-synapse.name;
     gid = config.users.groups.matrix-synapse.gid;
