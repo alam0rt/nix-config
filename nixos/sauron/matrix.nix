@@ -72,6 +72,16 @@ in {
     enable = true;
   };
 
+  environment.etc."mas" = {
+    source = (pkgs.formats.yaml { }).generate "config" {
+      settings = {
+        database = {
+          uri = "postgresql://postgres@localhost/mas";
+        };
+      };
+    };
+  };
+
   services.matrix-synapse = {
     enable = true;
     settings.server_name = config.networking.domain;
