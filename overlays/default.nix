@@ -26,6 +26,7 @@
               # Update Python dependencies to match pyproject.toml
           pythonPath = with prev.python3Packages; [
             final.opuslib-next # local
+	    final.protobuf3
             flask
             mutagen
             packaging
