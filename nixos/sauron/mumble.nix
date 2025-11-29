@@ -32,7 +32,7 @@ in {
 
   # disabled while packge is broken
   services.botamusique = {
-    enable = false;
+    enable = true;
     settings = {
       server = {
         host = config.services.murmur.registerHostname;
