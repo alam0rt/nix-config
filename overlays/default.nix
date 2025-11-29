@@ -7,7 +7,21 @@
   # This one contains whatever you want to overlay
   # You can change versions, add patches, set compilation flags, anything really.
   # https://nixos.wiki/wiki/Overlays
-  modifications = final: prev: {
+  modifications = final: prev: let
+    pythonEnv = prev.python3.withPackages (ps: [
+      final.opuslib-next # local
+      final.protobuf3 # local
+      ps.flask
+      ps.mutagen
+      ps.packaging
+      ps.pillow
+      ps.pycryptodome
+      ps.pyradios
+      ps.python-magic
+      ps.requests
+      ps.yt-dlp
+    ]);
+  in {
         botamusique = prev.botamusique.overrideAttrs (old: rec {
           src = prev.fetchFromGitHub {
             repo = "botamusique";
@@ -49,10 +63,10 @@
             mkdir -p $out/share $out/bin
             cp -r . $out/share/botamusique
 
-            # Create wrapper for the main script with proper Python path
-            makeWrapper ${prev.python3}/bin/python3 $out/bin/botamusique \
+            # Create wrapper for the main script with proper Python environment
+            makeWrapper ${pythonEnv}/bin/python3 $out/bin/botamusique \
               --add-flags "$out/share/botamusique/mumbleBot.py" \
-              --prefix PYTHONPATH : "$out/share/botamusique:$PYTHONPATH" \
+              --prefix PYTHONPATH : "$out/share/botamusique" \
               --prefix PATH : ${prev.lib.makeBinPath [ final.ffmpeg-headless ]}
 
             runHook postInstall
