@@ -15,7 +15,9 @@ python3Packages.buildPythonPackage rec {
   ];
   dependencies = [pkgs.libopus];
 
-  build-system = [ python3Packages.setuptools ];
+  build-system = [python3Packages.poetry-core];
+
+  pyproject = true;
 
   meta = with lib; {
     description = "Python bindings to the libopus, IETF low-delay audio codec";

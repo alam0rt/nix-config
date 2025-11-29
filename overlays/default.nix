@@ -1,5 +1,6 @@
 # This file defines overlays
 {inputs, ...}: {
+
   # This one brings our custom packages from the 'pkgs' directory
   additions = final: _prev: import ../pkgs final.pkgs;
 
@@ -24,7 +25,7 @@
           NODE_OPTIONS = null;
               # Update Python dependencies to match pyproject.toml
           pythonPath = with prev.python3Packages; [
-            pkgs.opuslib-next # local
+            final.opuslib-next # local
             flask
             mutagen
             packaging
@@ -40,6 +41,10 @@
             # This may need to be packaged separately for Nix if not available
           ];
 
+          #makeWrapperArgs = (old.makeWrapperArgs or []) ++ [
+          #  "--set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION python"
+          #  "--prefix LD_LIBRARY_PATH : ${prev.libopus}/lib"
+          #];
           # Replace Node.js with Deno in build inputs
           nativeBuildInputs = builtins.map 
             (pkg: if pkg == prev.nodejs then prev. deno else pkg)
@@ -52,10 +57,6 @@
             runHook preBuild
             runHook postBuild
           '';
-
-	  postInstall = (old.postInstall or "") + ''
-	    wrapProgram $out/bin/botamusique --set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION python --prefix LD_LIBRARY_PATH : ${prev.libopus}/lib
-	  '';
 
           # Update meta to note the limitation
           meta = old.meta // {
