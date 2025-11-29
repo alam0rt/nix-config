@@ -1,9 +1,12 @@
 diff --git a/variables.py b/variables.py
-index 0000000..1111111 100644
+index d85f9f8..48772b1 100644
 --- a/variables.py
 +++ b/variables.py
-@@ -1,3 +1,4 @@
+@@ -1,5 +1,7 @@
+ from logging import Logger
+ 
 +from __future__ import annotations
- import logging
- import os
- import sys
++
+ import database
+ import media.cache
+ import media.playlist
