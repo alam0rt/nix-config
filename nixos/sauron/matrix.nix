@@ -67,7 +67,10 @@ in {
     after = ["network.target" "postgresql.service"];
     wantedBy = ["multi-user.target"];
     serviceConfig = {
-      ExecStart = "${pkgs.matrix-authentication-service}/bin/mas-cli --config ${config.environment.etc."mas/config.yaml".source}";
+      Environment = "MAS_CONFIG_FILE=${config.environment.etc."mas/config.yaml".source}:/srv/data/matrix-authentication-service/secrets.yaml";
+      ExecStart = "${pkgs.matrix-authentication-service}/bin/mas-cli config check";
+      Type = "one-shot";
+      RemainAfterExit = true;
       User = "matrix-synapse";
       Group = "matrix-synapse";
       Restart = "on-failure";
