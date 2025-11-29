@@ -54,7 +54,7 @@
           '';
 
 	  postInstall = (old.postInstall or "") + ''
-	    wrapProgram $out/bin/botamusique --set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION python
+	    wrapProgram $out/bin/botamusique --set PROTOCOL_BUFFERS_PYTHON_IMPLEMENTATION python --prefix LD_LIBRARY_PATH : ${prev.libopus}/lib
 	  '';
 
           # Update meta to note the limitation
