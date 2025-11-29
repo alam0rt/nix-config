@@ -1,4 +1,8 @@
-{ pkgs, lib, python3Packages ? pkgs.python3Packages }:
+{
+  pkgs,
+  lib,
+  python3Packages ? pkgs.python3Packages,
+}:
 python3Packages.buildPythonPackage rec {
   pname = "protobuf";
   version = "3.20.3";
@@ -11,6 +15,6 @@ python3Packages.buildPythonPackage rec {
     description = "Python bindings for Opus codec (next generation)";
     homepage = "https://pypi.org/project/opuslib_next/";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

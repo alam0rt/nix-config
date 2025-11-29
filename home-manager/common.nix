@@ -59,8 +59,7 @@
   home.homeDirectory = "/home/${config.home.username}";
   # Required when using unstable branch
   home.enableNixpkgsReleaseCheck = false;
-  home.sessionPath = [ "$HOME/.local/bin" "$HOME/go/bin" ];
-
+  home.sessionPath = ["$HOME/.local/bin" "$HOME/go/bin"];
 
   programs.zsh = {
     enable = true; # must also be enabled in nixos
@@ -142,99 +141,100 @@
     EDITOR = "vim";
   };
 
-  home.packages = with pkgs; [
-    # k8s
-    kubectl
-    kubectx
-    kustomize
-    kubectl-explore
-    kubernetes-helm
-    kubecolor
-    stern
-    fluxcd
-    buildah
+  home.packages = with pkgs;
+    [
+      # k8s
+      kubectl
+      kubectx
+      kustomize
+      kubectl-explore
+      kubernetes-helm
+      kubecolor
+      stern
+      fluxcd
+      buildah
 
-    # core
-    jq
-    git
-    gh
-    ast-grep
-    yq-go
-    ripgrep
-    direnv
+      # core
+      jq
+      git
+      gh
+      ast-grep
+      yq-go
+      ripgrep
+      direnv
 
-    # encryption
-    gnupg
-    sops
-    yubikey-manager
+      # encryption
+      gnupg
+      sops
+      yubikey-manager
 
-    # dev
-    unstable.go
-    unstable.podman
-    unstable.podman-compose
-    opentofu # terraform fork - aliased to terraform
+      # dev
+      unstable.go
+      unstable.podman
+      unstable.podman-compose
+      opentofu # terraform fork - aliased to terraform
 
-    qemu
-    shellcheck
-    go-jsonnet # preferred over jsonnet
-    fzf
-    hyperfine
-    fd
-    bat
-    unstable.go
-    direnv
-    unstable.delve
-    nil # nix lsp
-    rust-analyzer
-    uv
+      qemu
+      shellcheck
+      go-jsonnet # preferred over jsonnet
+      fzf
+      hyperfine
+      fd
+      bat
+      unstable.go
+      direnv
+      unstable.delve
+      nil # nix lsp
+      rust-analyzer
+      uv
 
-    # terminals
-    kitty
+      # terminals
+      kitty
 
-    # trying out
-    duckdb
+      # trying out
+      duckdb
 
-    # graphical
-    p7zip-rar
+      # graphical
+      p7zip-rar
 
-    # CAD / 3d
-    openscad
-    openscad-lsp
+      # CAD / 3d
+      openscad
+      openscad-lsp
 
-    comma
-  ] ++ lib.optionals stdenv.isDarwin [
-    # macOS only packages
+      comma
+    ]
+    ++ lib.optionals stdenv.isDarwin [
+      # macOS only packages
 
-    unstable.vfkit # for podman
+      unstable.vfkit # for podman
 
-    iterm2
-    obsidian
-    saml2aws
-    awscli2
-    vendir
-    ssm-session-manager-plugin
-    amazon-ecr-credential-helper
-    rolecule
-    scaffold
-    argocd
+      iterm2
+      obsidian
+      saml2aws
+      awscli2
+      vendir
+      ssm-session-manager-plugin
+      amazon-ecr-credential-helper
+      rolecule
+      scaffold
+      argocd
+    ]
+    ++ lib.optionals stdenv.isLinux [
+      # misc
+      plasma5Packages.kdeconnect-kde
 
-  ] ++ lib.optionals stdenv.isLinux [
-    # misc
-    plasma5Packages.kdeconnect-kde
+      # design and 3d
+      super-slicer-latest
+      freecad
 
-    # design and 3d
-    super-slicer-latest
-    freecad
+      # development
+      gdb
 
-    # development
-    gdb
-
-    # embedded development
-    platformio
-    unstable.esptool
-    # inputs.pcsx-redux.packages.${system}.pcsx-redux
-
-  ];
+      # embedded development
+      platformio
+      unstable.esptool
+      # inputs.pcsx-redux.packages.${system}.pcsx-redux
+    ];
 
   # terminal
   programs.kitty = {

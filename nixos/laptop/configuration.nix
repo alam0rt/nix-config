@@ -51,7 +51,7 @@
   services.xserver.videoDrivers = ["i915"];
 
   # platformio / embedded dev
-  services.udev.packages = with pkgs; [ 
+  services.udev.packages = with pkgs; [
     platformio-core.udev
     openocd
   ];

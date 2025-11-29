@@ -1,4 +1,11 @@
-{ pkgs, lib, libopus, replaceVars, stdenv, python3Packages ? pkgs.python3Packages }:
+{
+  pkgs,
+  lib,
+  libopus,
+  replaceVars,
+  stdenv,
+  python3Packages ? pkgs.python3Packages,
+}:
 python3Packages.buildPythonPackage rec {
   pname = "opuslib_next";
   version = "1.1.5";
@@ -23,6 +30,6 @@ python3Packages.buildPythonPackage rec {
     description = "Python bindings to the libopus, IETF low-delay audio codec";
     homepage = "https://pypi.org/project/opuslib_next/";
     license = licenses.bsd3;
-    maintainers = with maintainers; [ ];
+    maintainers = with maintainers; [];
   };
 }

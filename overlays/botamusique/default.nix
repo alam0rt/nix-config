@@ -33,22 +33,24 @@ in {
     NODE_OPTIONS = null;
 
     # Update Python dependencies to match pyproject.toml
-    pythonPath = with prev.python3Packages; [
-      final.opuslib-next # local
-      final.protobuf3 # local
-      flask
-      mutagen
-      packaging
-      pillow
-      pycryptodome
-      pyradios
-      python-magic
-      requests
-      yt-dlp
-    ] ++ prev.lib.optionals prev.stdenv.isLinux [
-      # audioop-lts is needed for Python 3.13+ (audioop was removed)
-      # This may need to be packaged separately for Nix if not available
-    ];
+    pythonPath = with prev.python3Packages;
+      [
+        final.opuslib-next # local
+        final.protobuf3 # local
+        flask
+        mutagen
+        packaging
+        pillow
+        pycryptodome
+        pyradios
+        python-magic
+        requests
+        yt-dlp
+      ]
+      ++ prev.lib.optionals prev.stdenv.isLinux [
+        # audioop-lts is needed for Python 3.13+ (audioop was removed)
+        # This may need to be packaged separately for Nix if not available
+      ];
 
     installPhase = ''
       runHook preInstall
@@ -60,15 +62,19 @@ in {
       makeWrapper ${pythonEnv}/bin/python3 $out/bin/botamusique \
         --add-flags "$out/share/botamusique/main.py" \
         --prefix PYTHONPATH : "$out/share/botamusique" \
-        --prefix PATH : ${prev.lib.makeBinPath [ final.ffmpeg-headless ]}
+        --prefix PATH : ${prev.lib.makeBinPath [final.ffmpeg-headless]}
 
       runHook postInstall
     '';
 
     # Replace Node.js with Deno in build inputs
-    nativeBuildInputs = builtins.map 
-      (pkg: if pkg == prev.nodejs then prev. deno else pkg)
-      (builtins.filter 
+    nativeBuildInputs =
+      builtins.map
+      (pkg:
+        if pkg == prev.nodejs
+        then prev. deno
+        else pkg)
+      (builtins.filter
         (pkg: pkg != prev.npmHooks.npmConfigHook)
         old.nativeBuildInputs);
 
@@ -79,8 +85,10 @@ in {
     '';
 
     # Update meta to note the limitation
-    meta = old.meta // {
-      description = old.meta.description + " (built without web frontend)";
-    };
+    meta =
+      old.meta
+      // {
+        description = old.meta.description + " (built without web frontend)";
+      };
   });
 }

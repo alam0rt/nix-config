@@ -1,7 +1,4 @@
-{
-  config,
-  ...
-}: let
+{config, ...}: let
   cfg = config.server;
 in {
   networking.firewall = {
