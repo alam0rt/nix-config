@@ -1,5 +1,4 @@
 {pkgs, ...}: {
-
   # Enable the X11 windowing system.
   services.xserver = {
     enable = true;
@@ -17,7 +16,7 @@
   security.pam.services.swaylock = {};
 
   programs.waybar.enable = true; # top bar
-  environment.systemPackages = with pkgs; [ alacritty fuzzel swaylock mako swayidle ];
+  environment.systemPackages = with pkgs; [alacritty fuzzel swaylock mako swayidle];
 
   # enable XFCE as the default desktop manager
   services.displayManager.defaultSession = "niri";

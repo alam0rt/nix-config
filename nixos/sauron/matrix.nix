@@ -64,20 +64,23 @@ in {
 
   systemd.services."matrix-authentication-service" = {
     description = "MAS";
-    after = [ "network.target" "postgresql.service" ];
-    wantedBy = [ "multi-user.target" ];
+    after = ["network.target" "postgresql.service"];
+    wantedBy = ["multi-user.target"];
     serviceConfig = {
-      ExecStart = "${pkgs.matrix-authentication-service}/bin/mas-cli";
+      ExecStart = "${pkgs.matrix-authentication-service}/bin/mas-cli --config ${config.environment.etc."mas/config.yaml".source}";
+      User = config.services.matrix-synapse.user;
+      Group = config.services.matrix-synapse.group;
+      Restart = "on-failure";
     };
     enable = true;
   };
 
-  environment.etc."mas" = {
-    source = (pkgs.formats.yaml { }).generate "config" {
-      settings = {
-        database = {
-          uri = "postgresql://postgres@localhost/mas";
-        };
+  environment.etc."mas/config.yaml" = {
+    user = config.services.matrix-synapse.user;
+    gid = config.services.matrix-synapse.group;
+    source = (pkgs.formats.yaml {}).generate "config" {
+      database = {
+        uri = "postgresql://postgres@localhost/mas";
       };
     };
   };
