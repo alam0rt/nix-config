@@ -48,12 +48,12 @@
 
             mkdir -p $out/share $out/bin
             cp -r . $out/share/botamusique
-            chmod +x $out/share/botamusique/mumbleBot.py
-            wrapPythonProgramsIn $out/share/botamusique "$out $pythonPath"
 
-            # Convenience binary and wrap with ffmpeg dependency
-            makeWrapper $out/share/botamusique/mumbleBot.py $out/bin/botamusique # \
-            #  --prefix PATH : ${prev.lib.makeBinPath [ final.ffmpeg-headless ]}
+            # Create wrapper for the main script with proper Python path
+            makeWrapper ${prev.python3}/bin/python3 $out/bin/botamusique \
+              --add-flags "$out/share/botamusique/mumbleBot.py" \
+              --prefix PYTHONPATH : "$out/share/botamusique:$PYTHONPATH" \
+              --prefix PATH : ${prev.lib.makeBinPath [ final.ffmpeg-headless ]}
 
             runHook postInstall
           '';
