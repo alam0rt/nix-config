@@ -5,6 +5,9 @@
     nomic = {
       model = "/opt/models/nomic.gguf";
       extraArgs = [
+        "--embeddings"
+        "--pooling"
+        "last"
       ];
     };
     # You could define more models here:
