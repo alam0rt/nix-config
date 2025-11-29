@@ -76,8 +76,8 @@ in {
   };
 
   environment.etc."mas/config.yaml" = {
-    user = users.groups.matrix-synapse.name;
-    gid = users.groups.matrix-synapse.gid;
+    user = config.users.groups.matrix-synapse.name;
+    gid = config.users.groups.matrix-synapse.gid;
     source = (pkgs.formats.yaml {}).generate "config" {
       database = {
         uri = "postgresql://postgres@localhost/mas";
