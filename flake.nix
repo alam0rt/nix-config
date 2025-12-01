@@ -72,6 +72,39 @@
     # Other options beside 'alejandra' include 'nixpkgs-fmt'
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
 
+    # NixOS tests
+    # Accessible through 'nix build .#checks.x86_64-linux.laptop-boot-test'
+    checks.x86_64-linux.laptop-boot-test = nixpkgs.legacyPackages.x86_64-linux.testers.runNixOSTest {
+      name = "laptop-boot-test";
+
+      nodes.laptop = { pkgs, ... }: {
+        # Minimal test configuration - doesn't import full config to avoid dependency issues
+        networking.hostName = "laptop";
+        
+        boot.loader.grub.enable = false;
+        fileSystems."/" = {
+          device = "none";
+          fsType = "tmpfs";
+          options = [ "defaults" "size=2G" "mode=755" ];
+        };
+        
+        system.stateVersion = "25.11";
+      };
+
+      testScript = ''
+        # Start the machine and wait for it to boot
+        laptop.start()
+        laptop.wait_for_unit("multi-user.target")
+        
+        # Verify the machine is running
+        laptop.succeed("uname -a")
+        laptop.succeed("hostname | grep laptop")
+        
+        # Shutdown the machine
+        laptop.shutdown()
+      '';
+    };
+
     # Your custom packages and modifications, exported as overlays
     overlays = import ./overlays {inherit inputs;};
     # Reusable nixos modules you might want to export

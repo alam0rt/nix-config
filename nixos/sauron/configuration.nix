@@ -20,8 +20,7 @@
     ./nas.nix
     ./unifi.nix
     ./mail.nix
-    # TODO: fix CMake minimum version requirement upstream in pvpgnix
-    # ./pvpgn.nix
+    ./pvpgn.nix
     ./media.nix
     ./nginx.nix
     ./syncthing.nix

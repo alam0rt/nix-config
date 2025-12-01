@@ -24,7 +24,6 @@ in {
   };
   services.transmission = {
     enable = true;
-    package = pkgs.transmission_4;
     openFirewall = true;
     credentialsFile = config.age.secrets.transmission-credentials.path;
     settings = {

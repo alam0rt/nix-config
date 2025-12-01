@@ -6,16 +6,10 @@
 python3Packages.buildPythonPackage rec {
   pname = "protobuf";
   version = "3.20.3";
-  pyproject = true;
-
   src = python3Packages.fetchPypi {
     inherit pname version;
     sha256 = "sha256-LjQnQpyc/+vyWUkb4K9wGJYH82XC9Bx8N2SvbzNxBfI=";
   };
-
-  build-system = [
-    python3Packages.setuptools
-  ];
 
   meta = with lib; {
     description = "Python bindings for Opus codec (next generation)";
