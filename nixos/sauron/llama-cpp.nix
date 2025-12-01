@@ -5,6 +5,16 @@
     nomic = {
       model = "/opt/models/nomic.gguf";
       extraArgs = [
+        "-c"
+	"8192"
+	"-b"
+	"8192"
+	"-ub"
+	"8192"
+	"--rope-scaling"
+	"yarn"
+	"--rope-freq-scale"
+	".75"
         "--embeddings"
         "--pooling"
         "last"
