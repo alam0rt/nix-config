@@ -95,7 +95,7 @@
         nano
         zlib
         gatk # genotyping
-        (trimmomatic.override {jre = pkgs.jdk11;}) # fails with jdk21
+        trimmomatic
         samtools
         picard-tools
         bamtools
