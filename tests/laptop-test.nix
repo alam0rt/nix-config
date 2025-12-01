@@ -1,8 +1,4 @@
-let
-  # Get the flake
-  flake = builtins.getFlake (toString ../.);
-  pkgs = flake.legacyPackages.x86_64-linux;
-in
+{ pkgs, inputs, outputs }:
 
 pkgs.testers.runNixOSTest {
   name = "laptop-boot-test";
@@ -14,8 +10,7 @@ pkgs.testers.runNixOSTest {
       ../nixos/laptop/configuration.nix
     ];
     _module.args = {
-      inputs = flake.inputs;
-      outputs = flake.outputs;
+      inherit inputs outputs;
     };
   };
 
