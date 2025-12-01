@@ -44,9 +44,4 @@ get_secret() {
 
 export BORG_PASSPHRASE="$(get_secret "${BORG_SECRET_PATH}")"
 
-echo "Repository: $BORG_REPO"
-echo "Remote path: $BORG_REMOTE_PATH"
-echo ""
-
-# Run borg with all remaining arguments
 nix-shell -p borgbackup --run "SSH_AUTH_SOCK=$SSH_AUTH_SOCK borg $*"
