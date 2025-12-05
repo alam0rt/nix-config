@@ -12,6 +12,7 @@
     ./common.nix
     ./config/brewing.nix
     ./config/niri
+    ./config/ghostty
   ];
 
   nixpkgs = {
