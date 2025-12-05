@@ -1,6 +1,5 @@
 {pkgs, ...}: {
   imports = [
-    ../config/graphical
     ../config/common
     ../config/network
     ../config/network/nfs_mounts.nix
@@ -66,32 +65,6 @@
   };
 
   programs.wireshark.enable = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    # core
-    vim
-    firefox
-
-    # social
-    mumble
-    element
-    gnupg
-
-    # dev
-    wireshark
-    wineWowPackages.stable
-    winetricks
-
-    # fun
-    unstable.lutris
-    unstable.shadps4
-    r2modman
-
-    # misc
-    calibre
-  ];
 
   # bluetooth
   services.blueman.enable = true;

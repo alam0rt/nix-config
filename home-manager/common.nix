@@ -223,8 +223,12 @@
       argocd
     ]
     ++ lib.optionals stdenv.isLinux [
+      # chat
+      mumble
+
       # misc
       kdePackages.kdeconnect-kde
+      calibre
 
       # design and 3d
       super-slicer-latest

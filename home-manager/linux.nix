@@ -11,6 +11,8 @@
   imports = [
     ./common.nix
     ./config/brewing.nix
+    ./config/niri
+    ./config/ghostty
   ];
 
   nixpkgs = {
@@ -22,6 +24,15 @@
     config = {
       allowUnfree = true;
     };
+  };
+
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-gnome
+    ];
+    config.common.default = [ "*" ];
   };
 
   home.username = "sam";

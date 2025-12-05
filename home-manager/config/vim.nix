@@ -133,7 +133,7 @@
           filetypes = { 'yaml' },
           root_markers = { '.git', '.yamllint.yml', 'yamllint.yml', '.yaml-lint.yml', 'yaml-lint.yml' },
         }
-        
+
         vim.lsp.enable('ruby_lsp')
         vim.lsp.config['ruby_lsp'] = {
           cmd = { 'ruby-lsp' },
