@@ -5,7 +5,7 @@
     gofumpt # stricter gofmt
     yaml-language-server
     bash-language-server
-    dockerfile-language-server-nodejs
+    dockerfile-language-server
     nodePackages.vscode-json-languageserver # json
     jsonnet-language-server
     ruby-lsp

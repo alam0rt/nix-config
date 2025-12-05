@@ -222,7 +222,7 @@
     ]
     ++ lib.optionals stdenv.isLinux [
       # misc
-      plasma5Packages.kdeconnect-kde
+      kdePackages.kdeconnect-kde
 
       # design and 3d
       super-slicer-latest
@@ -249,8 +249,8 @@
   };
 
   programs.jujutsu.enable = true;
-  programs.jujutsu.settings.user.name = config.programs.git.userName;
-  programs.jujutsu.settings.user.email = config.programs.git.userEmail;
+  programs.jujutsu.settings.user.name = config.programs.git.settings.user.name;
+  programs.jujutsu.settings.user.email = config.programs.git.settings.user.email;
   programs.jujutsu.settings.git.push-new-bookmarks = true;
 
   # Enable home-manager and git
@@ -271,16 +271,6 @@
   programs.git = {
     enable = true;
     lfs.enable = true;
-    userName = "alam0rt";
-    userEmail = "sam@samlockart.com";
-    aliases = {
-      "new" = "!git checkout -b sam.lockart/$1 && :";
-      "pl" = "!git fetch; git pull -r";
-      "p" = "push";
-      "untracked" = "ls-files --others --exclude-standard";
-      "amend" = "commit -a --amend --no-edit";
-      "rbm" = "!br=$((test -e .git/refs/remotes/origin/main && echo main) || echo master) && git fetch origin && git rebase origin/$br";
-    };
     ignores = [
       ".idea/"
       "shell.nix"
@@ -288,7 +278,17 @@
       ".direnv/"
       ".DS_Store"
     ];
-    extraConfig = {
+    settings = {
+      user.name = "alam0rt";
+      user.email = "sam@samlockart.com";
+      alias = {
+        "new" = "!git checkout -b sam.lockart/$1 && :";
+        "pl" = "!git fetch; git pull -r";
+        "p" = "push";
+        "untracked" = "ls-files --others --exclude-standard";
+        "amend" = "commit -a --amend --no-edit";
+        "rbm" = "!br=$((test -e .git/refs/remotes/origin/main && echo main) || echo master) && git fetch origin && git rebase origin/$br";
+      };
       url = {
         "ssh://git@github.com/" = {
           insteadOf = "https://github.com/";

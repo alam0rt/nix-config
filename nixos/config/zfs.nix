@@ -6,7 +6,7 @@
   boot = {
     initrd.supportedFilesystems = ["zfs"];
     supportedFilesystems = ["zfs"];
-    zfs.package = pkgs.zfsUnstable;
+    zfs.package = pkgs.zfs_unstable;
   };
 
   services.udev.extraRules = ''

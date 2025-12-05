@@ -1,0 +1,13 @@
+[project]
+name = "ragnix"
+version = "0.1.0"
+description = "RAG-based code search"
+requires-python = ">=3.8"
+dependencies = [
+    "requests>=2.31.0",
+    "pandas",
+    "fsspec",
+    "torch",
+    "sentence_transformers",
+    "duckdb",
+]
