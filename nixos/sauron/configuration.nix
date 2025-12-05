@@ -17,7 +17,6 @@
     ./nas.nix
     ./unifi.nix
     ./mail.nix
-    ./pvpgn.nix
     ./media.nix
     ./nginx.nix
     ./syncthing.nix
@@ -26,6 +25,7 @@
     ./matrix.nix
     ./monitoring.nix
     ./home-assistant.nix
+    # ./pvpgn.nix
     # ./llama-cpp.nix
     # ./k8s.nix
     # ../config/home-manager.nix # get working
@@ -150,13 +150,22 @@
 
   # secrets
   age = {
+    rekey = {
+      hostPubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDNOSKuCJeOwyOqBF1uYhdT+xBRhfTmfLTFfCjyYbPfTKEN+1lrwq6NIbAlDNaiB2QmyWOkL/q8YZTqL5lsV0f+p5pYOlk4XqJZu75o7qU+UL1NRMKWhP3nkPFaajd3UkcTmS4dghZJbHbHEaQpdforBbsrOleh9p7sskLwABoYFkZDqBZRtgqYvHubsSPTWWzcu97pm8jJnKlj25Qw3WuIH5Arz+0w9ENUNV4Y36Hz+sgP+GhPQCird8O6bXgBPH436P36XdYb/a8SCY96xPMaSaW76tU/XVDImfkH7bGRdwRouO9gzjyzucdO51aK/OLaNitUdWkZVMnO2aQBkBNgvFtshU9fnt6ZLIuovsesACt8mLpNE74lKd4PGHxlz7KLcuBL9ZX3S9yr3TjlhEnb5EAahbhVWZuxVjZTPyOOnHqbFKeCRAmSbNFDrW8xWrzwLmdoSbCqWVmUFOMLEBEDMyOEByKHWpeBz5zFfxTloTNbwdYxgUG3o6xFzV9aYAU=";
+      masterIdentities = [
+        ../../secrets/yubikey-22916238.pub
+        ../../secrets/yubikey-15498888.pub
+      ];
+      storageMode = "local";
+      localStorageDir = ../../secrets/rekeyed/sauron;
+    };
     identityPaths = ["/srv/vault/ssh_keys/id_rsa"]; # requires `/srv/vault` to be mounted before agenix can be used
     secrets = {
       tailscale-server = {
-        file = ../../secrets/tailscale-server.age;
+        rekeyFile = ../../secrets/tailscale-server.age;
       };
       tailscale-authkey = {
-        file = ../../secrets/tailscale-authkey.age;
+        rekeyFile = ../../secrets/tailscale-authkey.age;
       };
     };
   };

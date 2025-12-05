@@ -8,7 +8,7 @@ in {
   age = {
     secrets = {
       maubot-secret-config = {
-        file = ../../secrets/maubot-secret-config.age;
+        rekeyFile = ../../secrets/maubot-secret-config.age;
         owner = "maubot";
         group = "maubot";
       };

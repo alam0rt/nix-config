@@ -36,6 +36,15 @@
 
   # secrets
   age = {
+    rekey = {
+      hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIOg/fX4K3M3plIQp8R2xg6hJl3yWA2UB3GNnOFn5FKRp"; # TODO: replace with actual desktop host key
+      masterIdentities = [
+        ../../secrets/yubikey-22916238.pub
+        ../../secrets/yubikey-15498888.pub
+      ];
+      storageMode = "local";
+      localStorageDir = ../../secrets/rekeyed/desktop;
+    };
     # TODO: will cause issues as syncthing needs to sync this before we can decrypt
     identityPaths = ["/home/sam/vault/ssh_keys/id_rsa"];
   };

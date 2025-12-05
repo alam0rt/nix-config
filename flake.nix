@@ -94,9 +94,11 @@
           inherit inputs outputs;
         };
         modules = [
-          # > Our main nixos configuration file <
+          # removed pvpgn
           ./nixos/configuration.nix
           ./nixos/sauron/configuration.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
         ];
       };
       desktop = nixpkgs.lib.nixosSystem {
@@ -104,9 +106,10 @@
           inherit inputs outputs;
         };
         modules = [
-          # > Our main nixos configuration file <
           ./nixos/configuration.nix
           ./nixos/desktop/configuration.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
         ];
       };
       laptop = nixpkgs.lib.nixosSystem {
@@ -127,6 +130,14 @@
           ./nixos/configuration.nix
           ./nixos/frodo/configuration.nix
         ];
+      };
+    };
+
+    agenix-rekey = inputs.agenix-rekey.configure {
+      userFlake = self;
+      # Only include hosts that use secrets
+      nixosConfigurations = {
+        inherit (self.nixosConfigurations) sauron desktop;
       };
     };
 

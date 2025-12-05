@@ -10,7 +10,7 @@
     port = 8000;
   };
 in {
-  age.secrets.hugging-face-ro-token.file = ../../secrets/hugging-face-ro-token.age;
+  age.secrets.hugging-face-ro-token.rekeyFile = ../../secrets/hugging-face-ro-token.age;
   virtualisation.oci-containers.containers = {
     vllm = {
       autoStart = false;

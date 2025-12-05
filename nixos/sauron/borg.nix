@@ -13,7 +13,7 @@
 in {
   environment.systemPackages = with pkgs; [borgbackup];
 
-  age.secrets.borg.file = ../../secrets/borg.age;
+  age.secrets.borg.rekeyFile = ../../secrets/borg.age;
 
   services.borgbackup.jobs = {
     mordor-vault = {

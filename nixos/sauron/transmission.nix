@@ -7,7 +7,7 @@
   cfg = config.server;
 in {
   age.secrets.transmission-credentials = {
-    file = ../../secrets/transmission-credentials.age;
+    rekeyFile = ../../secrets/transmission-credentials.age;
     owner = "transmission";
     group = "transmission";
   };
