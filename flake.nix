@@ -20,6 +20,11 @@
 
     # s3cr3ts
     agenix.url = "github:ryantm/agenix";
+    agenix-rekey.url = "github:oddlama/agenix-rekey";
+    # Make sure to override the nixpkgs version to follow your flake,
+    # otherwise derivation paths can mismatch (when using storageMode = "derivation"),
+    # resulting in the rekeyed secrets not being found!
+    agenix-rekey.inputs.nixpkgs.follows = "nixpkgs";
 
     # pvpgn
     pvpgnix.url = "github:alam0rt/pvpgnix";
