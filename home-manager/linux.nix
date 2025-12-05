@@ -11,6 +11,7 @@
   imports = [
     ./common.nix
     ./config/brewing.nix
+    ./config/niri
   ];
 
   nixpkgs = {
