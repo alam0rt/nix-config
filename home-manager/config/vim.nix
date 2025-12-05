@@ -9,7 +9,6 @@
     nodePackages.vscode-json-languageserver # json
     jsonnet-language-server
     ruby-lsp
-    openscad-lsp
   ];
   programs.neovim = {
     enable = true;
@@ -103,42 +102,76 @@
         -- Set up lspconfig.
         local capabilities = require('cmp_nvim_lsp').default_capabilities()
 
+        vim.lsp.enable('jsonnetls')
         vim.lsp.config['jsonnetls'] = {
           cmd = { 'jsonnet-language-server', '--lint', '-J', 'kubernetes', '-J', 'cicd-toolkit/lib', '-J', 'cicd-toolkit/vendor/cicd-toolkit/jsonnet', '-J', 'cicd-toolkit/vendor' },
           capabilities = capabilities,
           filetypes = { 'jsonnet' },
           root_markers = { '.git' },
         }
-        vim.lsp.enable('jsonnetls')
 
-        require('lspconfig')['nixd'].setup {
-          capabilities = capabilities
-        }
-        require('lspconfig')['gopls'].setup {
-          capabilities = capabilities
-        }
-        require('lspconfig')['yamlls'].setup {
-          capabilities = capabilities
-        }
-        require('lspconfig')['ruby_lsp'].setup {
-          capabilities = capabilities
-        }
-        require('lspconfig')['rust_analyzer'].setup {
-          capabilities = capabilities
-        }
-        require('lspconfig')['bashls'].setup {
-          capabilities = capabilities
-        }
-        require('lspconfig')['dockerls'].setup {
-          capabilities = capabilities
-        }
-        require('lspconfig')['jsonls'].setup {
+        vim.lsp.enable('nixd')
+        vim.lsp.config['nixd'] = {
+          cmd = { 'nixd' },
           capabilities = capabilities,
-          -- Use correct binary as per Nix
-          cmd = {'vscode-json-languageserver', '--stdio'},
+          filetypes = { 'nix' },
+          root_markers = { '.git', 'default.nix', 'shell.nix', 'flake.nix' },
         }
-        require('lspconfig')['openscad_lsp'].setup {
-          capabilities = capabilities
+
+        vim.lsp.enable('gopls')
+        vim.lsp.config['gopls'] = {
+          cmd = { 'gopls' },
+          capabilities = capabilities,
+          filetypes = { 'go', 'gomod', 'gosum', 'gowork' },
+          root_markers = { '.git', 'go.mod' },
+        }
+
+        vim.lsp.enable('yamlls')
+        vim.lsp.config['yamlls'] = {
+          cmd = { 'yaml-language-server', '--stdio' },
+          capabilities = capabilities,
+          filetypes = { 'yaml' },
+          root_markers = { '.git', '.yamllint.yml', 'yamllint.yml', '.yaml-lint.yml', 'yaml-lint.yml' },
+        }
+        
+        vim.lsp.enable('ruby_lsp')
+        vim.lsp.config['ruby_lsp'] = {
+          cmd = { 'ruby-lsp' },
+          capabilities = capabilities,
+          filetypes = { 'ruby' },
+          root_markers = { '.git', 'Gemfile' },
+        }
+
+        vim.lsp.enable('rust_analyzer')
+        vim.lsp.config['rust_analyzer'] = {
+          cmd = { 'rust-analyzer' },
+          capabilities = capabilities,
+          filetypes = { 'rust' },
+          root_markers = { '.git', 'Cargo.toml' },
+        }
+
+        vim.lsp.enable('bashls')
+        vim.lsp.config['bashls'] = {
+          cmd = { 'bash-language-server', 'start' },
+          capabilities = capabilities,
+          filetypes = { 'sh', 'bash' },
+          root_markers = { '.git', '.bashrc', '.bash_profile', '.profile' },
+        }
+
+        vim.lsp.enable('dockerls')
+        vim.lsp.config['dockerls'] = {
+          cmd = { 'docker-langserver', '--stdio' },
+          capabilities = capabilities,
+          filetypes = { 'dockerfile' },
+          root_markers = { '.git', 'Dockerfile' },
+        }
+
+        vim.lsp.enable('jsonls')
+        vim.lsp.config['jsonls'] = {
+          cmd = { 'vscode-json-languageserver', '--stdio' },
+          capabilities = capabilities,
+          filetypes = { 'json' },
+          root_markers = { '.git', 'package.json', 'tsconfig.json', '.eslintrc', '.prettierrc' },
         }
       EOF
     '';
