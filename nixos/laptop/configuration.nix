@@ -4,7 +4,6 @@
   ...
 }: {
   imports = [
-    ../config/graphical
     ../config/common
     ../config/network
     ../config/network/nfs_mounts.nix
@@ -59,31 +58,6 @@
     intelBusId = "PCI:0:2:0";
     sync.enable = true;
   };
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  environment.systemPackages = with pkgs; [
-    # core
-    vim
-    firefox
-
-    # social
-    mumble
-    element
-    gnupg
-
-    # dev
-    wireshark
-    wineWowPackages.stable
-    winetricks
-
-    # fun
-    unstable.lutris
-    unstable.shadps4
-
-    # 3d
-    super-slicer-latest
-  ];
 
   # bluetooth
   services.blueman.enable = true;
