@@ -168,6 +168,8 @@
       gnupg
       sops
       yubikey-manager
+      age-plugin-fido2-hmac
+      age
 
       # dev
       unstable.go
