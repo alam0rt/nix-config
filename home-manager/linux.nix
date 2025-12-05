@@ -26,6 +26,15 @@
     };
   };
 
+  xdg.portal = {
+    enable = true;
+    extraPortals = [
+      pkgs.xdg-desktop-portal-gtk
+      pkgs.xdg-desktop-portal-gnome
+    ];
+    config.common.default = [ "*" ];
+  };
+
   home.username = "sam";
   home.homeDirectory = "/home/${config.home.username}";
 
