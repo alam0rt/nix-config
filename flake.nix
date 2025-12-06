@@ -119,6 +119,8 @@
         modules = [
           ./nixos/configuration.nix
           ./nixos/laptop/configuration.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
           nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme-gen2
         ];
       };

@@ -21,7 +21,20 @@
 
   networking.firewall.enable = true;
 
-
+  # secrets
+  age = {
+    rekey = {
+      hostPubkey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFvEy6qUa8uxzxs3uQxhEUZTlhfyS5pG93+k0ft7qQZ4";
+      masterIdentities = [
+        ../../secrets/yubikey-fresh.pub
+      ];
+      storageMode = "local";
+      localStorageDir = ../../secrets/rekeyed/laptop;
+      agePlugins = [pkgs.age-plugin-fido2-hmac];
+    };
+    # TODO: will cause issues as syncthing needs to sync this before we can decrypt
+    identityPaths = ["/home/sam/.ssh/id_ed25519_sk_rk"];
+  };
 
   # Syncthing
   services.syncthing = {
