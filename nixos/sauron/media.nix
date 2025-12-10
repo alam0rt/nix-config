@@ -31,7 +31,18 @@ in {
     };
     tailscaleAuth = {
       enable = true;
-      virtualHosts = ["jackett.middleearth.samlockart.com"];
+      virtualHosts = [
+        "jackett.middleearth.samlockart.com"
+        "sonarr.middleearth.samlockart.com"
+        "radarr.middleearth.samlockart.com"
+        "bazarr.middleearth.samlockart.com"
+        "lidarr.middleearth.samlockart.com"
+        "open-webui.middleearth.samlockart.com"
+        "maubot.middleearth.samlockart.com"
+        "sync.middleearth.samlockart.com"
+        "transmission.middleearth.samlockart.com"
+        "grafana.middleearth.samlockart.com"
+      ];
     };
     virtualHosts."sonarr.middleearth.samlockart.com" = {
       forceSSL = false;
