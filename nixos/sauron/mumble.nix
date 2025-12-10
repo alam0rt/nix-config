@@ -30,7 +30,6 @@ in {
   # required
   users.users.nginx.extraGroups = ["murmur"];
 
-  # disabled while packge is broken
   services.botamusique = {
     enable = true;
     settings = {
