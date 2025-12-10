@@ -46,6 +46,7 @@ in {
         python-magic
         requests
         yt-dlp
+        audioop-lts
       ]
       ++ prev.lib.optionals prev.stdenv.isLinux [
         # audioop-lts is needed for Python 3.13+ (audioop was removed)
