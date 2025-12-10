@@ -14,10 +14,11 @@ final: prev: let
   ]);
 in {
   botamusique = prev.botamusique.overrideAttrs (old: rec {
+    version = "v8.3.4";
     src = prev.fetchFromGitHub {
       repo = "botamusique";
       owner = "algielen";
-      rev = "190b8e3659ecbae787b0b90a3c3bbf1a4fca494a";
+      rev = "8332323ff83df5df316aa1792f284fa5d72c482b";
       sha256 = "sha256-aDWTk1w9lknB5Vu3azrXzRhA7Q4LsN/xMo3VDL2alLM=";
     };
 
@@ -36,7 +37,7 @@ in {
     pythonPath = with prev.python3Packages;
       [
         final.opuslib-next # local
-        final.protobuf3 # local
+        protobuf
         flask
         mutagen
         packaging
