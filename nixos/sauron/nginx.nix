@@ -1,12 +1,4 @@
-<<<<<<< HEAD
-{
-  config,
-  pkgs,
-  ...
-}: let
-=======
 {config, lib, ...}: let
->>>>>>> main
   cfg = config.server;
 
   # Assertion: ensure all middleearth vhosts are protected by tailscale auth
