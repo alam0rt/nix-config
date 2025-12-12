@@ -1,5 +1,6 @@
 {config, lib, ...}: let
   cfg = config.server;
+  acmeDomain = "middleearth.samlockart.com";
 
   # Assertion: ensure all middleearth vhosts are protected by tailscale auth
   allVhosts = builtins.attrNames config.services.nginx.virtualHosts;
@@ -19,6 +20,22 @@ in {
       Add them to services.nginx.tailscaleAuth.virtualHosts in nginx.nix
     '';
   }];
+
+  # Cloudflare API token for ACME DNS-01 challenge
+  age.secrets.cloudflare-acme = {
+    file = ../../secrets/cloudflare-acme.age;
+    owner = "acme";
+    group = "acme";
+  };
+
+  # Wildcard certificate for middleearth.samlockart.com subdomains
+  security.acme.certs.${acmeDomain} = {
+    domain = "*.${acmeDomain}";
+    dnsProvider = "cloudflare";
+    credentialsFile = config.age.secrets.cloudflare-acme.path;
+    group = "nginx";
+  };
+
   networking.firewall = {
     allowedTCPPorts = [
       80

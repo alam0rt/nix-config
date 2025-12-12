@@ -14,4 +14,5 @@ in {
   "smtp-user.age".publicKeys = users;
   "smtp-pass.age".publicKeys = users;
   "smtp-addr.age".publicKeys = users;
+  "cloudflare-acme.age".publicKeys = users;
 }

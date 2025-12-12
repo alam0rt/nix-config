@@ -18,6 +18,8 @@ in {
     inherit (config.services.maubot) settings;
   in {
     virtualHosts."maubot.middleearth.samlockart.com" = {
+      forceSSL = true;
+      useACMEHost = "middleearth.samlockart.com";
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString settings.server.port}";
         proxyWebsockets = true;

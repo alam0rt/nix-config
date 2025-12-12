@@ -16,8 +16,8 @@ in {
   networking.firewall.allowedUDPPorts = [config.services.transmission.settings.peer-port];
 
   services.nginx.virtualHosts."transmission.middleearth.samlockart.com" = {
-    forceSSL = false;
-    enableACME = false;
+    forceSSL = true;
+    useACMEHost = "middleearth.samlockart.com";
     locations."/" = {
       proxyPass = "http://127.0.0.1:${toString config.services.transmission.settings.rpc-port}";
     };
