@@ -9,7 +9,7 @@ in {
   services.open-webui = {
     enable = true;
     package = pkgs.unstable.open-webui;
-    openFirewall = true;
+    openFirewall = false; # accessed via nginx reverse proxy
     port = 11111;
     environment = {
       OLLAMA_BASE_URL = "http://desktop:11434";

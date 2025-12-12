@@ -5,8 +5,14 @@
   ...
 }: let
   cfg = config.server;
+  # Network ranges for NFS/Samba access
+  localNet = "192.168.0.0/255.255.255.0";
+  tailscaleNet = "100.64.0.0/255.255.255.0"; # Tailscale CGNAT range
 in {
   # NFS
+  # Note: Exports restricted to LAN and Tailscale only
+  # 'insecure' option on public/media allows connections from unprivileged ports (required for macOS)
+  # Personal shares (sam/emma) use default 'secure' option requiring privileged ports
   services.nfs.server = {
     enable = true;
     # fixed rpc.statd port; for firewall
@@ -14,10 +20,10 @@ in {
     mountdPort = 4002;
     statdPort = 4000;
     exports = ''
-      /srv/share/sam          192.168.0.0/255.255.255.0(rw,fsid=0,no_subtree_check) 100.64.0.0/255.255.255.0(rw,fsid=0,no_subtree_check)
-      /srv/share/emma         192.168.0.0/255.255.255.0(rw,fsid=0,no_subtree_check) 100.64.0.0/255.255.255.0(rw,fsid=0,no_subtree_check)
-      /srv/share/public       192.168.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check) 100.64.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check)
-      /srv/media              192.168.0.0/255.255.255.0(ro,nohide,insecure,no_subtree_check) 100.64.0.0/255.255.255.0(rw,nohide,insecure,no_subtree_check)
+      /srv/share/sam          ${localNet}(rw,fsid=0,no_subtree_check,secure) ${tailscaleNet}(rw,fsid=0,no_subtree_check,secure)
+      /srv/share/emma         ${localNet}(rw,fsid=0,no_subtree_check,secure) ${tailscaleNet}(rw,fsid=0,no_subtree_check,secure)
+      /srv/share/public       ${localNet}(rw,nohide,insecure,no_subtree_check) ${tailscaleNet}(rw,nohide,insecure,no_subtree_check)
+      /srv/media              ${localNet}(ro,nohide,insecure,no_subtree_check) ${tailscaleNet}(rw,nohide,insecure,no_subtree_check)
     '';
   };
 

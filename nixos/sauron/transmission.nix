@@ -25,19 +25,19 @@ in {
   services.transmission = {
     enable = true;
     package = pkgs.transmission_4;
-    openFirewall = true;
+    openFirewall = false; # RPC accessed via nginx; peer-port opened explicitly above
     credentialsFile = config.age.secrets.transmission-credentials.path;
     settings = {
       home = "/srv/data/transmission";
       download-dir = "/srv/media/downloads";
       incomplete-dir = "/srv/media/downloads/.incomplete";
       trash-original-torrent-files = true;
-      rpc-bind-address = "0.0.0.0";
+      rpc-bind-address = "127.0.0.1"; # bind to localhost only
       rpc-port = 9091;
       umask = (builtins.fromTOML "octal = 0o0002").octal; # 0666 - 0002 = u+rw,g+rw,o+r
-      rpc-whitelist = "127.0.0.1,192.168.0.*,100.64.0.*";
+      rpc-whitelist = "127.0.0.1";
+      rpc-whitelist-enabled = true;
       rpc-host-whitelist-enabled = false;
-      rpc-authentication-required = false;
       ratio-limit = "0.0";
       ratio-limit-enabled = true;
       download-queue-size = 15;

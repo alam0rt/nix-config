@@ -136,6 +136,8 @@
     # https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html
     settings = {
       PrintMotd = true;
+      MaxAuthTries = 3;
+      LoginGraceTime = 20;
     };
     banner = ''
       speak friend and enter...
@@ -144,6 +146,46 @@
     extraConfig = ''
       PubkeyAuthOptions verify-required
     '';
+  };
+
+  # Intrusion detection/prevention
+  services.fail2ban = {
+    enable = true;
+    maxretry = 5;
+    bantime = "1h";
+    bantime-increment = {
+      enable = true;
+      maxtime = "168h"; # 1 week max ban
+      factor = "4";
+    };
+    ignoreIP = [
+      "127.0.0.0/8"
+      "192.168.0.0/24"
+      "100.64.0.0/10" # tailscale CGNAT range
+    ];
+    jails = {
+      sshd = {
+        settings = {
+          enabled = true;
+          maxretry = 3;
+          findtime = "10m";
+        };
+      };
+      nginx-http-auth = {
+        settings = {
+          enabled = true;
+          maxretry = 5;
+          findtime = "10m";
+        };
+      };
+      nginx-botsearch = {
+        settings = {
+          enabled = true;
+          maxretry = 5;
+          findtime = "10m";
+        };
+      };
+    };
   };
 
   services.tailscale.authKeyFile = config.age.secrets.tailscale-authkey.path;

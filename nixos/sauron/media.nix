@@ -88,7 +88,7 @@ in {
   services.jellyfin = {
     package = pkgs.unstable.jellyfin;
     enable = true;
-    openFirewall = true;
+    openFirewall = false; # accessed via nginx reverse proxy
     dataDir = "/srv/data/jellyfin";
     cacheDir = "/var/cache/jellyfin"; # leave on ssd
   };
@@ -96,21 +96,21 @@ in {
   services.lidarr = {
     enable = true;
     dataDir = "/srv/data/lidarr";
-    openFirewall = true;
+    openFirewall = false; # accessed via nginx reverse proxy
   };
   users.users.lidarr.extraGroups = ["transmission"];
 
   services.radarr = {
     enable = true;
     dataDir = "/srv/data/radarr";
-    openFirewall = true;
+    openFirewall = false; # accessed via nginx reverse proxy
   };
   users.users.radarr.extraGroups = ["transmission"];
 
   services.sonarr = {
     enable = true;
     dataDir = "/srv/data/sonarr";
-    openFirewall = true;
+    openFirewall = false; # accessed via nginx reverse proxy
   };
   users.users.sonarr.extraGroups = ["transmission"];
 
@@ -118,12 +118,12 @@ in {
     enable = true;
     dataDir = "/srv/data/jackett";
     package = pkgs.unstable.jackett;
-    openFirewall = true;
+    openFirewall = false; # accessed via nginx reverse proxy
   };
 
   services.bazarr = {
     enable = true;
-    openFirewall = true;
+    openFirewall = false; # accessed via nginx reverse proxy
   };
   users.users.bazarr.extraGroups = [
     "sonarr"
@@ -140,7 +140,7 @@ in {
     rarbg = {
       # https://github.com/mgdigital/rarbg-selfhosted
       image = "ghcr.io/mgdigital/rarbg-selfhosted:latest";
-      ports = ["3333:3333"];
+      ports = ["127.0.0.1:3333:3333"]; # bind to localhost only
       volumes = ["/srv/data/rarbg_db.sqlite:/rarbg_db.sqlite"];
       pull = "always";
       serviceName = "rarbg-selfhosted";
@@ -151,7 +151,7 @@ in {
       ports = ["8191:8191"];
       pull = "always";
       serviceName = "flaresolverr";
-      extraOptions = ["--network=host"];
+      extraOptions = ["--network=host"]; # required for functionality
     };
   };
 }

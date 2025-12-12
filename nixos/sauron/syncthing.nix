@@ -14,7 +14,7 @@ in {
     overrideDevices = true; # overrides any devices added or deleted through the WebUI
     openDefaultPorts = true;
     overrideFolders = true; # overrides any folders added or deleted through the WebUI
-    guiAddress = "http://0.0.0.0:8384";
+    guiAddress = "http://127.0.0.1:8384"; # accessed via nginx reverse proxy
     settings = {
       # TODO: use declarative node configuration
       # https://wiki.nixos.org/wiki/Syncthing
