@@ -87,7 +87,7 @@
         export KUBECONFIG="/home/sam/vault/kube"
       fi
 
-      export GOPRIVATE="github.com/alam0rt/*,github.com/zendesk/*"
+      export GOPRIVATE="github.com/alam0rt/*"
 
       # Load session vars
       . ${config.home.profileDirectory}/etc/profile.d/hm-session-vars.sh
