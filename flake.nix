@@ -134,7 +134,7 @@
       userFlake = self;
       # Only include hosts that use secrets
       nixosConfigurations = {
-        inherit (self.nixosConfigurations) laptop; # todo: add sauron
+        inherit (self.nixosConfigurations) sauron laptop; # todo: add sauron
       };
     };
 

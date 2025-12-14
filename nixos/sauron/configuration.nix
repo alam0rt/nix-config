@@ -155,18 +155,11 @@
       masterIdentities = [
         ../../secrets/yubikey-22916238.pub
         ../../secrets/yubikey-15498888.pub
+        ../../secrets/yubikey-18103415.pub
       ];
       storageMode = "local";
-      localStorageDir = ../../secrets/rekeyed/sauron;
-    };
-    identityPaths = ["/srv/vault/ssh_keys/id_rsa"]; # requires `/srv/vault` to be mounted before agenix can be used
-    secrets = {
-      tailscale-server = {
-        rekeyFile = ../../secrets/tailscale-server.age;
-      };
-      tailscale-authkey = {
-        rekeyFile = ../../secrets/tailscale-authkey.age;
-      };
+      localStorageDir = ./. + "/secrets/rekeyed/${config.networking.hostName}";
+      agePlugins = [pkgs.age-plugin-fido2-hmac];
     };
   };
 

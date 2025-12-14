@@ -1,6 +1,7 @@
 {
   inputs,
   pkgs,
+  config,
   ...
 }: {
   imports = [
@@ -32,14 +33,9 @@
         ../../secrets/yubikey-22916238.pub
       ];
       storageMode = "local";
-      localStorageDir = ../../secrets/rekeyed/laptop;
+      localStorageDir = ./. + "/secrets/rekeyed/${config.networking.hostName}";
       agePlugins = [pkgs.age-plugin-fido2-hmac];
     };
-  };
-
-  age.secrets.randomPassword = {
-    rekeyFile = ./secrets/randomPassword.age;
-    generator.script = "passphrase";
   };
 
   # Syncthing
