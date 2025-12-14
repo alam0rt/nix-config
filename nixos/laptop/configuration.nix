@@ -21,7 +21,14 @@
 
   networking.firewall.enable = true;
 
-
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.greetd}/bin/agreety --cmd \'${pkgs.niri}/bin/niri --session\'";
+      };
+    };
+  };
 
   # Syncthing
   services.syncthing = {
@@ -66,6 +73,11 @@
   services.blueman.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+
+  # audio
+  services.pipewire.enable = true;
+  services.pipewire.pulse.enable = true;
+  security.rtkit.enable = true;
 
   # steam
   programs.steam = {

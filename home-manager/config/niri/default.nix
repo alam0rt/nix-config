@@ -1,5 +1,6 @@
 {pkgs, ...}: {
   xdg.configFile."niri/config.kdl".source = ./config.kdl;
+  xdg.configFile."waybar/config.jsonc".source = ./waybar-config.jsonc;
 
   programs.fuzzel.enable = true; # Super+D in the default setting (app launcher)
   programs.swaylock.enable = true; # Super+Alt+L in the default setting (screen locker)
@@ -10,6 +11,5 @@
   home.packages = with pkgs; [
     swaybg # wallpaper
     xwayland-satellite # xwayland support
-    niri
   ];
 }
