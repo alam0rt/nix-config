@@ -3,7 +3,7 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.greetd}/bin/agreety --cmd \'${pkgs.niri}/bin/niri --session\'";
+        command = "${pkgs.greetd}/bin/agreety --cmd \'${pkgs.uwsm}/bin/uwsm start -- niri-uwsm.desktop\'";
       };
     };
   };
@@ -14,6 +14,23 @@
       emoji = [ "Font Awesome" ];
     };
   };
+
+  security.pam.services.swaylock = {};
+
+  programs.uwsm = {
+    enable = true;
+    waylandCompositors = {
+      niri = {
+        prettyName = "Niri";
+        comment = "Dynamic, scrollable tiling Wayland compositor";
+        binPath = "/run/current-system/sw/bin/niri-session";
+      };
+    };
+  };
+
+  environment.systemPackages = with pkgs; [
+    niri
+  ];
 
   fonts.packages = with pkgs; [
     font-awesome
