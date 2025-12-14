@@ -1,4 +1,4 @@
-{pkgs, ...}: {
+{pkgs, config, ...}: {
   imports = [
     ../config/common
     ../config/network
@@ -43,7 +43,7 @@
         ../../secrets/yubikey-15498888.pub
       ];
       storageMode = "local";
-      localStorageDir = ../../secrets/rekeyed/desktop;
+      localStorageDir = ./. + "/secrets/rekeyed/${config.networking.hostName}";
     };
     # TODO: will cause issues as syncthing needs to sync this before we can decrypt
     identityPaths = ["/home/sam/vault/ssh_keys/id_rsa"];
