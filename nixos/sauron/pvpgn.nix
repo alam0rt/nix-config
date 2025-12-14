@@ -7,7 +7,7 @@
   cfg = config.server;
 in {
   services.pvpgn = {
-    enable = true;
+    enable = false;
     bnetd = {
       servername = "WankNet";
       logFile = "/var/log/bnetd.log";

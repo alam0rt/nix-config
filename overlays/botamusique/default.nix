@@ -1,11 +1,12 @@
 final: prev: let
   pythonEnv = prev.python3.withPackages (ps: [
     final.opuslib-next # local
-    final.protobuf3 # local
+    ps.audioop-lts
     ps.flask
     ps.mutagen
     ps.packaging
     ps.pillow
+    ps.protobuf
     ps.pycryptodome
     ps.pyradios
     ps.python-magic
@@ -13,12 +14,14 @@ final: prev: let
     ps.yt-dlp
   ]);
 in {
-  botamusique = prev.botamusique.overrideAttrs (old: rec {
+  botamusique = prev.botamusique.overrideAttrs (old: {
+    version = "v8.3.4";
+    
     src = prev.fetchFromGitHub {
       repo = "botamusique";
       owner = "algielen";
-      rev = "190b8e3659ecbae787b0b90a3c3bbf1a4fca494a";
-      sha256 = "sha256-aDWTk1w9lknB5Vu3azrXzRhA7Q4LsN/xMo3VDL2alLM=";
+      rev = "8332323ff83df5df316aa1792f284fa5d72c482b";
+      sha256 = "sha256-LTkosBgubV2fYjrNbEETm3LVD1putVCNrBfC59RWp+8=";
     };
 
     patches = [
@@ -36,11 +39,12 @@ in {
     pythonPath = with prev.python3Packages;
       [
         final.opuslib-next # local
-        final.protobuf3 # local
+        audioop-lts
         flask
         mutagen
         packaging
         pillow
+        protobuf
         pycryptodome
         pyradios
         python-magic
@@ -48,8 +52,7 @@ in {
         yt-dlp
       ]
       ++ prev.lib.optionals prev.stdenv.isLinux [
-        # audioop-lts is needed for Python 3.13+ (audioop was removed)
-        # This may need to be packaged separately for Nix if not available
+        # Additional Linux-specific dependencies if needed
       ];
 
     installPhase = ''

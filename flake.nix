@@ -13,11 +13,6 @@
     home-manager.url = "github:nix-community/home-manager/release-25.11";
     home-manager.inputs.nixpkgs.follows = "nixpkgs";
 
-    # darwin
-    nix-darwin.url = "github:lnl7/nix-darwin/master";
-    nix-darwin.inputs.nixpkgs.follows = "nixpkgs";
-    nixpkgs-firefox-darwin.url = "github:bandithedoge/nixpkgs-firefox-darwin";
-
     # s3cr3ts
     agenix.url = "github:ryantm/agenix";
     agenix-rekey.url = "github:oddlama/agenix-rekey";
@@ -139,19 +134,7 @@
       userFlake = self;
       # Only include hosts that use secrets
       nixosConfigurations = {
-        inherit (self.nixosConfigurations) sauron desktop;
-      };
-    };
-
-    # Standalone home-manager configuration entrypoint
-    # Available through 'home-manager --flake .#your-username@your-hostname'
-    homeConfigurations = {
-      "sam.lockart@FYV2M2TY9X" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages.aarch64-darwin; # Home-manager requires 'pkgs' instance
-        extraSpecialArgs = {
-          inherit inputs outputs;
-        };
-        modules = [./home-manager/darwin.nix];
+        inherit (self.nixosConfigurations) laptop; # todo: add sauron
       };
     };
   };

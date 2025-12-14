@@ -1,6 +1,5 @@
 {
   config,
-  lib,
   pkgs,
   ...
 }: let
@@ -28,10 +27,6 @@ in {
         proxyPass = "http://127.0.0.1:8096";
         recommendedProxySettings = true;
       };
-    };
-    tailscaleAuth = {
-      enable = true;
-      virtualHosts = ["jackett.middleearth.samlockart.com"];
     };
     virtualHosts."sonarr.middleearth.samlockart.com" = {
       forceSSL = false;

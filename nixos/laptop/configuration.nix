@@ -9,6 +9,7 @@
     ../config/network/nfs_mounts.nix
     ../config/nvidia.nix
     ../config/home-manager.nix
+    ../config/desktop-common.nix
     ./hardware-configuration.nix
   ];
 
@@ -21,6 +22,7 @@
 
   networking.firewall.enable = true;
 
+<<<<<<< HEAD
   # secrets
   age = {
     rekey = {
@@ -36,6 +38,8 @@
     identityPaths = ["/home/sam/.ssh/id_ed25519_sk_rk"];
   };
 
+=======
+>>>>>>> main
   # Syncthing
   services.syncthing = {
     enable = true;
@@ -79,6 +83,11 @@
   services.blueman.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
+
+  # audio
+  services.pipewire.enable = true;
+  services.pipewire.pulse.enable = true;
+  security.rtkit.enable = true;
 
   # steam
   programs.steam = {
