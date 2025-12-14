@@ -137,5 +137,16 @@
         inherit (self.nixosConfigurations) laptop; # todo: add sauron
       };
     };
+
+    devShells = forAllSystems (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [inputs.agenix-rekey.overlays.default];
+      };
+    in {
+      default = pkgs.mkShell {
+        packages = [pkgs.agenix-rekey];
+      };
+    });
   };
 }
