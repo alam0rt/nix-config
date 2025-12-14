@@ -9,6 +9,7 @@
     ../config/network/nfs_mounts.nix
     ../config/nvidia.nix
     ../config/home-manager.nix
+    ../config/desktop-common.nix
     ./hardware-configuration.nix
   ];
 
@@ -20,15 +21,6 @@
   networking.wireless.userControlled.enable = true;
 
   networking.firewall.enable = true;
-
-  services.greetd = {
-    enable = true;
-    settings = {
-      default_session = {
-        command = "${pkgs.greetd}/bin/agreety --cmd \'${pkgs.niri}/bin/niri --session\'";
-      };
-    };
-  };
 
   # Syncthing
   services.syncthing = {

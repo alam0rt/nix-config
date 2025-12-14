@@ -5,6 +5,7 @@
     ../config/network/nfs_mounts.nix
     ../config/home-manager.nix
     ../config/overclocking.nix
+    ../config/desktop-common.nix
     ./hardware-configuration.nix
   ];
 
