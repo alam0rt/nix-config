@@ -7,13 +7,35 @@
   host = "${user}.rsync.net";
   repo = "${user}@${host}";
   environment = {
-    #BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
+    BORG_RSH = "ssh -i ${config.age.secrets.borg-ssh.path}";
     BORG_RELOCATED_REPO_ACCESS_IS_OK = "1";
   };
 in {
   environment.systemPackages = with pkgs; [borgbackup];
 
   age.secrets.borg.rekeyFile = ../../secrets/borg.age;
+  age.secrets.borg-ssh = {
+    rekeyFile = ./borg-ssh.age;
+    generator.script = "ssh-ed25519";
+    mode = "0600";
+  };
+
+  age.secrets.borg-ssh-public = {
+    rekeyFile = ./borg-ssh-public.age;
+    generator = {
+      dependencies = {
+        inherit (config.age.secrets) borg-ssh;
+      };
+      script = {pkgs, decrypt, lib, deps, file, ...}: ''
+        pub=$(ssh-keygen -y -f <(${decrypt} ${lib.escapeShellArg deps.borg-ssh.file}))
+        if [ -z "$pub" ]; then
+          echo "Failed to generate public key" >&2
+          exit 1
+        fi
+        echo "$pub"
+      '';
+    };
+  };
 
   services.borgbackup.jobs = {
     mordor-vault = {

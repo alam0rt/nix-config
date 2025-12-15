@@ -11,7 +11,7 @@
     ../config/zfs.nix
     ./maubot.nix
     ./mumble.nix
-    ./borg.nix
+    ./borg
     ./vaultwarden.nix
     ./transmission.nix
     ./nas.nix
