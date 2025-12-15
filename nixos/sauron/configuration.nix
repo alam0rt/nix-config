@@ -10,25 +10,25 @@
     ../config/nvidia.nix
     ../config/zfs.nix
     ./maubot
-    ./mumble.nix
+    ./mumble
     ./borg
     ./tailscale
-    ./vaultwarden.nix
+    ./vaultwarden
     ./transmission
-    ./nas.nix
-    ./unifi.nix
+    ./nas
+    ./unifi
     ./mail
-    ./media.nix
-    ./nginx.nix
-    ./syncthing.nix
-    ./openwebui.nix
-    ./whisper.nix
-    ./matrix.nix
-    ./monitoring.nix
-    ./home-assistant.nix
-    # ./pvpgn.nix
-    # ./llama-cpp.nix
-    # ./k8s.nix
+    ./media
+    ./nginx
+    ./syncthing
+    ./openwebui
+    ./whisper
+    ./matrix
+    ./monitoring
+    ./home-assistant
+    # ./pvpgn
+    # ./llama-cpp
+    # ./k8s
     # ../config/home-manager.nix # get working
   ];
 
