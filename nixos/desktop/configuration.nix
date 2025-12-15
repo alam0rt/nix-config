@@ -34,20 +34,8 @@
     package32 = unstable.driversi686Linux.mesa;
   };
 
-  # secrets
-  age = {
-    rekey = {
-      hostPubkey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIKUZsPCBv+914ZE8kLvYuohYRxnymVbf98FJo0xlV1SZAAAABHNzaDo= ssh:"; # TODO: replace with actual desktop host key
-      masterIdentities = [
-        ../../secrets/yubikey-22916238.pub
-        ../../secrets/yubikey-15498888.pub
-      ];
-      storageMode = "local";
-      localStorageDir = ./. + "/secrets/rekeyed/${config.networking.hostName}";
-    };
-    # TODO: will cause issues as syncthing needs to sync this before we can decrypt
-    identityPaths = ["/home/sam/vault/ssh_keys/id_rsa"];
-  };
+  # ssk-keyscan $hostname
+  age.rekey.hostPubKey = "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIKUZsPCBv+914ZE8kLvYuohYRxnymVbf98FJo0xlV1SZAAAABHNzaDo= ssh:";
 
   # Syncthing
   services.syncthing = {
