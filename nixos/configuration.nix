@@ -10,8 +10,7 @@
   # You can import other NixOS modules here
   imports = [
     ./config/common
-    inputs.agenix.nixosModules.default
-    inputs.pvpgnix.nixosModules.x86_64-linux.default
+    ./config/secrets
   ];
 
   # https://github.com/nix-community/nix-ld

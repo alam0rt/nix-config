@@ -1,6 +1,7 @@
 {
   inputs,
   pkgs,
+  config,
   ...
 }: {
   imports = [
@@ -21,6 +22,9 @@
   networking.wireless.userControlled.enable = true;
 
   networking.firewall.enable = true;
+
+  # ssk-keyscan $hostname
+  age.rekey.hostPubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD1T9mW39qktiMSPdx6f1J88poTg02UebSLlzwSP/F3mO5TUVShFomeS2lto0BgFul9tVvxxCN582Kh604nFQ/gq59wew4d9N96c0l2c584gj3sfg8O1xxkPsFa+EPZ98JGBpuLiYvzzGguUeITSE+uP4jyJ4EPEn55NwnJx74uCGGaFt3D2dCAF99jWCKWvvWR1Wk0znW18RDm9kOvlXflAJ02s2+Vne/PWiaOVm6Kw+/JAaRCxxncTyf7LFnzXAPOvVmdYzNgKFsN36r7A9CTRgDhWqXFkZBwoWS8PIDxS9iwLaapNv3kMAfJXx8UxZYLPx+Jbi0Q88JaSvnmqMJwP1BwsXoEoadWzY+oEXr9MJ1K2Q2dyyl6ZAoEgU4A5dBcmc0E14mltgD/09JJDMhf5HWzwRQXoo/ZSQ0+lTmNwQDrYaomuBayaKbECNki5J2NjGMICtHmGVzeLxzHZnBnAGxmURE90rXvy5gKF7nruVFmcViEnzzUqPweemcwsSmNhx0TSJfrqHRs4+rsJlAJ0JZTVE1fYVHqCbe7x13dUTpMChHHy0NPvwfao/EPC05fJAypTSr/5a76qf/lh58Ahmxg5HpbOx8RbasfKwkJTT0Kg58sexia8CUsTdl2u/YknyB4z0uXxlvtooa702/3WXf9oUNI71wfXi4k+pBKxw==";
 
   # Syncthing
   services.syncthing = {

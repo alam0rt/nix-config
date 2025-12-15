@@ -15,6 +15,11 @@
 
     # s3cr3ts
     agenix.url = "github:ryantm/agenix";
+    agenix-rekey.url = "github:oddlama/agenix-rekey";
+    # Make sure to override the nixpkgs version to follow your flake,
+    # otherwise derivation paths can mismatch (when using storageMode = "derivation"),
+    # resulting in the rekeyed secrets not being found!
+    agenix-rekey.inputs.nixpkgs.follows = "nixpkgs";
 
     # pvpgn
     pvpgnix.url = "github:alam0rt/pvpgnix";
@@ -84,9 +89,11 @@
           inherit inputs outputs;
         };
         modules = [
-          # > Our main nixos configuration file <
+          # removed pvpgn
           ./nixos/configuration.nix
           ./nixos/sauron/configuration.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
         ];
       };
       desktop = nixpkgs.lib.nixosSystem {
@@ -94,9 +101,10 @@
           inherit inputs outputs;
         };
         modules = [
-          # > Our main nixos configuration file <
           ./nixos/configuration.nix
           ./nixos/desktop/configuration.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
         ];
       };
       laptop = nixpkgs.lib.nixosSystem {
@@ -106,6 +114,8 @@
         modules = [
           ./nixos/configuration.nix
           ./nixos/laptop/configuration.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
           nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme-gen2
         ];
       };
@@ -119,5 +129,24 @@
         ];
       };
     };
+
+    agenix-rekey = inputs.agenix-rekey.configure {
+      userFlake = self;
+      # Only include hosts that use secrets
+      nixosConfigurations = {
+        inherit (self.nixosConfigurations) sauron laptop; # todo: add sauron
+      };
+    };
+
+    devShells = forAllSystems (system: let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [inputs.agenix-rekey.overlays.default];
+      };
+    in {
+      default = pkgs.mkShell {
+        packages = [pkgs.agenix-rekey];
+      };
+    });
   };
 }
