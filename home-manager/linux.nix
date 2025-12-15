@@ -32,7 +32,7 @@
       pkgs.xdg-desktop-portal-gtk
       pkgs.xdg-desktop-portal-gnome
     ];
-    config.common.default = [ "*" ];
+    config.common.default = ["*"];
   };
 
   home.username = "sam";
@@ -43,5 +43,4 @@
 
   # https://nixos.wiki/wiki/FAQ/When_do_I_update_stateVersion
   home.stateVersion = "24.11";
-
 }

@@ -9,9 +9,9 @@
   };
   fonts.fontconfig = {
     defaultFonts = {
-      sansSerif = [ "Noto Sans" "Liberation Sans" ];
-      monospace = [ "Drafting Mono"];
-      emoji = [ "Font Awesome" ];
+      sansSerif = ["Noto Sans" "Liberation Sans"];
+      monospace = ["Drafting Mono"];
+      emoji = ["Font Awesome"];
     };
   };
 

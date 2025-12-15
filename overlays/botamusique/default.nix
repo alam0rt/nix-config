@@ -16,7 +16,7 @@ final: prev: let
 in {
   botamusique = prev.botamusique.overrideAttrs (old: {
     version = "v8.3.4";
-    
+
     src = prev.fetchFromGitHub {
       repo = "botamusique";
       owner = "algielen";

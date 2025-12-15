@@ -26,7 +26,14 @@ in {
       dependencies = {
         inherit (config.age.secrets) borg-ssh;
       };
-      script = {pkgs, decrypt, lib, deps, file, ...}: ''
+      script = {
+        pkgs,
+        decrypt,
+        lib,
+        deps,
+        file,
+        ...
+      }: ''
         pub=$(ssh-keygen -y -f <(${decrypt} ${lib.escapeShellArg deps.borg-ssh.file}))
         if [ -z "$pub" ]; then
           echo "Failed to generate public key" >&2

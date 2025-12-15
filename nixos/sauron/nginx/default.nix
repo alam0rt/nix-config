@@ -1,24 +1,32 @@
-{config, lib, ...}: let
+{
+  config,
+  lib,
+  ...
+}: let
   cfg = config.server;
 
   # Assertion: ensure all middleearth vhosts are protected by tailscale auth
   allVhosts = builtins.attrNames config.services.nginx.virtualHosts;
-  middleearthVhosts = builtins.filter
+  middleearthVhosts =
+    builtins.filter
     (name: lib.hasSuffix ".middleearth.samlockart.com" name)
     allVhosts;
   tailscaleVhosts = config.services.nginx.tailscaleAuth.virtualHosts;
-  missingVhosts = builtins.filter
+  missingVhosts =
+    builtins.filter
     (name: !(builtins.elem name tailscaleVhosts))
     middleearthVhosts;
 in {
-  assertions = [{
-    assertion = missingVhosts == [];
-    message = ''
-      The following middleearth.samlockart.com virtualHosts are not protected by tailscaleAuth:
-        ${lib.concatStringsSep "\n    " missingVhosts}
-      Add them to services.nginx.tailscaleAuth.virtualHosts in nginx.nix
-    '';
-  }];
+  assertions = [
+    {
+      assertion = missingVhosts == [];
+      message = ''
+        The following middleearth.samlockart.com virtualHosts are not protected by tailscaleAuth:
+          ${lib.concatStringsSep "\n    " missingVhosts}
+        Add them to services.nginx.tailscaleAuth.virtualHosts in nginx.nix
+      '';
+    }
+  ];
   networking.firewall = {
     allowedTCPPorts = [
       80
