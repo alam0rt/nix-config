@@ -9,7 +9,7 @@
     ../config/network
     ../config/nvidia.nix
     ../config/zfs.nix
-    ./maubot.nix
+    ./maubot
     ./mumble.nix
     ./borg
     ./tailscale
