@@ -14,7 +14,7 @@
     ./borg
     ./tailscale
     ./vaultwarden.nix
-    ./transmission.nix
+    ./transmission
     ./nas.nix
     ./unifi.nix
     ./mail

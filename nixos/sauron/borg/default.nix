@@ -13,7 +13,7 @@
 in {
   environment.systemPackages = with pkgs; [borgbackup];
 
-  age.secrets.borg.rekeyFile = ../../../secrets/borg.age;
+  age.secrets.borg.rekeyFile = ./borg.age;
   age.secrets.borg-ssh = {
     rekeyFile = ./borg-ssh.age;
     generator.script = "ssh-ed25519";
