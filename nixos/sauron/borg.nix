@@ -7,7 +7,7 @@
   host = "${user}.rsync.net";
   repo = "${user}@${host}";
   environment = {
-    BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
+    #BORG_RSH = "ssh -i /srv/vault/ssh_keys/id_rsa";
     BORG_RELOCATED_REPO_ACCESS_IS_OK = "1";
   };
 in {
