@@ -155,7 +155,7 @@
   # secrets
   age = {
     rekey = {
-      hostPubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDNOSKuCJeOwyOqBF1uYhdT+xBRhfTmfLTFfCjyYbPfTKEN+1lrwq6NIbAlDNaiB2QmyWOkL/q8YZTqL5lsV0f+p5pYOlk4XqJZu75o7qU+UL1NRMKWhP3nkPFaajd3UkcTmS4dghZJbHbHEaQpdforBbsrOleh9p7sskLwABoYFkZDqBZRtgqYvHubsSPTWWzcu97pm8jJnKlj25Qw3WuIH5Arz+0w9ENUNV4Y36Hz+sgP+GhPQCird8O6bXgBPH436P36XdYb/a8SCY96xPMaSaW76tU/XVDImfkH7bGRdwRouO9gzjyzucdO51aK/OLaNitUdWkZVMnO2aQBkBNgvFtshU9fnt6ZLIuovsesACt8mLpNE74lKd4PGHxlz7KLcuBL9ZX3S9yr3TjlhEnb5EAahbhVWZuxVjZTPyOOnHqbFKeCRAmSbNFDrW8xWrzwLmdoSbCqWVmUFOMLEBEDMyOEByKHWpeBz5zFfxTloTNbwdYxgUG3o6xFzV9aYAU=";
+      hostPubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQClOnCpf7ig5jUEcAxC00+cYdjB5RrYShdpeunm0Gs2kMFis/GBh98QN8WfPzVvoqE0lppOcqnMNkYu3vm87O/8yKP6JSDMWl+6Zp4k6/dbrNClK8RwJyFJRwln0qDCzwfesOLA3Zt+gmDuclDMQMvlGRfRGOzYgfmszs0oLhISEwzwIh9GdUlZSppnUDWUKNIM9f3GkZ6bR4fX0S+BzbMgGg8YwnE7Zp913+sIoWqmV2cvbOvn8uYztjDfbWwY2mRIq+f4ULCNRa3Otuk30XQ4nBzV48qg4BZ5MpvNPImWz6nIvtDnkXzo30Df9QVd627ZctvJgXlamGfHekplMKy/V3utzaX440xTI2g9Oq4LjXEURpRgrae4qepUIr5JBSNg+X9mWKFNjSaCxahVhH/g32H8TXvlbm7Uyjiyci79fMTsmnrN9o2JxYph4sKgmWr3QaSFQSNpQDETp0lak9XIGzEOSz1PBVweccQZy6GCkM9MpO6/qr8ytiATOvTjEL2TwuRPU/ssoAH6+aWIT/Qm1Mywf+xxbOlpGalIRgAzwyibqWtg0KxqObIMtsvz+/aO4+exBfmNGc6+Z6tKEG4n8Ygqkt8eAIHrIPAvGEnr+c8Tfb8QkWtx7AgmjeX/JzeGZ82a6syN63w38NiDTnOUxtdwcXuZMM3LMipF9Eekew==";
       masterIdentities = [
         ../../secrets/yubikey-22916238.pub
         ../../secrets/yubikey-15498888.pub
