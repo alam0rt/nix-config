@@ -10,6 +10,7 @@
   # You can import other NixOS modules here
   imports = [
     ./config/common
+    ./config/secrets
   ];
 
   # https://github.com/nix-community/nix-ld

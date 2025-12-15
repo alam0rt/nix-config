@@ -7,7 +7,7 @@
         ./pubkeys/yubikey-18103415.pub
       ];
       storageMode = "local";
-      localStorageDir = ./. + "/secrets/rekeyed/${config.networking.hostName}";
+      localStorageDir = ./. + "/rekeyed/${config.networking.hostName}";
       agePlugins = [pkgs.age-plugin-fido2-hmac];
     };
   };
