@@ -9,17 +9,17 @@ in {
   users.groups.mail = {};
   age.secrets = {
     smtp-addr = {
-      rekeyFile = ../../secrets/smtp-addr.age;
+      rekeyFile = ./smtp-addr.age;
       mode = "640";
       group = "mail";
     };
     smtp-user = {
-      rekeyFile = ../../secrets/smtp-user.age;
+      rekeyFile = ./smtp-user.age;
       mode = "640";
       group = "mail";
     };
     smtp-pass = {
-      rekeyFile = ../../secrets/smtp-pass.age;
+      rekeyFile = ./smtp-pass.age;
       mode = "640";
       group = "mail";
     };
