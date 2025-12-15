@@ -29,7 +29,7 @@
     # ./pvpgn
     # ./llama-cpp
     # ./k8s
-    # ../config/home-manager.nix # get working
+    ../config/home-manager.nix # get working
   ];
 
   boot = {
