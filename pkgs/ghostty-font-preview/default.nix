@@ -9,9 +9,19 @@ writeShellApplication {
     # Uses FZF to browse available Ghostty fonts and spawns a preview
     # terminal with fastfetch to show each font in action.
 
+    # Create a temp preview script to avoid quoting issues with FZF
+    PREVIEW_SCRIPT=$(mktemp)
+    cat > "$PREVIEW_SCRIPT" << 'EOFSCRIPT'
+#!/bin/bash
+font="$*"
+pkill -f "ghostty.*font-preview-window" 2>/dev/null || true
+ghostty --title="font-preview-window" --font-family="$font" -e sh -c "fastfetch; echo; echo \"Font: $font\"; read -n 1" 2>&1 &
+EOFSCRIPT
+    chmod +x "$PREVIEW_SCRIPT"
+
     cleanup() {
-      # Kill any lingering preview windows
-      pkill -f "ghostty.*--class=font-preview" 2>/dev/null || true
+      pkill -f "ghostty.*font-preview-window" 2>/dev/null || true
+      rm -f "$PREVIEW_SCRIPT"
     }
     trap cleanup EXIT
 
@@ -20,25 +30,13 @@ writeShellApplication {
       ghostty +list-fonts | grep -E '^[^ ]' | sort -u
     }
 
-    # Preview function - launches ghostty with selected font
-    preview_font() {
-      local font="$1"
-      # Kill previous preview window if any
-      pkill -f "ghostty.*--class=font-preview" 2>/dev/null || true
-      # Launch new preview window (non-blocking)
-      ghostty --class=font-preview --font-family="$font" -e sh -c "fastfetch; echo ''; echo 'Font: $font'; echo 'Press any key to close...'; read -n 1" &
-    }
-
-    export -f preview_font
-
     # Main: pipe fonts to fzf with preview
     selected=$(get_font_families | fzf \
       --header="Select a font (preview spawns in new window)" \
-      --preview="bash -c 'preview_font {}'"\
       --preview-window=hidden \
-      --bind="change:execute-silent(bash -c 'preview_font {}')" \
-      --bind="up:up+execute-silent(bash -c 'preview_font {}')" \
-      --bind="down:down+execute-silent(bash -c 'preview_font {}')")
+      --bind "change:execute-silent($PREVIEW_SCRIPT {})" \
+      --bind "up:up+execute-silent($PREVIEW_SCRIPT {})" \
+      --bind "down:down+execute-silent($PREVIEW_SCRIPT {})")
 
     # Cleanup and print result
     cleanup
