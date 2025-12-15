@@ -1,5 +1,5 @@
 {...}: {
-  imports = [./users.nix];
+  imports = [./users.nix ./agenix.nix];
   nix = {
     # Optimisation of the Nix Store
     optimise.automatic = true;
