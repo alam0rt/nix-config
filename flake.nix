@@ -126,6 +126,8 @@
         modules = [
           ./nixos/configuration.nix
           ./nixos/frodo/configuration.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
         ];
       };
     };
@@ -134,7 +136,7 @@
       userFlake = self;
       # Only include hosts that use secrets
       nixosConfigurations = {
-        inherit (self.nixosConfigurations) sauron laptop; # todo: add sauron
+        inherit (self.nixosConfigurations) sauron laptop frodo desktop;
       };
     };
 

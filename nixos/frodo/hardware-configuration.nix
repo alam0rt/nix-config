@@ -4,7 +4,6 @@
 {
   config,
   lib,
-  pkgs,
   modulesPath,
   ...
 }: {
@@ -24,7 +23,7 @@
     "kvm-amd"
     "wl"
   ];
-  boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
+  # boot.extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
 
   fileSystems."/" = {
     device = "/dev/disk/by-uuid/b3db866e-cfef-4472-9c51-c641f46274af";

@@ -14,6 +14,8 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  age.rekey.hostPubkey = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDDWgLVf6L0SYhVVvo0LEvtqRr5mmVGj+dU8djXptJRRweId9xH85ITXiiCQ9duyZOf17QEnLP62mGoBRwU6n8m3CHy+OZsXn+ZZvShXdDmfGC5f96Weq7+imyGaONxazVr58wL1PL45lSmpbu2gNkG7p+iz5yyvzrz3e1A0RqIzNfOmFv2LBxarEgtrT6JX4n2wK5wv/ObjGkhBZ2l7Df51g3WBFyp3Th+BURfbgQ3cG0xrN0f3FLxoYmUJZuwgnqCkZqTrFEB4BCHIu3bYRNL8cnZYidIQtAeqojgWXtH2mj4Joh9t+MfifUNrjAuCxZG6hN5CcnPS/5f6+Py8seJZEZj6XaAMj6JfyJYMnTVMZ/yjQoUarE+XcUBXKK5GWZ+T3xoGjN9O4WeATwr4o8HyccOHRWiklAdMr/sKSQEK/V5m4K8zLk5ui3EeDc3iri6qiraLiLs7ibazhWOZWkFHSNZs2rVbjyJfDuqSojiucELFXCgjm+T/ho5+Xf2MnsQPcKEkHtzrvGUXFCagvu8ufjqeMa1WVHtCHn73VtaKTlyfhuOBJDNq9XvQwymamFejWX9SAVZXph5a/Wj/U+naYu3owlL1IuV6j4HEQQVYOZ5ryX4QRZaGd9QWFCCxfKtIzU3llIdbYnFp6C8Vs2uzf6+zKV/TpSk/gcJJvh6eQ==";
+
   networking.hostName = "frodo";
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
@@ -34,11 +36,6 @@
   #   useXkbConfig = true; # use xkb.options in tty.
   # };
 
-  # Set your time zone.
-  time.timeZone = "Australia/Melbourne";
-
-  # Select internationalisation properties.
-  i18n.defaultLocale = "en_US.UTF-8";
 
   # Enable the X11 windowing system.
   # services.xserver.enable = true;
