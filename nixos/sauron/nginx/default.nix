@@ -125,6 +125,23 @@ in {
       # proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
     '';
 
+    # Localhost-only status endpoint for prometheus nginx exporter
+    virtualHosts."localhost" = {
+      listen = [
+        { addr = "127.0.0.1"; port = 80; }
+        { addr = "[::1]"; port = 80; }
+      ];
+      locations."/nginx_status" = {
+        extraConfig = ''
+          stub_status on;
+          access_log off;
+          allow 127.0.0.1;
+          allow ::1;
+          deny all;
+        '';
+      };
+    };
+
     virtualHosts."www.iced.cool" = {
       # catch all
       forceSSL = true;
