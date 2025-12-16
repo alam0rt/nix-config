@@ -1,6 +1,6 @@
 * {
     border: none;
-    border-radius: 0;
+    border-radius: 10px;
     font-size: 13px;
     min-height: 0;
 }
@@ -9,6 +9,14 @@ window#waybar {
     background: rgba(43, 48, 59, 0.5);
     border-bottom: 3px solid rgba(100, 114, 125, 0.5);
     color: white;
+    padding: 2px 0;
+}
+
+/* Ensure emojis and icons have enough space */
+#battery, #clock, #network, #pulseaudio, #cpu, #memory, #tray, #wireplumber, #backlight {
+    padding: 0 10px;
+    margin: 2px 4px;
+    min-height: 20px;
 }
 
 tooltip {
