@@ -21,12 +21,8 @@
     ];
 
     jails = {
-      # SSH jail - NixOS pre-configures this, just customize settings
       sshd.settings = {
         enabled = true;
-        maxretry = 3;
-        findtime = 3600; # 1 hour
-        bantime = 3600; # 1 hour
       };
 
       # Nginx bad bots and scanners
@@ -51,30 +47,6 @@
         maxretry = 3;
         findtime = 60; # 1 minute
         bantime = 3600; # 1 hour
-      };
-
-      # Nginx URL probing (wp-admin, phpmyadmin, .env, .git, etc)
-      nginx-url-probe.settings = {
-        enabled = true;
-        port = "http,https";
-        filter = "nginx-url-probe";
-        logpath = "/var/log/nginx/access.log";
-        backend = "auto";
-        maxretry = 5;
-        findtime = 600; # 10 minutes
-        bantime = 86400; # 1 day
-      };
-
-      # Vaultwarden/Bitwarden login failures
-      vaultwarden.settings = {
-        enabled = true;
-        port = "http,https";
-        filter = "vaultwarden";
-        logpath = "/var/log/vaultwarden/vaultwarden.log";
-        backend = "auto";
-        maxretry = 3;
-        findtime = 3600; # 1 hour
-        bantime = 86400; # 1 day
       };
     };
   };
