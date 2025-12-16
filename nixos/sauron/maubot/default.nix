@@ -17,7 +17,9 @@ in {
   services.nginx = let
     inherit (config.services.maubot) settings;
   in {
-    virtualHosts."maubot.middleearth.samlockart.com" = {
+    virtualHosts."maubot.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString settings.server.port}";
         proxyWebsockets = true;

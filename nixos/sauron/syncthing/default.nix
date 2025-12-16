@@ -45,9 +45,9 @@ in {
     };
   };
 
-  services.nginx.virtualHosts."sync.middleearth.samlockart.com" = {
-    forceSSL = false;
-    enableACME = false;
+  services.nginx.virtualHosts."sync.${cfg.domain}" = {
+    forceSSL = true;
+    useACMEHost = cfg.domain;
     locations."/" = {
       proxyPass = "http://127.0.0.1:8384";
     };

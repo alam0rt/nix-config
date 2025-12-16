@@ -20,49 +20,49 @@ in {
         recommendedProxySettings = true;
       };
     };
-    virtualHosts."tv.middleearth.samlockart.com" = {
-      forceSSL = false;
-      enableACME = false;
+    virtualHosts."tv.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
         recommendedProxySettings = true;
       };
     };
-    virtualHosts."sonarr.middleearth.samlockart.com" = {
-      forceSSL = false;
-      enableACME = false;
+    virtualHosts."sonarr.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8989";
         recommendedProxySettings = true;
       };
     };
-    virtualHosts."jackett.middleearth.samlockart.com" = {
-      forceSSL = false;
-      enableACME = false;
+    virtualHosts."jackett.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:9117";
         recommendedProxySettings = true;
       };
     };
-    virtualHosts."bazarr.middleearth.samlockart.com" = {
-      forceSSL = false;
-      enableACME = false;
+    virtualHosts."bazarr.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.bazarr.listenPort}";
         recommendedProxySettings = true;
       };
     };
-    virtualHosts."radarr.middleearth.samlockart.com" = {
-      forceSSL = false;
-      enableACME = false;
+    virtualHosts."radarr.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:7878";
         recommendedProxySettings = true;
       };
     };
-    virtualHosts."lidarr.middleearth.samlockart.com" = {
-      forceSSL = false;
-      enableACME = false;
+    virtualHosts."lidarr.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.lidarr.settings.server.port}";
       };

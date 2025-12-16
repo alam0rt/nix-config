@@ -9,7 +9,7 @@
   allVhosts = builtins.attrNames config.services.nginx.virtualHosts;
   middleearthVhosts =
     builtins.filter
-    (name: lib.hasSuffix ".middleearth.samlockart.com" name)
+    (name: lib.hasSuffix ".${cfg.domain}" name)
     allVhosts;
   tailscaleVhosts = config.services.nginx.tailscaleAuth.virtualHosts;
   missingVhosts =
@@ -21,7 +21,7 @@ in {
     {
       assertion = missingVhosts == [];
       message = ''
-        The following middleearth.samlockart.com virtualHosts are not protected by tailscaleAuth:
+        The following ${cfg.domain} virtualHosts are not protected by tailscaleAuth:
           ${lib.concatStringsSep "\n    " missingVhosts}
         Add them to services.nginx.tailscaleAuth.virtualHosts in nginx.nix
       '';
@@ -40,6 +40,21 @@ in {
   security.acme.defaults.email = "sam@samlockart.com";
   security.acme.acceptTerms = true;
 
+  age.secrets.cloudflare-api-token.rekeyFile = ./cloudflare-api-token.age;
+
+  security.acme = {
+    certs = {
+      "${cfg.domain}" = {
+        domain = "*.${cfg.domain}";
+        group = "nginx";
+        dnsProvider = "cloudflare";
+        # location of your CLOUDFLARE_DNS_API_TOKEN=[value]
+        # https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#EnvironmentFile=
+        environmentFile = config.age.secrets.cloudflare-api-token.path;
+      };
+    };
+  };
+
   ## services
   services.tailscaleAuth = {
     enable = true;
@@ -55,17 +70,17 @@ in {
     tailscaleAuth = {
       enable = true;
       virtualHosts = [
-        "jackett.middleearth.samlockart.com"
-        "sonarr.middleearth.samlockart.com"
-        "radarr.middleearth.samlockart.com"
-        "bazarr.middleearth.samlockart.com"
-        "lidarr.middleearth.samlockart.com"
-        "open-webui.middleearth.samlockart.com"
-        "maubot.middleearth.samlockart.com"
-        "sync.middleearth.samlockart.com"
-        "transmission.middleearth.samlockart.com"
-        "grafana.middleearth.samlockart.com"
-        "tv.middleearth.samlockart.com"
+        "jackett.${cfg.domain}"
+        "sonarr.${cfg.domain}"
+        "radarr.${cfg.domain}"
+        "bazarr.${cfg.domain}"
+        "lidarr.${cfg.domain}"
+        "open-webui.${cfg.domain}"
+        "maubot.${cfg.domain}"
+        "sync.${cfg.domain}"
+        "transmission.${cfg.domain}"
+        "grafana.${cfg.domain}"
+        "tv.${cfg.domain}"
       ];
     };
 
@@ -109,6 +124,23 @@ in {
       # This might create errors - might be breaking Grafana
       # proxy_cookie_path / "/; secure; HttpOnly; SameSite=strict";
     '';
+
+    # Localhost-only status endpoint for prometheus nginx exporter
+    virtualHosts."localhost" = {
+      listen = [
+        { addr = "127.0.0.1"; port = 80; }
+        { addr = "[::1]"; port = 80; }
+      ];
+      locations."/nginx_status" = {
+        extraConfig = ''
+          stub_status on;
+          access_log off;
+          allow 127.0.0.1;
+          allow ::1;
+          deny all;
+        '';
+      };
+    };
 
     virtualHosts."www.iced.cool" = {
       # catch all

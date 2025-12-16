@@ -18,9 +18,9 @@ in {
     };
   };
 
-  services.nginx.virtualHosts."open-webui.middleearth.samlockart.com" = {
-    forceSSL = false;
-    enableACME = false;
+  services.nginx.virtualHosts."open-webui.${cfg.domain}" = {
+    forceSSL = true;
+    useACMEHost = cfg.domain;
     locations."/" = {
       proxyPass = "http://127.0.0.1:${toString config.services.open-webui.port}";
       recommendedProxySettings = true;

@@ -1,5 +1,8 @@
 {...}: {
-  imports = [./users.nix];
+  imports = [
+    ./users.nix
+    ./server.nix
+  ];
   nix = {
     # Optimisation of the Nix Store
     optimise.automatic = true;
