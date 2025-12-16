@@ -40,6 +40,21 @@ in {
   security.acme.defaults.email = "sam@samlockart.com";
   security.acme.acceptTerms = true;
 
+  age.secrets.cloudflare-api-token = ./cloudflare-api-token.age;
+
+  security.acme = {
+    certs = {
+      "middleearth.samlockart.com" = {
+        domain = "*.middleearth.samlockart.com";
+        group = "nginx";
+        dnsProvider = "cloudflare";
+        # location of your CLOUDFLARE_DNS_API_TOKEN=[value]
+        # https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#EnvironmentFile=
+        environmentFile = config.age.secrets.cloudflare-api-token.path;
+      };
+    };
+  };
+
   ## services
   services.tailscaleAuth = {
     enable = true;
