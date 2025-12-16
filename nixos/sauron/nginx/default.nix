@@ -9,7 +9,7 @@
   allVhosts = builtins.attrNames config.services.nginx.virtualHosts;
   middleearthVhosts =
     builtins.filter
-    (name: lib.hasSuffix ".middleearth.samlockart.com" name)
+    (name: lib.hasSuffix ".${cfg.domain}" name)
     allVhosts;
   tailscaleVhosts = config.services.nginx.tailscaleAuth.virtualHosts;
   missingVhosts =
@@ -21,7 +21,7 @@ in {
     {
       assertion = missingVhosts == [];
       message = ''
-        The following middleearth.samlockart.com virtualHosts are not protected by tailscaleAuth:
+        The following ${cfg.domain} virtualHosts are not protected by tailscaleAuth:
           ${lib.concatStringsSep "\n    " missingVhosts}
         Add them to services.nginx.tailscaleAuth.virtualHosts in nginx.nix
       '';
@@ -40,12 +40,12 @@ in {
   security.acme.defaults.email = "sam@samlockart.com";
   security.acme.acceptTerms = true;
 
-  age.secrets.cloudflare-api-token = ./cloudflare-api-token.age;
+  age.secrets.cloudflare-api-token.rekeyFile = ./cloudflare-api-token.age;
 
   security.acme = {
     certs = {
-      "middleearth.samlockart.com" = {
-        domain = "*.middleearth.samlockart.com";
+      "${cfg.domain}" = {
+        domain = "*.${cfg.domain}";
         group = "nginx";
         dnsProvider = "cloudflare";
         # location of your CLOUDFLARE_DNS_API_TOKEN=[value]
@@ -70,17 +70,17 @@ in {
     tailscaleAuth = {
       enable = true;
       virtualHosts = [
-        "jackett.middleearth.samlockart.com"
-        "sonarr.middleearth.samlockart.com"
-        "radarr.middleearth.samlockart.com"
-        "bazarr.middleearth.samlockart.com"
-        "lidarr.middleearth.samlockart.com"
-        "open-webui.middleearth.samlockart.com"
-        "maubot.middleearth.samlockart.com"
-        "sync.middleearth.samlockart.com"
-        "transmission.middleearth.samlockart.com"
-        "grafana.middleearth.samlockart.com"
-        "tv.middleearth.samlockart.com"
+        "jackett.${cfg.domain}"
+        "sonarr.${cfg.domain}"
+        "radarr.${cfg.domain}"
+        "bazarr.${cfg.domain}"
+        "lidarr.${cfg.domain}"
+        "open-webui.${cfg.domain}"
+        "maubot.${cfg.domain}"
+        "sync.${cfg.domain}"
+        "transmission.${cfg.domain}"
+        "grafana.${cfg.domain}"
+        "tv.${cfg.domain}"
       ];
     };
 

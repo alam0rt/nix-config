@@ -12,15 +12,15 @@ in {
     enable = true;
     settings = {
       server = {
-        domain = "grafana.middleearth.samlockart.com";
-        root_url = "http://${toString config.services.grafana.settings.server.domain}/";
+        domain = "grafana.${cfg.domain}";
+        root_url = "https://${toString config.services.grafana.settings.server.domain}/";
         protocol = "http";
         http_port = 3000;
         http_addr = "127.0.0.1";
         serve_from_sub_path = false;
       };
       security = {
-        cookie_secure = false; # serving via https proxy
+        cookie_secure = true; # serving via https proxy
       };
       smtp = {
         enabled = true;
@@ -33,8 +33,8 @@ in {
   };
 
   services.nginx.virtualHosts.${toString config.services.grafana.settings.server.domain} = {
-    forceSSL = false;
-    enableACME = false;
+    forceSSL = true;
+    useACMEHost = cfg.domain;
     locations = {
       "/" = {
         proxyPass = "${toString config.services.grafana.settings.server.protocol}://${toString config.services.grafana.settings.server.http_addr}:${toString config.services.grafana.settings.server.http_port}";
