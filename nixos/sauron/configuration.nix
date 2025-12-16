@@ -9,6 +9,7 @@
     ../config/network
     ../config/nvidia.nix
     ../config/zfs.nix
+    ./fail2ban.nix
     ./maubot
     ./mumble
     ./borg
