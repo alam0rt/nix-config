@@ -1,0 +1,12 @@
+diff --git a/main.py b/main.py
+index d85f9f8..650708e 100644
+--- a/main.py
++++ b/main.py
+@@ -12,6 +12,7 @@ from typing import Any
+ import command
+ import constants
+ import media.playlist
++import media.radio
+ import util
+ import variables as var
+ from database import SettingsDatabase, MusicDatabase, DatabaseMigration

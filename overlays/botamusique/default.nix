@@ -26,6 +26,7 @@ in {
 
     patches = [
       ./circular-import.patch
+      ./radio-import.patch
     ];
 
     # Remove npm dependencies
