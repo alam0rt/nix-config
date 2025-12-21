@@ -32,25 +32,22 @@ in {
     enable = true;
     schedule = "daily";
     configuration = {
-      radarr = [
-        {
+      radarr = {
+        main = {
           api_key = {
             _secret = config.age.secrets."radarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.radarr.settings.server.port}/";
-          instance_name = "main";
-
-        }
-      ];
-      sonarr = [
-        {
+        };
+      };
+      sonarr = {
+        main = {
           api_key = {
             _secret = config.age.secrets."sonarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.sonarr.settings.server.port}/";
-          instance_name = "main";
-        }
-      ];
+        };
+      };
     };
   };
 
