@@ -16,8 +16,16 @@ in {
     openFirewall = true;
   };
 
-  age.secrets."sonarr-api-key".source = ./sonarr-api-key.age;
-  age.secrets."radarr-api-key".source = ./radarr-api-key.age;
+  age.secrets."sonarr-api-key" = {
+    rekeyFile = ./sonarr-api-key.age;
+    owner = "recyclarr";
+    group = "recyclarr";
+  };
+  age.secrets."radarr-api-key" = {
+    rekeyFile = ./radarr-api-key.age;
+    owner = "recyclarr";
+    group = "recyclarr";
+  };
 
   services.recyclarr = {
     enable = true;
