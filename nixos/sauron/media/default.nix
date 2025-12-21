@@ -61,7 +61,7 @@ in {
             # anime
             {template = "sonarr-quality-definition-anime";}
             {template = "sonarr-v4-quality-profile-anime";}
-            {template = "sonarr-v4-custom-formats-anime"}
+            {template = "sonarr-v4-custom-formats-anime";}
           ];
         };
       };
