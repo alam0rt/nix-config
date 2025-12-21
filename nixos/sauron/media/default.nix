@@ -21,6 +21,7 @@ in {
     owner = "recyclarr";
     group = "recyclarr";
   };
+
   age.secrets."radarr-api-key" = {
     rekeyFile = ./radarr-api-key.age;
     owner = "recyclarr";
@@ -36,7 +37,7 @@ in {
           api_key = {
             _secret = config.age.secrets."radarr-api-key".path;
           };
-          base_url = "http://localhost:${toString config.services.radarr.port}/";
+          base_url = "http://localhost:${toString config.services.radarr.settings.port}/";
           instance_name = "main";
 
         }
@@ -46,7 +47,7 @@ in {
           api_key = {
             _secret = config.age.secrets."sonarr-api-key".path;
           };
-          base_url = "http://localhost:${toString config.services.sonarr.port}/";
+          base_url = "http://localhost:${toString config.services.sonarr.settings.port}/";
           instance_name = "main";
         }
       ];
@@ -90,7 +91,7 @@ in {
       forceSSL = true;
       useACMEHost = cfg.domain;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:8989";
+        proxyPass = "http://127.0.0.1:${toString config.services.sonarr.settings.port}";
         recommendedProxySettings = true;
       };
     };
@@ -114,7 +115,7 @@ in {
       forceSSL = true;
       useACMEHost = cfg.domain;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:7878";
+        proxyPass = "http://127.0.0.1:${toString config.services.radarr.settings.port}";
         recommendedProxySettings = true;
       };
     };
