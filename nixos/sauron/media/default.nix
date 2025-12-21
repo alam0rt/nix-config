@@ -58,10 +58,6 @@ in {
             {template = "sonarr-quality-definition-series";}
             {template = "sonarr-v4-quality-profile-web-1080p";}
             {template = "sonarr-v4-custom-formats-web-1080p";}
-            # anime
-            {template = "sonarr-quality-definition-anime";}
-            {template = "sonarr-v4-quality-profile-anime";}
-            {template = "sonarr-v4-custom-formats-anime";}
           ];
         };
       };
