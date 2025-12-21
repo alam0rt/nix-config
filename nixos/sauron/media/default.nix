@@ -16,6 +16,35 @@ in {
     openFirewall = true;
   };
 
+  age.secrets."sonarr-api-key".source = ./sonarr-api-key.age;
+  age.secrets."radarr-api-key".source = ./radarr-api-key.age;
+
+  services.recyclarr = {
+    enable = true;
+    schedule = "daily";
+    configuration = {
+      radarr = [
+        {
+          api_key = {
+            _secret = age.secrets."radarr-api-key".path;
+          };
+          base_url = "http://localhost:${toString config.services.radarr.port}/";
+          instance_name = "main";
+
+        }
+      ];
+      sonarr = [
+        {
+          api_key = {
+            _secret = age.secrets."sonarr-api-key".path;
+          };
+          base_url = "http://localhost:${toString config.services.sonarr.port}/";
+          instance_name = "main";
+        }
+      ];
+    };
+  };
+
   services.nginx = {
     virtualHosts."tv.samlockart.com" = {
       forceSSL = true;
