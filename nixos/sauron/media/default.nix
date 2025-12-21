@@ -13,6 +13,7 @@ in {
 
   services.jellyseerr = {
     enable = true;
+    openFirewall = true;
   };
 
   services.nginx = {
