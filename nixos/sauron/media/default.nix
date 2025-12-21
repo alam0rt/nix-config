@@ -26,7 +26,7 @@ in {
       radarr = [
         {
           api_key = {
-            _secret = age.secrets."radarr-api-key".path;
+            _secret = config.age.secrets."radarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.radarr.port}/";
           instance_name = "main";
@@ -36,7 +36,7 @@ in {
       sonarr = [
         {
           api_key = {
-            _secret = age.secrets."sonarr-api-key".path;
+            _secret = config.age.secrets."sonarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.sonarr.port}/";
           instance_name = "main";
