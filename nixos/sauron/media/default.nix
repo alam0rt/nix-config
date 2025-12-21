@@ -25,6 +25,14 @@ in {
         recommendedProxySettings = true;
       };
     };
+    virtualHosts."requests.iced.cool" = {
+      forceSSL = true;
+      enableACME = true;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}";
+        recommendedProxySettings = true;
+      };
+    };
     virtualHosts."jellyseerr.${cfg.domain}" = {
       forceSSL = true;
       useACMEHost = cfg.domain;
