@@ -37,7 +37,7 @@ in {
           api_key = {
             _secret = config.age.secrets."radarr-api-key".path;
           };
-          base_url = "http://localhost:${toString config.services.radarr.settings.port}/";
+          base_url = "http://localhost:${toString config.services.radarr.settings.server.port}/";
           instance_name = "main";
 
         }
@@ -47,7 +47,7 @@ in {
           api_key = {
             _secret = config.age.secrets."sonarr-api-key".path;
           };
-          base_url = "http://localhost:${toString config.services.sonarr.settings.port}/";
+          base_url = "http://localhost:${toString config.services.sonarr.settings.server.port}/";
           instance_name = "main";
         }
       ];
@@ -91,7 +91,7 @@ in {
       forceSSL = true;
       useACMEHost = cfg.domain;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.sonarr.settings.port}";
+        proxyPass = "http://127.0.0.1:${toString config.services.sonarr.settings.server.port}";
         recommendedProxySettings = true;
       };
     };
@@ -115,7 +115,7 @@ in {
       forceSSL = true;
       useACMEHost = cfg.domain;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.radarr.settings.port}";
+        proxyPass = "http://127.0.0.1:${toString config.services.radarr.settings.server.port}";
         recommendedProxySettings = true;
       };
     };
