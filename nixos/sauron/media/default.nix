@@ -55,8 +55,8 @@ in {
           delete_old_custom_formats = true;
           include = [
             {template = "sonarr-quality-definition-series";}
-            {template = "sonarr-quality-profile-web-1080p-v4";}
-            {template = "sonarr-custom-formats-web-1080p-v4";}
+            {template = "sonarr-v4-quality-profile-web-1080p";}
+            {template = "sonarr-v4-custom-formats-web-1080p";}
           ];
         };
       };
