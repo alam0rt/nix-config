@@ -81,6 +81,7 @@ in {
         "transmission.${cfg.domain}"
         "grafana.${cfg.domain}"
         "tv.${cfg.domain}"
+        "jellyseerr.${cfg.domain}"
       ];
     };
 
