@@ -33,15 +33,18 @@ in {
     schedule = "daily";
     configuration = {
       radarr = {
-        main = {
+        movies = {
           api_key = {
             _secret = config.age.secrets."radarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.radarr.settings.server.port}/";
+          include = [
+            { template = "radarr-custom-formats-hd-bluray-web"; }
+          ];
         };
       };
       sonarr = {
-        main = {
+        tv = {
           api_key = {
             _secret = config.age.secrets."sonarr-api-key".path;
           };
