@@ -38,8 +38,11 @@ in {
             _secret = config.age.secrets."radarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.radarr.settings.server.port}/";
+          delete_old_custom_formats = true;
           include = [
-            { template = "radarr-custom-formats-hd-bluray-web"; }
+            {template = "radarr-quality-definition-movie";}
+            {template = "radarr-quality-profile-hd-bluray-web";}
+            {template = "radarr-custom-formats-hd-bluray-web";}
           ];
         };
       };
@@ -49,6 +52,12 @@ in {
             _secret = config.age.secrets."sonarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.sonarr.settings.server.port}/";
+          delete_old_custom_formats = true;
+          include = [
+            {template = "sonarr-quality-definition-series";}
+            {template = "sonarr-quality-profile-web-1080p-v4";}
+            {template = "sonarr-custom-formats-web-1080p-v4";}
+          ];
         };
       };
     };
