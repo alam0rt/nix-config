@@ -11,12 +11,24 @@ in {
     unstable.jellyfin-ffmpeg
   ];
 
+  services.jellyseerr = {
+    enable = true;
+  };
+
   services.nginx = {
     virtualHosts."tv.samlockart.com" = {
       forceSSL = true;
       enableACME = true;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
+        recommendedProxySettings = true;
+      };
+    };
+    virtualHosts."jellyseerr.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}";
         recommendedProxySettings = true;
       };
     };
