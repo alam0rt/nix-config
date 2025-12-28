@@ -199,19 +199,19 @@ in {
       serviceName = "rarbg-selfhosted";
     };
 
-    recyclarr = {
+    janitorr = {
       image = "ghcr.io/schaka/janitorr:jvm-v2.0.1";
       ports = [];
       volumes = [
-        "/srv/data/recyclarr/config/application.yml:/config/application.yml:ro"
-        "/srv/data/recyclarr/logs:/logs"
+        "/srv/data/janitorr/config/application.yml:/config/application.yml:ro"
+        "/srv/data/janitorr/logs:/logs"
         "/srv/media/movies:/srv/media/movies"
         "/srv/media/tv:/srv/media/tv"
         "/srv/media/the_will_collection:/srv/media/the_will_collection"
       ];
       user = "1000:1000";
       pull = "always";
-      serviceName = "recyclarr";
+      serviceName = "janitorr";
       extraOptions = [
         "--memory=256m"
         "--memory-swappiness=0"
