@@ -223,7 +223,7 @@ in {
         "/srv/media/tv:/srv/media/tv"
         "/srv/media/the_will_collection:/srv/media/the_will_collection"
       ];
-      user = "${toString config.users.users.janitorr.uid}:${toString config.users.users.janitorr.gid}";
+      user = "${toString config.users.users.janitorr.uid}:${toString config.users.groups.janitorr.gid}";
       pull = "always";
       serviceName = "janitorr";
       extraOptions = [
