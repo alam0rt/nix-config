@@ -191,7 +191,6 @@ in {
 
   users.users.janitorr = {
     uid = 977;
-    gid = 968;
     isSystemUser = true;
     group = "janitorr";
     description = "User for running Janitorr";
@@ -199,7 +198,9 @@ in {
     createHome = true;
     extraGroups = ["sonarr" "radarr"];
   };
-  users.groups.janitorr = {};
+  users.groups.janitorr = {
+    gid = 968;
+  };
 
 
   virtualisation.oci-containers.containers = {
