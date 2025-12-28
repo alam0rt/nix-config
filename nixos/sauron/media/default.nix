@@ -190,7 +190,7 @@ in {
   networking.firewall.allowedTCPPorts = [8191]; # flaresolverr
 
   users.users.janitorr = {
-    uid = 977;
+    uid = "977";
     isSystemUser = true;
     group = "janitorr";
     description = "User for running Janitorr";
@@ -199,7 +199,7 @@ in {
     extraGroups = ["sonarr" "radarr"];
   };
   users.groups.janitorr = {
-    gid = 968;
+    gid = "968";
   };
 
 
