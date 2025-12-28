@@ -212,7 +212,7 @@ in {
       pull = "always";
       serviceName = "rarbg-selfhosted";
     };
-
+/*
     janitorr = {
       image = "ghcr.io/schaka/janitorr:jvm-v2.0.1";
       ports = [];
@@ -233,6 +233,7 @@ in {
         "--network=host"
       ];
     };
+    */
 
     flaresolverr = {
       image = "ghcr.io/flaresolverr/flaresolverr:latest";
