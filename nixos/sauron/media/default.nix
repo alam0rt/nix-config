@@ -189,6 +189,13 @@ in {
   ]; # dlna
   networking.firewall.allowedTCPPorts = [8191]; # flaresolverr
 
+  users.users.janitorr = {
+    isSystemUser = true;
+    description = "User for running Janitorr";
+    home = "/srv/data/janitorr";
+    createHome = true;
+    extraGroups = ["sonarr" "radarr"];
+  };
   virtualisation.oci-containers.containers = {
     rarbg = {
       # https://github.com/mgdigital/rarbg-selfhosted
@@ -209,7 +216,7 @@ in {
         "/srv/media/tv:/srv/media/tv"
         "/srv/media/the_will_collection:/srv/media/the_will_collection"
       ];
-      user = "1000:1000";
+      user = "janitorr:janitorr";
       pull = "always";
       serviceName = "janitorr";
       extraOptions = [
