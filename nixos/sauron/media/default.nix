@@ -214,7 +214,6 @@ in {
       serviceName = "janitorr";
       extraOptions = [
         "--memory=256m"
-        "--memory-swappiness=0"
         "--userns=host"
       ];
     };
