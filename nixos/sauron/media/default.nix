@@ -215,6 +215,7 @@ in {
       extraOptions = [
         "--memory=256m"
         "--userns=host"
+        "--network=host"
       ];
     };
 
