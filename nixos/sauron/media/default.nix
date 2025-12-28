@@ -190,6 +190,8 @@ in {
   networking.firewall.allowedTCPPorts = [8191]; # flaresolverr
 
   users.users.janitorr = {
+    uid = 977;
+    gid = 968;
     isSystemUser = true;
     group = "janitorr";
     description = "User for running Janitorr";
@@ -220,7 +222,7 @@ in {
         "/srv/media/tv:/srv/media/tv"
         "/srv/media/the_will_collection:/srv/media/the_will_collection"
       ];
-      user = "janitorr:janitorr";
+      user = "${config.users.users.janitorr.uid}:${config.users.users.janitorr.gid}";
       pull = "always";
       serviceName = "janitorr";
       extraOptions = [
