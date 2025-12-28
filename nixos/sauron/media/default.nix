@@ -191,11 +191,15 @@ in {
 
   users.users.janitorr = {
     isSystemUser = true;
+    group = "janitorr";
     description = "User for running Janitorr";
     home = "/srv/data/janitorr";
     createHome = true;
     extraGroups = ["sonarr" "radarr"];
   };
+  users.groups.janitorr = {};
+
+
   virtualisation.oci-containers.containers = {
     rarbg = {
       # https://github.com/mgdigital/rarbg-selfhosted
