@@ -221,6 +221,7 @@ in {
         "/srv/data/janitorr/logs:/logs"
         "/srv/media/movies:/srv/media/movies"
         "/srv/media/tv:/srv/media/tv"
+        "/srv/media/leaving-soon:/srv/media/leaving-soon"
         "/srv/media/the_will_collection:/srv/media/the_will_collection"
       ];
       user = "${toString config.users.users.janitorr.uid}:${toString config.users.groups.janitorr.gid}";
