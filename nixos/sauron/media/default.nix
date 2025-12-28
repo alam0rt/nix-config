@@ -33,19 +33,32 @@ in {
     schedule = "daily";
     configuration = {
       radarr = {
-        main = {
+        movies = {
           api_key = {
             _secret = config.age.secrets."radarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.radarr.settings.server.port}/";
+          delete_old_custom_formats = true;
+          include = [
+            {template = "radarr-quality-definition-movie";}
+            {template = "radarr-quality-profile-hd-bluray-web";}
+            {template = "radarr-custom-formats-hd-bluray-web";}
+          ];
         };
       };
       sonarr = {
-        main = {
+        tv = {
           api_key = {
             _secret = config.age.secrets."sonarr-api-key".path;
           };
           base_url = "http://localhost:${toString config.services.sonarr.settings.server.port}/";
+          delete_old_custom_formats = true;
+          include = [
+            # regular
+            {template = "sonarr-quality-definition-series";}
+            {template = "sonarr-v4-quality-profile-web-1080p";}
+            {template = "sonarr-v4-custom-formats-web-1080p";}
+          ];
         };
       };
     };
