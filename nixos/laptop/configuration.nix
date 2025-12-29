@@ -83,7 +83,13 @@
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
-  programs.ghidra.enable = true;
+  programs.ghidra = {
+    enable = true;
+    package = pkgs.ghidra.withExtensions (p: with p; [
+      ret-sync
+      findcrypt
+    ] ++ [ pkgs.ghidra-psx-ldr ]);
+  };
 
   nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];
 
