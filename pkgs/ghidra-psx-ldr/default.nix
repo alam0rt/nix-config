@@ -1,9 +1,9 @@
 {
   lib,
   fetchFromGitHub,
-  buildGhidraExtension,
+  ghidra,
 }:
-buildGhidraExtension (finalAttrs: {
+ghidra.buildGhidraExtension (finalAttrs: {
   pname = "ghidra-psx-ldr";
   version = "2025.09.06";
 
