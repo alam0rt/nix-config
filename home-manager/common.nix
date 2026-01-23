@@ -176,6 +176,7 @@
       unstable.podman
       unstable.podman-compose
       opentofu # terraform fork - aliased to terraform
+      imhex
 
       qemu
       shellcheck
@@ -190,6 +191,8 @@
       nil # nix lsp
       rust-analyzer
       uv
+
+      try # utility to try out commands in temporary containers
 
       # terminals
       kitty
@@ -231,6 +234,7 @@
       calibre
 
       # design and 3d
+      godot
       super-slicer-latest
       freecad
 

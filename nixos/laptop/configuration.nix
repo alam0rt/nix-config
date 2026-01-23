@@ -21,6 +21,7 @@
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   networking.wireless.userControlled.enable = true;
 
+  services.avahi.enable = true;
   networking.firewall.enable = true;
 
   # ssk-keyscan $hostname
@@ -85,10 +86,12 @@
 
   programs.ghidra = {
     enable = true;
+    gdb = true;
     package = let
       ghidraWithExts = pkgs.ghidra.withExtensions (p: with p; [
         ret-sync
         findcrypt
+        ghidra-delinker-extension
       ] ++ [ pkgs.ghidra-psx-ldr ]);
     in pkgs.symlinkJoin {
       name = "ghidra-wrapped";
