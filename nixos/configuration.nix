@@ -22,7 +22,7 @@
       outputs.overlays.modifications
       outputs.overlays.unstable-packages
 
-      inputs.llama-cpp.overlays.default
+      #inputs.llama-cpp.overlays.default
       # # Patch ROCm variant inside llamaPackages
       # (final: prev: {
       #   llamaPackages = prev.llamaPackages // {
