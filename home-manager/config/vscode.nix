@@ -13,6 +13,7 @@
         # core
         dracula-theme.theme-dracula
         vscodevim.vim
+        redhat.vscode-yaml
 
         # golang
         golang.go
