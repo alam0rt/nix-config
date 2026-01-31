@@ -82,6 +82,7 @@ in {
         "grafana.${cfg.domain}"
         "tv.${cfg.domain}"
         "jellyseerr.${cfg.domain}"
+        "library.iced.cool"
       ];
     };
 
@@ -150,6 +151,17 @@ in {
       default = true;
       locations."/" = {
         return = 404;
+      };
+    };
+
+    virtualHosts."library.iced.cool" = {
+      forceSSL = true;
+      enableACME = true;
+      root = "/srv/share/public/muay_thai_library";
+      locations."/" = {
+        extraConfig = ''
+          autoindex on;
+        '';
       };
     };
   };
