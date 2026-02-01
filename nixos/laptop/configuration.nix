@@ -71,10 +71,25 @@
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
 
-  # audio
-  services.pipewire.enable = true;
-  services.pipewire.pulse.enable = true;
-  security.rtkit.enable = true;
+  # audio - PipeWire setup per https://wiki.nixos.org/wiki/PipeWire
+  security.rtkit.enable = true; # allows PipeWire to use realtime scheduler
+  services.pipewire = {
+    enable = true;
+    alsa.enable = true;
+    alsa.support32Bit = true; # for 32-bit apps like Steam
+    pulse.enable = true;
+    # jack.enable = true; # uncomment if JACK apps needed
+  };
+
+  # Bluetooth audio codecs for better quality
+  services.pipewire.wireplumber.extraConfig."10-bluez" = {
+    "monitor.bluez.properties" = {
+      "bluez5.enable-sbc-xq" = true;
+      "bluez5.enable-msbc" = true;
+      "bluez5.enable-hw-volume" = true;
+      "bluez5.roles" = [ "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag" ];
+    };
+  };
 
   # steam
   programs.steam = {
