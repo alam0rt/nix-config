@@ -127,6 +127,22 @@ in {
       description = "KV cache data type (auto, fp8, fp8_e4m3, fp8_e5m2)";
     };
 
+    attentionBackend = lib.mkOption {
+      type = lib.types.nullOr (lib.types.enum ["FLASHINFER" "FLASH_ATTN" "XFORMERS" "TRITON_ATTN" "ROCM_FLASH" "TORCH_SDPA"]);
+      default = null;
+      description = ''
+        Attention backend to use. Useful for older GPUs that don't support Flash Attention 2.
+        Flash Attention 2 requires compute capability 8.0+ (Ampere or newer).
+        For older GPUs (Turing 7.5, Volta 7.0), use FLASHINFER or TRITON_ATTN.
+      '';
+    };
+
+    maxNumBatchedTokens = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+      description = "Maximum number of batched tokens per iteration (for chunked prefill)";
+    };
+
     # Generic server args for any vLLM option not covered above
     # See: https://docs.vllm.ai/en/stable/cli/serve/
     serverArgs = lib.mkOption {
@@ -197,6 +213,10 @@ in {
           # Hugging Face cache location inside container
           HF_HOME = "/root/.cache/huggingface";
         }
+        // lib.optionalAttrs (cfg.attentionBackend != null) {
+          # Override attention backend (useful for older GPUs without FA2 support)
+          VLLM_ATTENTION_BACKEND = cfg.attentionBackend;
+        }
         // lib.optionalAttrs (cfg.backend == "rocm") {
           HIP_VISIBLE_DEVICES = "0";
         };
@@ -209,9 +229,9 @@ in {
       ];
 
       # vLLM serve command arguments
+      # Model is passed as positional argument (preferred by vLLM 0.15+)
       cmd =
         [
-          "--model"
           (if cfg.modelPath != null then "/model" else cfg.model)
           "--host"
           "0.0.0.0"
@@ -226,6 +246,7 @@ in {
         ]
         # Optional flags
         ++ lib.optionals (cfg.maxModelLen != null) ["--max-model-len" (toString cfg.maxModelLen)]
+        ++ lib.optionals (cfg.maxNumBatchedTokens != null) ["--max-num-batched-tokens" (toString cfg.maxNumBatchedTokens)]
         ++ lib.optionals cfg.trustRemoteCode ["--trust-remote-code"]
         ++ lib.optionals (cfg.enablePrefixCaching == true) ["--enable-prefix-caching"]
         ++ lib.optionals (cfg.enablePrefixCaching == false) ["--no-enable-prefix-caching"]

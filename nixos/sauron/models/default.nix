@@ -20,17 +20,36 @@
   #          "messages": [{"role": "user", "content": "Hello!"}],
   #          "temperature": 0.3, "min_p": 0.15, "repetition_penalty": 1.05}'
   #
+  # Hardware notes for NVIDIA T1000 8GB (Turing, compute capability 7.5):
+  #   - Does not support bfloat16, vLLM auto-casts to float16
+  #   - Flash Attention 2 requires compute 8.0+, use FLASHINFER instead
+  #   - Limited VRAM, use conservative memory settings
+  #
   services.vllm = {
     enable = true;
     modelPath = "/srv/share/public/models/LFM2.5-1.2B-Instruct";
     backend = "cuda";
     port = 8100;
-    dtype = "auto"; # as recommended by Liquid AI docs
+
+    # Force float16 for Turing GPUs (T1000 doesn't support bfloat16)
+    dtype = "float16";
+
+    # Memory settings for 8GB VRAM
     gpuMemoryUtilization = 0.90;
     cacheDir = "/srv/data/vllm"; # persist on ZFS
 
+    # Use FLASHINFER backend - compatible with compute capability 7.5
+    # FA2 requires compute 8.0+ (Ampere), FLASHINFER works on Turing
+    attentionBackend = "FLASHINFER";
+
     # Performance optimizations
     enablePrefixCaching = true; # cache common prefixes
+    enableChunkedPrefill = true; # better memory efficiency
+
+    # Limit context for memory-constrained GPU
+    # LFM2.5 supports 128k but T1000 can't handle that much
+    maxModelLen = 16384;
+    maxNumBatchedTokens = 2048;
 
     # Any other vLLM flags can be passed via serverArgs
     # See: https://docs.vllm.ai/en/stable/cli/serve/
