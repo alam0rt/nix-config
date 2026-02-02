@@ -80,11 +80,11 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    # Enable podman for rootless containers
-    virtualisation.podman = {
-      enable = true;
-      dockerCompat = true;
-    };
+    # Enable podman for containers
+    virtualisation.podman.enable = true;
+    # Note: dockerCompat conflicts with virtualisation.docker.enable
+    # If you need the `docker` command alias, set virtualisation.podman.dockerCompat = true
+    # in your host config (only if docker is not enabled)
 
     # ROCm support for AMD GPUs
     hardware.graphics.extraPackages = lib.mkIf (cfg.backend == "rocm") (with pkgs; [
