@@ -120,7 +120,6 @@
   environment.systemPackages = with pkgs; [
     ipmiutil
     ipmitool
-    steamcmd
   ];
 
   # Use podman with docker CLI compatibility
@@ -129,6 +128,9 @@
     dockerCompat = true; # Provides `docker` command alias
     defaultNetwork.settings.dns_enabled = true;
   };
+
+  # All OCI containers use podman
+  virtualisation.oci-containers.backend = "podman";
 
   services.openssh = {
     # support yubikey
