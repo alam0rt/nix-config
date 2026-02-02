@@ -51,6 +51,14 @@
       flake-registry = "";
       # Workaround for https://github.com/NixOS/nix/issues/9574
       nix-path = config.nix.nixPath;
+      # CUDA binary cache - saves build time for CUDA packages
+      # https://wiki.nixos.org/wiki/CUDA
+      substituters = [
+        "https://cache.nixos-cuda.org"
+      ];
+      trusted-public-keys = [
+        "cache.nixos-cuda.org:74DUi4Ye579gUqzH4ziL9IyiJBlDpMRn9MBN8oNan9M="
+      ];
     };
     # Opinionated: disable channels
     channel.enable = false;
