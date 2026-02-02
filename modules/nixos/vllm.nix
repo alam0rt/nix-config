@@ -70,9 +70,31 @@ in {
     };
 
     backend = lib.mkOption {
-      type = lib.types.enum ["rocm" "cuda"];
+      type = lib.types.enum ["rocm" "cuda" "cpu"];
       default = "rocm";
-      description = "GPU backend: rocm for AMD, cuda for NVIDIA";
+      description = "Backend: rocm for AMD GPUs, cuda for NVIDIA GPUs, cpu for CPU-only inference";
+    };
+
+    # CPU-specific options
+    cpuKvCacheSpace = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+      description = ''
+        KV cache space in GiB for CPU backend. Larger values support more
+        concurrent requests and longer context. Default is 4GB.
+        Set based on available system memory.
+      '';
+    };
+
+    cpuOmpThreadsBind = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "0-30";
+      description = ''
+        CPU cores to bind OpenMP threads to for CPU backend.
+        Use 'auto' for automatic binding, or specify range like '0-30'.
+        Reserve 1-2 cores for the serving framework.
+      '';
     };
 
     huggingFaceTokenFile = lib.mkOption {
@@ -186,7 +208,7 @@ in {
       rocmPackages.clr.icd
     ]);
 
-    # NVIDIA Container Toolkit for CUDA GPUs
+    # NVIDIA Container Toolkit for CUDA GPUs (not needed for CPU backend)
     hardware.nvidia-container-toolkit.enable = lib.mkIf (cfg.backend == "cuda") true;
 
     # Ensure cache directory exists
@@ -200,6 +222,8 @@ in {
       image =
         if cfg.backend == "rocm"
         then "rocm/vllm:latest"
+        else if cfg.backend == "cpu"
+        then "public.ecr.aws/q9t5s3a7/vllm-cpu-release-repo:latest"
         else "vllm/vllm-openai:latest";
       autoStart = true;
 
@@ -208,10 +232,12 @@ in {
 
       environment =
         {
-          # PyTorch memory allocation optimization
-          PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True";
           # Hugging Face cache location inside container
           HF_HOME = "/root/.cache/huggingface";
+        }
+        // lib.optionalAttrs (cfg.backend != "cpu") {
+          # PyTorch memory allocation optimization (GPU only)
+          PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True";
         }
         // lib.optionalAttrs (cfg.attentionBackend != null) {
           # Override attention backend (useful for older GPUs without FA2 support)
@@ -219,6 +245,13 @@ in {
         }
         // lib.optionalAttrs (cfg.backend == "rocm") {
           HIP_VISIBLE_DEVICES = "0";
+        }
+        // lib.optionalAttrs (cfg.backend == "cpu") {
+          # CPU backend specific settings
+          VLLM_CPU_KVCACHE_SPACE = toString (if cfg.cpuKvCacheSpace != null then cfg.cpuKvCacheSpace else 4);
+        }
+        // lib.optionalAttrs (cfg.backend == "cpu" && cfg.cpuOmpThreadsBind != null) {
+          VLLM_CPU_OMP_THREADS_BIND = cfg.cpuOmpThreadsBind;
         };
 
       # Persist model cache and optionally mount local model
@@ -237,10 +270,13 @@ in {
           "0.0.0.0"
           "--port"
           "8000"
-          "--gpu-memory-utilization"
-          (toString cfg.gpuMemoryUtilization)
           "--dtype"
           cfg.dtype
+        ]
+        # GPU-specific options (not applicable for CPU backend)
+        ++ lib.optionals (cfg.backend != "cpu") [
+          "--gpu-memory-utilization"
+          (toString cfg.gpuMemoryUtilization)
           "--tensor-parallel-size"
           (toString cfg.tensorParallelSize)
         ]
@@ -261,7 +297,7 @@ in {
       # Port mapping
       ports = ["${cfg.host}:${toString cfg.port}:8000"];
 
-      # GPU device access
+      # Device access based on backend
       extraOptions =
         if cfg.backend == "rocm"
         then [
@@ -270,6 +306,13 @@ in {
           "--ipc=host"
           "--group-add=video"
           "--security-opt=seccomp=unconfined"
+        ]
+        else if cfg.backend == "cpu"
+        then [
+          # CPU backend needs these for NUMA optimizations
+          "--cap-add=SYS_NICE"
+          "--security-opt=seccomp=unconfined"
+          "--shm-size=4g"
         ]
         else [
           "--gpus=all"
