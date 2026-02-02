@@ -22,7 +22,7 @@
   #
   services.vllm = {
     enable = true;
-    model = "LiquidAI/LFM2.5-1.2B-Instruct";
+    modelPath = "/srv/share/public/models/LFM2.5-1.2B-Instruct";
     backend = "cuda";
     port = 8100;
     dtype = "auto"; # as recommended by Liquid AI docs

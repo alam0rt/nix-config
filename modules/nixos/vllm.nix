@@ -26,7 +26,17 @@ in {
     model = lib.mkOption {
       type = lib.types.str;
       default = "Qwen/Qwen3-Coder-30B-A3B-Instruct";
-      description = "The Hugging Face model to serve";
+      description = "The Hugging Face model to serve (ignored if modelPath is set)";
+    };
+
+    modelPath = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+      description = ''
+        Path to a local model directory to serve directly.
+        When set, this takes precedence over the `model` option.
+        The path will be mounted read-only into the container at /model.
+      '';
     };
 
     port = lib.mkOption {
@@ -191,16 +201,18 @@ in {
           HIP_VISIBLE_DEVICES = "0";
         };
 
-      # Persist model cache
+      # Persist model cache and optionally mount local model
       volumes = [
         "${cfg.cacheDir}:/root/.cache/huggingface"
+      ] ++ lib.optionals (cfg.modelPath != null) [
+        "${cfg.modelPath}:/model:ro"
       ];
 
       # vLLM serve command arguments
       cmd =
         [
           "--model"
-          cfg.model
+          (if cfg.modelPath != null then "/model" else cfg.model)
           "--host"
           "0.0.0.0"
           "--port"
