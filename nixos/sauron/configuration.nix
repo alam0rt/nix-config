@@ -23,7 +23,7 @@
     ./nginx
     ./syncthing
     ./openwebui
-    ./whisper
+    # ./whisper # moved to ./models
     ./matrix
     ./monitoring
     ./home-assistant
