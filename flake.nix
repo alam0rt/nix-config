@@ -94,6 +94,7 @@
           ./nixos/sauron/configuration.nix
           inputs.agenix.nixosModules.default
           inputs.agenix-rekey.nixosModules.default
+          self.nixosModules.vllm
         ];
       };
       desktop = nixpkgs.lib.nixosSystem {

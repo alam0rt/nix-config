@@ -27,6 +27,7 @@
     ./matrix
     ./monitoring
     ./home-assistant
+    ./models
     # ./pvpgn
     # ./llama-cpp
     # ../config/home-manager.nix # get working
