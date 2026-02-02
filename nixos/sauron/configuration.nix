@@ -121,16 +121,13 @@
     ipmiutil
     ipmitool
     steamcmd
-    docker # todo - replace with podman
   ];
 
-  # enable docker support
-  virtualisation.docker = {
+  # Use podman with docker CLI compatibility
+  virtualisation.podman = {
     enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
+    dockerCompat = true; # Provides `docker` command alias
+    defaultNetwork.settings.dns_enabled = true;
   };
 
   services.openssh = {
