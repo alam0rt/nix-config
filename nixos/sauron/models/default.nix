@@ -34,8 +34,8 @@
     # Force float16 for Turing GPUs (T1000 doesn't support bfloat16)
     dtype = "float16";
 
-    # Memory settings for 8GB VRAM
-    gpuMemoryUtilization = 0.90;
+    # Memory settings for 8GB VRAM - minimal for simple chatbot
+    gpuMemoryUtilization = 0.70;
     cacheDir = "/srv/data/vllm"; # persist on ZFS
 
     # Use FLASHINFER backend - compatible with compute capability 7.5
@@ -43,18 +43,20 @@
     attentionBackend = "FLASHINFER";
 
     # Performance optimizations
-    enablePrefixCaching = true; # cache common prefixes
+    enablePrefixCaching = false; # disable to save memory
     enableChunkedPrefill = true; # better memory efficiency
 
-    # Limit context for memory-constrained GPU
-    # LFM2.5 supports 128k but T1000 can't handle that much
-    maxModelLen = 16384;
-    maxNumBatchedTokens = 2048;
+    # Minimal context for simple chatbot use case
+    # Short conversations don't need much context
+    maxModelLen = 2048;
+    maxNumBatchedTokens = 512;
+    maxNumSeqs = 2; # single user chatbot
 
     # Any other vLLM flags can be passed via serverArgs
     # See: https://docs.vllm.ai/en/stable/cli/serve/
     serverArgs = {
       "disable-log-stats" = true; # reduce log noise
+      "enforce-eager" = true; # disable CUDA graphs to save memory
     };
   };
 
