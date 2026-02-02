@@ -5,6 +5,20 @@
   ...
 }: let
   cfg = config.services.vllm;
+
+  # Convert serverArgs attrset to CLI flags
+  # e.g. { enable-prefix-caching = true; max-num-seqs = 256; }
+  # becomes [ "--enable-prefix-caching" "--max-num-seqs" "256" ]
+  serverArgsToFlags = args:
+    lib.flatten (lib.mapAttrsToList (name: value:
+      if value == true
+      then ["--${name}"]
+      else if value == false
+      then [] # Skip false booleans
+      else if value == null
+      then [] # Skip nulls
+      else ["--${name}" (toString value)]
+    ) args);
 in {
   options.services.vllm = {
     enable = lib.mkEnableOption "vLLM inference server";
@@ -28,9 +42,9 @@ in {
     };
 
     maxModelLen = lib.mkOption {
-      type = lib.types.int;
-      default = 4096;
-      description = "Maximum model context length";
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+      description = "Maximum model context length. If null, inferred from model config.";
     };
 
     gpuMemoryUtilization = lib.mkOption {
@@ -60,10 +74,65 @@ in {
       '';
     };
 
-    extraArgs = lib.mkOption {
-      type = lib.types.listOf lib.types.str;
-      default = [];
-      description = "Extra arguments to pass to vLLM";
+    # Common useful options as first-class citizens
+    trustRemoteCode = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Trust remote code from HuggingFace (required for some models)";
+    };
+
+    enablePrefixCaching = lib.mkOption {
+      type = lib.types.nullOr lib.types.bool;
+      default = null;
+      description = "Enable prefix caching for better performance with repeated prefixes";
+    };
+
+    enableChunkedPrefill = lib.mkOption {
+      type = lib.types.nullOr lib.types.bool;
+      default = null;
+      description = "Enable chunked prefill for better memory efficiency";
+    };
+
+    quantization = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "Quantization method (awq, gptq, squeezellm, fp8, etc.)";
+    };
+
+    tensorParallelSize = lib.mkOption {
+      type = lib.types.int;
+      default = 1;
+      description = "Number of GPUs for tensor parallelism";
+    };
+
+    maxNumSeqs = lib.mkOption {
+      type = lib.types.nullOr lib.types.int;
+      default = null;
+      description = "Maximum number of sequences to process in parallel";
+    };
+
+    kvCacheDtype = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      description = "KV cache data type (auto, fp8, fp8_e4m3, fp8_e5m2)";
+    };
+
+    # Generic server args for any vLLM option not covered above
+    # See: https://docs.vllm.ai/en/stable/cli/serve/
+    serverArgs = lib.mkOption {
+      type = lib.types.attrsOf (lib.types.oneOf [lib.types.bool lib.types.int lib.types.float lib.types.str]);
+      default = {};
+      example = {
+        "swap-space" = 4;
+        "disable-log-stats" = true;
+        "max-logprobs" = 20;
+      };
+      description = ''
+        Additional vLLM server arguments as an attribute set.
+        Keys are flag names (without --), values are the flag values.
+        Boolean true adds the flag, false omits it.
+        See https://docs.vllm.ai/en/stable/cli/serve/
+      '';
     };
 
     openFirewall = lib.mkOption {
@@ -136,14 +205,25 @@ in {
           "0.0.0.0"
           "--port"
           "8000"
-          "--max-model-len"
-          (toString cfg.maxModelLen)
           "--gpu-memory-utilization"
           (toString cfg.gpuMemoryUtilization)
           "--dtype"
           cfg.dtype
+          "--tensor-parallel-size"
+          (toString cfg.tensorParallelSize)
         ]
-        ++ cfg.extraArgs;
+        # Optional flags
+        ++ lib.optionals (cfg.maxModelLen != null) ["--max-model-len" (toString cfg.maxModelLen)]
+        ++ lib.optionals cfg.trustRemoteCode ["--trust-remote-code"]
+        ++ lib.optionals (cfg.enablePrefixCaching == true) ["--enable-prefix-caching"]
+        ++ lib.optionals (cfg.enablePrefixCaching == false) ["--no-enable-prefix-caching"]
+        ++ lib.optionals (cfg.enableChunkedPrefill == true) ["--enable-chunked-prefill"]
+        ++ lib.optionals (cfg.enableChunkedPrefill == false) ["--no-enable-chunked-prefill"]
+        ++ lib.optionals (cfg.quantization != null) ["--quantization" cfg.quantization]
+        ++ lib.optionals (cfg.maxNumSeqs != null) ["--max-num-seqs" (toString cfg.maxNumSeqs)]
+        ++ lib.optionals (cfg.kvCacheDtype != null) ["--kv-cache-dtype" cfg.kvCacheDtype]
+        # Generic serverArgs
+        ++ (serverArgsToFlags cfg.serverArgs);
 
       # Port mapping
       ports = ["${cfg.host}:${toString cfg.port}:8000"];

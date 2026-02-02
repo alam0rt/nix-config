@@ -26,9 +26,17 @@
     backend = "cuda";
     port = 8100;
     dtype = "auto"; # as recommended by Liquid AI docs
-    maxModelLen = 4096;
     gpuMemoryUtilization = 0.90;
     cacheDir = "/srv/data/vllm"; # persist on ZFS
+
+    # Performance optimizations
+    enablePrefixCaching = true; # cache common prefixes
+
+    # Any other vLLM flags can be passed via serverArgs
+    # See: https://docs.vllm.ai/en/stable/cli/serve/
+    serverArgs = {
+      "disable-log-stats" = true; # reduce log noise
+    };
   };
 
   # Wyoming Faster Whisper - Speech-to-Text server
