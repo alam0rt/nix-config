@@ -120,15 +120,6 @@
           nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme-gen2
         ];
       };
-      frodo = nixpkgs.lib.nixosSystem {
-        specialArgs = {
-          inherit inputs outputs;
-        };
-        modules = [
-          ./nixos/configuration.nix
-          ./nixos/frodo/configuration.nix
-        ];
-      };
     };
 
     agenix-rekey = inputs.agenix-rekey.configure {

@@ -35,6 +35,19 @@
     config.common.default = ["*"];
   };
 
+  # allow auto-mounting of removable media (e.g. USB drives)
+  services.udiskie = {
+    enable = true;
+    settings = {
+        # workaround for
+        # https://github.com/nix-community/home-manager/issues/632
+        program_options = {
+            # replace with your favorite file manager
+            file_manager = "${pkgs.kdePackages.dolphin}/bin/dolphin";
+        };
+    };
+  };
+
   home.username = "sam";
   home.homeDirectory = "/home/${config.home.username}";
 

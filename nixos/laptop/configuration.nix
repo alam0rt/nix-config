@@ -21,7 +21,6 @@
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
   networking.wireless.userControlled.enable = true;
 
-  services.avahi.enable = true;
   networking.firewall.enable = true;
 
   # ssk-keyscan $hostname
@@ -46,18 +45,8 @@
     };
   };
 
-  programs.wireshark = {
-    enable = true;
-  };
-
   # reduce power consumption
   services.xserver.videoDrivers = ["i915"];
-
-  # platformio / embedded dev
-  services.udev.packages = with pkgs; [
-    platformio-core.udev
-    openocd
-  ];
 
   # enable prime
   hardware.nvidia.prime = {
@@ -65,40 +54,6 @@
     intelBusId = "PCI:0:2:0";
     sync.enable = true;
   };
-
-  # bluetooth
-  services.blueman.enable = true;
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
-
-  # audio - PipeWire setup per https://wiki.nixos.org/wiki/PipeWire
-  security.rtkit.enable = true; # allows PipeWire to use realtime scheduler
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true; # for 32-bit apps like Steam
-    pulse.enable = true;
-    # jack.enable = true; # uncomment if JACK apps needed
-  };
-
-  # Bluetooth audio codecs for better quality
-  services.pipewire.wireplumber.extraConfig."10-bluez" = {
-    "monitor.bluez.properties" = {
-      "bluez5.enable-sbc-xq" = true;
-      "bluez5.enable-msbc" = true;
-      "bluez5.enable-hw-volume" = true;
-      "bluez5.roles" = [ "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag" ];
-    };
-  };
-
-  # steam
-  programs.steam = {
-    enable = true;
-    remotePlay.openFirewall = true; # Open ports in the firewall for Steam Remote Play
-    dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
-    localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
-  };
-
   programs.ghidra = {
     enable = true;
     gdb = true;
