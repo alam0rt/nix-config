@@ -17,7 +17,6 @@
 
   services.udisks2.enable = true; # enables support for external drives and media
 
-
   # bluetooth
   services.blueman.enable = true;
   hardware.bluetooth.enable = true; # enables support for Bluetooth
@@ -39,7 +38,7 @@
       "bluez5.enable-sbc-xq" = true;
       "bluez5.enable-msbc" = true;
       "bluez5.enable-hw-volume" = true;
-      "bluez5.roles" = [ "hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag" ];
+      "bluez5.roles" = ["hsp_hs" "hsp_ag" "hfp_hf" "hfp_ag"];
     };
   };
 
@@ -50,8 +49,6 @@
     dedicatedServer.openFirewall = true; # Open ports in the firewall for Source Dedicated Server
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
-
-
 
   # platformio / embedded dev
   services.udev.packages = with pkgs; [

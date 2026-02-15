@@ -130,8 +130,14 @@ in {
     # Localhost-only status endpoint for prometheus nginx exporter
     virtualHosts."localhost" = {
       listen = [
-        { addr = "127.0.0.1"; port = 80; }
-        { addr = "[::1]"; port = 80; }
+        {
+          addr = "127.0.0.1";
+          port = 80;
+        }
+        {
+          addr = "[::1]";
+          port = 80;
+        }
       ];
       locations."/nginx_status" = {
         extraConfig = ''

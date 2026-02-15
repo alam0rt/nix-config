@@ -58,19 +58,23 @@
     enable = true;
     gdb = true;
     package = let
-      ghidraWithExts = pkgs.ghidra.withExtensions (p: with p; [
-        ret-sync
-        findcrypt
-        ghidra-delinker-extension
-      ] ++ [ pkgs.ghidra-psx-ldr ]);
-    in pkgs.symlinkJoin {
-      name = "ghidra-wrapped";
-      paths = [ ghidraWithExts ];
-      buildInputs = [ pkgs.makeWrapper ];
-      postBuild = ''
-        wrapProgram $out/bin/ghidra --set _JAVA_AWT_WM_NONREPARENTING 1
-      '';
-    };
+      ghidraWithExts = pkgs.ghidra.withExtensions (p:
+        with p;
+          [
+            ret-sync
+            findcrypt
+            ghidra-delinker-extension
+          ]
+          ++ [pkgs.ghidra-psx-ldr]);
+    in
+      pkgs.symlinkJoin {
+        name = "ghidra-wrapped";
+        paths = [ghidraWithExts];
+        buildInputs = [pkgs.makeWrapper];
+        postBuild = ''
+          wrapProgram $out/bin/ghidra --set _JAVA_AWT_WM_NONREPARENTING 1
+        '';
+      };
   };
 
   nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];

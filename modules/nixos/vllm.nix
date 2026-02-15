@@ -10,15 +10,17 @@
   # e.g. { enable-prefix-caching = true; max-num-seqs = 256; }
   # becomes [ "--enable-prefix-caching" "--max-num-seqs" "256" ]
   serverArgsToFlags = args:
-    lib.flatten (lib.mapAttrsToList (name: value:
-      if value == true
-      then ["--${name}"]
-      else if value == false
-      then [] # Skip false booleans
-      else if value == null
-      then [] # Skip nulls
-      else ["--${name}" (toString value)]
-    ) args);
+    lib.flatten (lib.mapAttrsToList (
+        name: value:
+          if value == true
+          then ["--${name}"]
+          else if value == false
+          then [] # Skip false booleans
+          else if value == null
+          then [] # Skip nulls
+          else ["--${name}" (toString value)]
+      )
+      args);
 in {
   options.services.vllm = {
     enable = lib.mkEnableOption "vLLM inference server";
@@ -248,24 +250,34 @@ in {
         }
         // lib.optionalAttrs (cfg.backend == "cpu") {
           # CPU backend specific settings
-          VLLM_CPU_KVCACHE_SPACE = toString (if cfg.cpuKvCacheSpace != null then cfg.cpuKvCacheSpace else 4);
+          VLLM_CPU_KVCACHE_SPACE = toString (
+            if cfg.cpuKvCacheSpace != null
+            then cfg.cpuKvCacheSpace
+            else 4
+          );
         }
         // lib.optionalAttrs (cfg.backend == "cpu" && cfg.cpuOmpThreadsBind != null) {
           VLLM_CPU_OMP_THREADS_BIND = cfg.cpuOmpThreadsBind;
         };
 
       # Persist model cache and optionally mount local model
-      volumes = [
-        "${cfg.cacheDir}:/root/.cache/huggingface"
-      ] ++ lib.optionals (cfg.modelPath != null) [
-        "${cfg.modelPath}:/model:ro"
-      ];
+      volumes =
+        [
+          "${cfg.cacheDir}:/root/.cache/huggingface"
+        ]
+        ++ lib.optionals (cfg.modelPath != null) [
+          "${cfg.modelPath}:/model:ro"
+        ];
 
       # vLLM serve command arguments
       # Model is passed as positional argument (preferred by vLLM 0.15+)
       cmd =
         [
-          (if cfg.modelPath != null then "/model" else cfg.model)
+          (
+            if cfg.modelPath != null
+            then "/model"
+            else cfg.model
+          )
           "--host"
           "0.0.0.0"
           "--port"
