@@ -240,6 +240,7 @@
 
       # development
       gdb
+      gef # https://github.com/hugsy/gef
 
       # embedded development
       platformio

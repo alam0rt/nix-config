@@ -129,6 +129,15 @@
     defaultNetwork.settings.dns_enabled = true;
   };
 
+  # Container storage on larger filesystem
+  virtualisation.containers.storage.settings = {
+    storage = {
+      driver = "overlay";
+      graphroot = "/srv/share/public/containers/storage";
+      runroot = "/run/containers/storage";
+    };
+  };
+
   # All OCI containers use podman
   virtualisation.oci-containers.backend = "podman";
 
