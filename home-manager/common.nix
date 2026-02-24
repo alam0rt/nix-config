@@ -177,8 +177,6 @@
       unstable.podman-compose
       opentofu # terraform fork - aliased to terraform
       imhex
-      gdb
-      gef # https://github.com/hugsy/gef
 
       qemu
       shellcheck
@@ -241,6 +239,8 @@
       try # utility to try out commands in temporary containers
 
       # development
+      gdb
+      gef # https://github.com/hugsy/gef
 
       # embedded development
       platformio
