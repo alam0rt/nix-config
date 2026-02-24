@@ -177,6 +177,8 @@
       unstable.podman-compose
       opentofu # terraform fork - aliased to terraform
       imhex
+      gdb
+      gef # https://github.com/hugsy/gef
 
       qemu
       shellcheck
@@ -191,8 +193,6 @@
       nil # nix lsp
       rust-analyzer
       uv
-
-      try # utility to try out commands in temporary containers
 
       # terminals
       kitty
@@ -238,9 +238,9 @@
       super-slicer-latest
       freecad
 
+      try # utility to try out commands in temporary containers
+
       # development
-      gdb
-      gef # https://github.com/hugsy/gef
 
       # embedded development
       platformio
