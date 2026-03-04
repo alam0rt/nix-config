@@ -195,9 +195,6 @@
       # terminals
       kitty
 
-      # trying out
-      duckdb
-
       # graphical
       p7zip-rar
 
