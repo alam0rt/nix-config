@@ -293,6 +293,7 @@
         "new" = "!git checkout -b sam.lockart/$1 && :";
         "pl" = "!git fetch; git pull -r";
         "p" = "push";
+        "c" = "commit";
         "untracked" = "ls-files --others --exclude-standard";
         "amend" = "commit -a --amend --no-edit";
         "rbm" = "!br=$((test -e .git/refs/remotes/origin/main && echo main) || echo master) && git fetch origin && git rebase origin/$br";

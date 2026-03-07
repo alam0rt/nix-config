@@ -40,9 +40,25 @@ in {
       rpc-authentication-required = false;
       ratio-limit = "0.0";
       ratio-limit-enabled = true;
-      download-queue-size = 15;
-      queue-stalled-minutes = 20;
       peer-port = 51413;
+
+      # Queue management
+      download-queue-enabled = true;
+      download-queue-size = 30;
+      queue-stalled-enabled = true;
+      queue-stalled-minutes = 10;
+
+      # Seed queue
+      seed-queue-enabled = true;
+      seed-queue-size = 5;
+
+      # Peer limits
+      peer-limit-per-torrent = 40;       # ↓ lower per-torrent peers so bad torrents can't hog connections
+      peer-limit-global = 800;           # ↑ raise global ceiling to accommodate more active torrents
+
+      # Idle seeding
+      idle-seeding-limit-enabled = true;
+      idle-seeding-limit = 5;            # stop seeding after 5 min idle (since ratio-limit is 0.0)
     };
   };
 
