@@ -19,8 +19,6 @@ in {
     mode = "0400";
   };
 
-  # KEY=VALUE env file loaded by systemd EnvironmentFile=.
-  # Contains: MATRIX_ACCESS_TOKEN, ANTHROPIC_API_KEY, OPENCLAW_GATEWAY_TOKEN
   age.secrets."openclaw-env" = {
     rekeyFile = ./openclaw-env.age;
     owner = "openclaw";
