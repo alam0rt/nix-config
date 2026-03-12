@@ -261,6 +261,17 @@
   programs.jujutsu.settings.user.email = config.programs.git.settings.user.email;
   programs.jujutsu.settings.git.push-new-bookmarks = true;
 
+  programs.ssh = {
+    enable = true;
+    matchBlocks = {
+      "sauron" = {
+        setEnv = {
+          TERM = "xterm-256color";
+        };
+      };
+    };
+  };
+
   # Enable home-manager and git
   programs.home-manager.enable = true;
 
