@@ -30,7 +30,7 @@ in {
   # --- Service ---
   services.openclaw-gateway = {
     enable = true;
-    package = inputs.nix-openclaw.packages.${pkgs.system}.openclaw-gateway;
+    package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
     inherit port;
 
     # Empty config — the real config is in the agenix secret.
@@ -93,12 +93,13 @@ in {
     RemoveIPC = true;
 
     # Syscall filtering
-    SystemCallArchitectures = "native";
-    # Node.js + Matrix SDK needs many syscalls
-    # Allow: @system-service (basic service operations), @resources (process/thread management)
-    # Block: @privileged (most dangerous root operations), @obsolete (deprecated syscalls)  
-    # Explicitly allow: fchown/fchownat (needed by Matrix SDK crypto store via libuv copyfile)
-    SystemCallFilter = ["@system-service" "@resources" "fchown" "fchownat" "~@privileged" "~@obsolete"];
+    # TODO: Re-enable syscall filtering with a proper allow-list after identifying
+    # all required syscalls for Node.js + Matrix SDK. The Matrix SDK's crypto store
+    # needs fchown/fchownat and potentially other syscalls in the @privileged set.
+    # Consider using tools like strace to build a complete allow-list or explore
+    # alternative sandboxing approaches (e.g., systemd-analyze security, firejail).
+    # SystemCallArchitectures = "native";
+    # SystemCallFilter = ["@system-service" "@resources" "fchown" "fchownat" "~@privileged" "~@obsolete"];
 
     # Network — only IPv4/IPv6/Unix (outbound HTTPS to Matrix + Anthropic)
     # AF_NETLINK is needed for network interface enumeration
