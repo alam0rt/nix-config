@@ -43,8 +43,9 @@ in {
       OPENCLAW_CONFIG_PATH = "/var/lib/openclaw/openclaw.json";
       # Configure npm to use writable directory for plugins
       NPM_CONFIG_PREFIX = "/var/lib/openclaw/.npm-global";
-      # Ensure Node.js can find the installed plugins
-      NODE_PATH = "/var/lib/openclaw/.npm-global/lib/node_modules";
+      # Ensure Node.js can find the installed plugins and their dependencies
+      # Plugin extensions are in /var/lib/openclaw/extensions/<plugin>/node_modules
+      NODE_PATH = "/var/lib/openclaw/extensions/matrix/node_modules";
     };
 
     environmentFiles = [
