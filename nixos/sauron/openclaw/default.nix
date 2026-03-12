@@ -190,6 +190,16 @@ in {
       proxyPass = "http://127.0.0.1:${toString port}";
       recommendedProxySettings = true;
       proxyWebsockets = true;
+      extraConfig = ''
+        # Explicit websocket upgrade headers
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        
+        # Timeouts for long-lived websocket connections
+        proxy_read_timeout 86400s;
+        proxy_send_timeout 86400s;
+      '';
     };
   };
 
