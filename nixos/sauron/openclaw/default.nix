@@ -38,30 +38,6 @@ in {
     # which the gateway ignores because OPENCLAW_CONFIG_PATH points elsewhere.
     config = {};
 
-    # Copy the agenix secret to a writable location on startup
-    # so the gateway can apply doctor fixes (like auto-enabling matrix).
-    execStartPre = [
-      "+${pkgs.coreutils}/bin/cp -f ${config.age.secrets."openclaw-config".path} /var/lib/openclaw/openclaw.json"
-      "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
-      "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
-    ];
-
-    # Install Matrix plugin at runtime (avoids Nix sandbox network restrictions)
-    preStart = ''
-      # Configure npm to use writable directory instead of Nix store
-      export NPM_CONFIG_PREFIX="/var/lib/openclaw/.npm-global"
-      export PATH="/var/lib/openclaw/.npm-global/bin:$PATH"
-      export NODE_PATH="/var/lib/openclaw/.npm-global/lib/node_modules:$NODE_PATH"
-      
-      # Install Matrix plugin if not already present
-      if [ ! -d "/var/lib/openclaw/.npm-global/lib/node_modules/@openclaw/matrix" ]; then
-        echo "Installing @openclaw/matrix plugin..."
-        ${config.services.openclaw-gateway.package}/bin/openclaw plugins install @openclaw/matrix
-      else
-        echo "@openclaw/matrix plugin already installed"
-      fi
-    '';
-
     # Point the gateway at the writable copy
     environment = {
       OPENCLAW_CONFIG_PATH = "/var/lib/openclaw/openclaw.json";
@@ -84,6 +60,28 @@ in {
     # Logging - override upstream file logging to use journald
     StandardOutput = pkgs.lib.mkForce "journal";
     StandardError = pkgs.lib.mkForce "journal";
+
+    # Install Matrix plugin at runtime (avoids Nix sandbox network restrictions)
+    ExecStartPre = [
+      # Copy config (from services.openclaw-gateway.execStartPre)
+      "+${pkgs.coreutils}/bin/cp -f ${config.age.secrets."openclaw-config".path} /var/lib/openclaw/openclaw.json"
+      "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
+      "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
+      # Install Matrix plugin
+      ''
+        ${pkgs.bash}/bin/bash -c '
+          export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
+          export PATH=/var/lib/openclaw/.npm-global/bin:$PATH
+          export NODE_PATH=/var/lib/openclaw/.npm-global/lib/node_modules
+          if [ ! -d /var/lib/openclaw/.npm-global/lib/node_modules/@openclaw/matrix ]; then
+            echo "Installing @openclaw/matrix plugin..."
+            ${config.services.openclaw-gateway.package}/bin/openclaw plugins install @openclaw/matrix
+          else
+            echo "@openclaw/matrix plugin already installed"
+          fi
+        '
+      ''
+    ];
 
     # Filesystem
     ProtectSystem = "strict";
