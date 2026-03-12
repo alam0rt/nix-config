@@ -94,7 +94,8 @@ in {
 
     # Syscall filtering
     SystemCallArchitectures = "native";
-    SystemCallFilter = ["@system-service" "~@privileged" "~@resources"];
+    # Node.js needs many syscalls - allow all except dangerous privileged ones
+    SystemCallFilter = ["@system-service" "@resources" "~@privileged" "~@obsolete"];
 
     # Network — only IPv4/IPv6/Unix (outbound HTTPS to Matrix + Anthropic)
     # AF_NETLINK is needed for network interface enumeration
