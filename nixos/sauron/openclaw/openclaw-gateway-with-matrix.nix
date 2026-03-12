@@ -24,20 +24,19 @@ stdenv.mkDerivation {
 
     # Set up environment for openclaw plugins install
     export HOME=$(mktemp -d)
-    export PATH="${nodejs_22}/bin:${pnpm_10}/bin:$PATH"
-    export OPENCLAW_STATE_DIR="$out/lib/openclaw"
-    export NODE_PATH="$out/lib/openclaw/node_modules"
+    export PATH="$out/bin:${nodejs_22}/bin:${pnpm_10}/bin:$PATH"
+    export OPENCLAW_STATE_DIR="$HOME/.openclaw"
+    mkdir -p "$OPENCLAW_STATE_DIR"
     
-    # Create a temporary package.json in the openclaw directory for pnpm to use
-    cd "$out/lib/openclaw"
-    
-    # Install the Matrix plugin using pnpm directly
-    # This will install @openclaw/matrix and its dependencies including @vector-im/matrix-bot-sdk
-    echo "Installing Matrix plugin with pnpm..."
-    ${pnpm_10}/bin/pnpm add @openclaw/matrix@latest --save-prod --no-lockfile || {
-      echo "Failed to install Matrix plugin, trying with npm..."
+    # Run openclaw plugins install to install the Matrix plugin
+    # This uses the openclaw binary which handles plugin installation properly
+    echo "Installing Matrix plugin via openclaw CLI..."
+    $out/bin/openclaw plugins install @openclaw/matrix || {
+      echo "Warning: Matrix plugin installation failed"
+      echo "Trying manual npm install as fallback..."
+      cd "$out/lib/openclaw"
       ${nodejs_22}/bin/npm install --no-save --no-package-lock @openclaw/matrix || {
-        echo "Warning: Matrix plugin installation failed"
+        echo "Warning: Manual installation also failed"
         echo "Service will start but Matrix channel will not be available"
       }
     }
