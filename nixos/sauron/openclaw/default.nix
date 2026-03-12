@@ -61,7 +61,8 @@ in {
     ProtectSystem = "strict";
     ProtectHome = true;
     PrivateTmp = true;
-    PrivateDevices = true;
+    # PrivateDevices blocks network interface enumeration - disabled for now
+    # PrivateDevices = true;
     ReadWritePaths = ["/var/lib/openclaw"];
     UMask = "0077";
 
@@ -88,7 +89,8 @@ in {
     SystemCallFilter = ["@system-service" "~@privileged" "~@resources"];
 
     # Network — only IPv4/IPv6/Unix (outbound HTTPS to Matrix + Anthropic)
-    RestrictAddressFamilies = ["AF_INET" "AF_INET6" "AF_UNIX"];
+    # AF_NETLINK is needed for network interface enumeration
+    RestrictAddressFamilies = ["AF_INET" "AF_INET6" "AF_UNIX" "AF_NETLINK"];
     RestrictNamespaces = true;
 
     # Note: MemoryDenyWriteExecute=true breaks Node.js V8 JIT
