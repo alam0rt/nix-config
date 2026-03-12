@@ -83,6 +83,39 @@
           kubectl get --as admin --as-group system:masters --raw "/api/v1/nodes/$1/proxy/configz" "''${@:2}" | jq .
       }
 
+      # OpenClaw remote gateway via SSH tunnel
+      openclaw-remote() {
+          local host="''${1:-sauron}"
+          local port="''${2:-18789}"
+          
+          # Check if tunnel already exists
+          if lsof -ti:$port > /dev/null 2>&1; then
+              echo "🦞 Tunnel already active on port $port"
+              return 0
+          fi
+          
+          echo "🦞 Opening SSH tunnel to $host:$port..."
+          echo "   Local: ws://127.0.0.1:$port"
+          echo "   Press Ctrl+C to close tunnel"
+          echo ""
+          ssh -N -L "$port:127.0.0.1:$port" "$host"
+      }
+
+      # Wrapper for openclaw that ensures tunnel is active
+      openclaw() {
+          local port=18789
+          
+          # Check if tunnel is active
+          if ! lsof -ti:$port > /dev/null 2>&1; then
+              echo "⚠️  No SSH tunnel detected on port $port"
+              echo "💡 Run 'openclaw-remote' in another terminal first"
+              return 1
+          fi
+          
+          # Run the actual openclaw command
+          command openclaw "$@"
+      }
+
       if [[ -f "/home/sam/vault/kube" ]]; then
         export KUBECONFIG="/home/sam/vault/kube"
       fi
@@ -201,6 +234,9 @@
       # CAD / 3d
       openscad
       openscad-lsp
+
+      # AI
+      unstable.openclaw
 
       comma
     ]
