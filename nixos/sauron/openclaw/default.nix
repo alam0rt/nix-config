@@ -94,8 +94,11 @@ in {
 
     # Syscall filtering
     SystemCallArchitectures = "native";
-    # Node.js needs many syscalls - allow all except dangerous privileged ones
-    SystemCallFilter = ["@system-service" "@resources" "~@privileged" "~@obsolete"];
+    # Node.js + Matrix SDK needs many syscalls
+    # Allow: @system-service (basic service operations), @resources (process/thread management)
+    # Block: @privileged (most dangerous root operations), @obsolete (deprecated syscalls)  
+    # Explicitly allow: fchown/fchownat (needed by Matrix SDK crypto store via libuv copyfile)
+    SystemCallFilter = ["@system-service" "@resources" "fchown" "fchownat" "~@privileged" "~@obsolete"];
 
     # Network — only IPv4/IPv6/Unix (outbound HTTPS to Matrix + Anthropic)
     # AF_NETLINK is needed for network interface enumeration
