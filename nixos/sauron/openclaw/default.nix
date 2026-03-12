@@ -38,9 +38,18 @@ in {
     # which the gateway ignores because OPENCLAW_CONFIG_PATH points elsewhere.
     config = {};
 
-    # Point the gateway at the agenix-managed config instead of /etc.
+    # Copy the agenix secret to a writable location on startup
+    # so the gateway can apply doctor fixes (like auto-enabling matrix).
+    execStartPre = [
+      "mkdir -p /var/lib/openclaw"
+      "cp -f ${config.age.secrets."openclaw-config".path} /var/lib/openclaw/openclaw.json"
+      "chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
+      "chmod 0600 /var/lib/openclaw/openclaw.json"
+    ];
+
+    # Point the gateway at the writable copy
     environment = {
-      OPENCLAW_CONFIG_PATH = config.age.secrets."openclaw-config".path;
+      OPENCLAW_CONFIG_PATH = "/var/lib/openclaw/openclaw.json";
     };
 
     environmentFiles = [
