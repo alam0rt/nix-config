@@ -28,6 +28,7 @@
     ./monitoring
     ./home-assistant
     ./models
+    ./openclaw
     # ./pvpgn
     # ./llama-cpp
     # ../config/home-manager.nix # get working

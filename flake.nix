@@ -36,6 +36,9 @@
     # ai
     llama-cpp.url = "github:ggml-org/llama.cpp";
 
+    # openclaw
+    nix-openclaw.url = "github:openclaw/nix-openclaw";
+
     # hardware modules
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -94,6 +97,7 @@
           ./nixos/sauron/configuration.nix
           inputs.agenix.nixosModules.default
           inputs.agenix-rekey.nixosModules.default
+          inputs.nix-openclaw.nixosModules.openclaw-gateway
           self.nixosModules.vllm
         ];
       };
