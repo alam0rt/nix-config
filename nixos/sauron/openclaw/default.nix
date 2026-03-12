@@ -30,10 +30,7 @@ in {
   # --- Service ---
   services.openclaw-gateway = {
     enable = true;
-    package = let
-      basePackage = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
-    in
-      pkgs.callPackage ./openclaw-gateway-with-matrix.nix { inherit basePackage; };
+    package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
     inherit port;
 
     # Empty config — the real config is in the agenix secret.
@@ -49,9 +46,29 @@ in {
       "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
     ];
 
+    # Install Matrix plugin at runtime (avoids Nix sandbox network restrictions)
+    preStart = ''
+      # Configure npm to use writable directory instead of Nix store
+      export NPM_CONFIG_PREFIX="/var/lib/openclaw/.npm-global"
+      export PATH="/var/lib/openclaw/.npm-global/bin:$PATH"
+      export NODE_PATH="/var/lib/openclaw/.npm-global/lib/node_modules:$NODE_PATH"
+      
+      # Install Matrix plugin if not already present
+      if [ ! -d "/var/lib/openclaw/.npm-global/lib/node_modules/@openclaw/matrix" ]; then
+        echo "Installing @openclaw/matrix plugin..."
+        ${config.services.openclaw-gateway.package}/bin/openclaw plugins install @openclaw/matrix
+      else
+        echo "@openclaw/matrix plugin already installed"
+      fi
+    '';
+
     # Point the gateway at the writable copy
     environment = {
       OPENCLAW_CONFIG_PATH = "/var/lib/openclaw/openclaw.json";
+      # Configure npm to use writable directory for plugins
+      NPM_CONFIG_PREFIX = "/var/lib/openclaw/.npm-global";
+      # Ensure Node.js can find the installed plugins
+      NODE_PATH = "/var/lib/openclaw/.npm-global/lib/node_modules";
     };
 
     environmentFiles = [

@@ -3,10 +3,18 @@
 , makeWrapper
 , nodejs_22
 , pnpm_10
+, fetchurl
 , basePackage
 }:
 
-stdenv.mkDerivation {
+let
+  # Fetch the Matrix plugin tarball (fixed-output derivation with network access)
+  matrixPluginTarball = fetchurl {
+    url = "https://registry.npmjs.org/@openclaw/matrix/-/matrix-2026.3.11.tgz";
+    sha256 = "sha256-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=";
+  };
+
+in stdenv.mkDerivation {
   pname = "${basePackage.pname}-with-matrix";
   version = basePackage.version;
 
@@ -16,6 +24,9 @@ stdenv.mkDerivation {
   dontBuild = true;
 
   nativeBuildInputs = [ makeWrapper nodejs_22 pnpm_10 ];
+
+  # Allow network access to fetch dependencies
+  __noChroot = true;
 
   installPhase = ''
     # Copy the base package
