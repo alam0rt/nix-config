@@ -33,10 +33,58 @@ in {
     package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
     inherit port;
 
-    # Empty config — the real config is in the agenix secret.
-    # This still writes an innocuous {} to /etc/openclaw/openclaw.json
-    # which the gateway ignores because OPENCLAW_CONFIG_PATH points elsewhere.
-    config = {};
+    # Public/non-secret configuration
+    # Secrets (API keys, tokens, Matrix credentials) stay in agenix
+    config = {
+      gateway = {
+        mode = "local";
+        controlUi = {
+          allowedOrigins = [
+            "https://openclaw.${cfg.domain}"
+          ];
+        };
+        trustedProxies = [
+          "127.0.0.1"
+          "::1"
+        ];
+      };
+      agents = {
+        defaults = {
+          model = {
+            primary = "openrouter/nvidia/nemotron-3-super-120b-a12b:free";
+          };
+          models = {
+            "openrouter/nvidia/nemotron-3-super-120b-a12b" = {
+              alias = "free";
+            };
+          };
+        };
+        list = [
+          {
+            id = "main";
+            identity = {
+              name = "OpenClaw Bot";
+              theme = "helpful AI assistant and friend to the people";
+            };
+          }
+        ];
+      };
+      tools = {
+        allow = ["process" "read"];
+        deny = ["exec" "edit" "write" "apply_patch"];
+        exec = {
+          backgroundMs = 10000;
+          timeoutSec = 1800;
+        };
+        elevated = {
+          enabled = false;
+        };
+      };
+      messages = {
+        ackReaction = "✅";
+        ackReactionScope = "group-mentions";
+      };
+    };
 
     # Point the gateway at the writable copy
     environment = {
@@ -76,8 +124,13 @@ in {
         fi
       '';
     in [
-      # Copy config (from services.openclaw-gateway.execStartPre)
-      "+${pkgs.coreutils}/bin/cp -f ${config.age.secrets."openclaw-config".path} /var/lib/openclaw/openclaw.json"
+      # Merge base config with secrets using jq (from services.openclaw-gateway.execStartPre)
+      ''
+        ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
+          ${pkgs.writeText "openclaw-base-config.json" (builtins.toJSON config.services.openclaw-gateway.config)} \
+          ${config.age.secrets."openclaw-config".path} \
+          > /var/lib/openclaw/openclaw.json
+      ''
       "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
       "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
       # Install Matrix plugin
