@@ -8,8 +8,7 @@
   # https://nixos.wiki/wiki/Overlays
   modifications = final: prev:
     {}
-    // (import ./botamusique final prev)
-    // (import ./openclaw-gateway final prev);
+    // (import ./botamusique final prev);
 
   # When applied, the unstable nixpkgs set (declared in the flake inputs) will
   # be accessible through 'pkgs.unstable'
