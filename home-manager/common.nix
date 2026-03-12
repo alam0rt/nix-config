@@ -264,6 +264,7 @@
   programs.ssh = {
     enable = true;
     matchBlocks = {
+      # TODO: enumate all of my hosts
       "sauron" = {
         setEnv = {
           TERM = "xterm-256color";
