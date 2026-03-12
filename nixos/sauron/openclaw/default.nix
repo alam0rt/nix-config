@@ -42,10 +42,6 @@ in {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
           ];
-          pairing = {
-            enabled = true;
-            autoApprove = true;
-          };
         };
         trustedProxies = [
           "127.0.0.1"
