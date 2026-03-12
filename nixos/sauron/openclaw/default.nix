@@ -112,6 +112,12 @@ in {
 
     # Install Matrix plugin at runtime (avoids Nix sandbox network restrictions)
     ExecStartPre = let
+      mergeConfig = pkgs.writeShellScript "merge-openclaw-config" ''
+        ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
+          ${pkgs.writeText "openclaw-base-config.json" (builtins.toJSON config.services.openclaw-gateway.config)} \
+          ${config.age.secrets."openclaw-config".path} \
+          > /var/lib/openclaw/openclaw.json
+      '';
       installPlugin = pkgs.writeShellScript "install-matrix-plugin" ''
         export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
         export PATH=/var/lib/openclaw/.npm-global/bin:${pkgs.nodejs_22}/bin:${pkgs.python3}/bin:$PATH
@@ -124,13 +130,8 @@ in {
         fi
       '';
     in [
-      # Merge base config with secrets using jq (from services.openclaw-gateway.execStartPre)
-      ''
-        ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
-          ${pkgs.writeText "openclaw-base-config.json" (builtins.toJSON config.services.openclaw-gateway.config)} \
-          ${config.age.secrets."openclaw-config".path} \
-          > /var/lib/openclaw/openclaw.json
-      ''
+      # Merge base config with secrets using jq
+      "${mergeConfig}"
       "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
       "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
       # Install Matrix plugin
