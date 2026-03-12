@@ -38,11 +38,17 @@ in {
     config = {
       gateway = {
         mode = "local";
+        auth = {
+          mode = "trusted-proxy";
+          allowTailscale = true;
+          trustedProxy = {
+            userHeader = "x-tailscale-user";
+          };
+        };
         controlUi = {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
           ];
-          dangerouslyDisableDeviceAuth = true;
         };
         trustedProxies = [
           "127.0.0.1"
