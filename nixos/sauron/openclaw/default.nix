@@ -62,25 +62,25 @@ in {
     StandardError = pkgs.lib.mkForce "journal";
 
     # Install Matrix plugin at runtime (avoids Nix sandbox network restrictions)
-    ExecStartPre = [
+    ExecStartPre = let
+      installPlugin = pkgs.writeShellScript "install-matrix-plugin" ''
+        export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
+        export PATH=/var/lib/openclaw/.npm-global/bin:$PATH
+        export NODE_PATH=/var/lib/openclaw/.npm-global/lib/node_modules
+        if [ ! -d /var/lib/openclaw/.npm-global/lib/node_modules/@openclaw/matrix ]; then
+          echo "Installing @openclaw/matrix plugin..."
+          ${config.services.openclaw-gateway.package}/bin/openclaw plugins install @openclaw/matrix
+        else
+          echo "@openclaw/matrix plugin already installed"
+        fi
+      '';
+    in [
       # Copy config (from services.openclaw-gateway.execStartPre)
       "+${pkgs.coreutils}/bin/cp -f ${config.age.secrets."openclaw-config".path} /var/lib/openclaw/openclaw.json"
       "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
       "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
       # Install Matrix plugin
-      ''
-        ${pkgs.bash}/bin/bash -c '
-          export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
-          export PATH=/var/lib/openclaw/.npm-global/bin:$PATH
-          export NODE_PATH=/var/lib/openclaw/.npm-global/lib/node_modules
-          if [ ! -d /var/lib/openclaw/.npm-global/lib/node_modules/@openclaw/matrix ]; then
-            echo "Installing @openclaw/matrix plugin..."
-            ${config.services.openclaw-gateway.package}/bin/openclaw plugins install @openclaw/matrix
-          else
-            echo "@openclaw/matrix plugin already installed"
-          fi
-        '
-      ''
+      "${installPlugin}"
     ];
 
     # Filesystem
