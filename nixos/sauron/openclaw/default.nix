@@ -19,6 +19,7 @@ in {
     mode = "0400";
   };
 
+  # Contains: MATRIX_ACCESS_TOKEN, ANTHROPIC_API_KEY, OPENCLAW_GATEWAY_TOKEN
   age.secrets."openclaw-env" = {
     rekeyFile = ./openclaw-env.age;
     owner = "openclaw";
@@ -52,6 +53,10 @@ in {
   # Lock down the service to the minimum required for a pure chatbot
   # (no tools, no plugins, no shell access).
   systemd.services.openclaw-gateway.serviceConfig = {
+    # Logging - override upstream file logging to use journald
+    StandardOutput = "journal";
+    StandardError = "journal";
+
     # Filesystem
     ProtectSystem = "strict";
     ProtectHome = true;
