@@ -41,10 +41,10 @@ in {
     # Copy the agenix secret to a writable location on startup
     # so the gateway can apply doctor fixes (like auto-enabling matrix).
     execStartPre = [
-      "mkdir -p /var/lib/openclaw"
-      "cp -f ${config.age.secrets."openclaw-config".path} /var/lib/openclaw/openclaw.json"
-      "chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
-      "chmod 0600 /var/lib/openclaw/openclaw.json"
+      "${pkgs.coreutils}/bin/mkdir -p /var/lib/openclaw"
+      "${pkgs.coreutils}/bin/cp -f ${config.age.secrets."openclaw-config".path} /var/lib/openclaw/openclaw.json"
+      "${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
+      "${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
     ];
 
     # Point the gateway at the writable copy
