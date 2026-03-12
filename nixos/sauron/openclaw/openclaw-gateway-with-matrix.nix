@@ -1,32 +1,62 @@
 { lib
 , stdenv
+, makeWrapper
+, nodejs_22
+, pnpm_10
 , basePackage
 }:
 
-# Simple wrapper that adds @vector-im/matrix-bot-sdk to openclaw-gateway
-# The Matrix plugin (@openclaw/matrix) expects this dependency to be available
-basePackage.overrideAttrs (oldAttrs: {
-  postInstall = (oldAttrs.postInstall or "") + ''
-    # The Matrix plugin requires @vector-im/matrix-bot-sdk but it's not in the base package.
-    # Following the pattern from upstream gateway-install.sh which does similar workarounds
-    # for strip-ansi, combined-stream, and hasown dependencies.
+stdenv.mkDerivation {
+  pname = "${basePackage.pname}-with-matrix";
+  version = basePackage.version;
+
+  dontUnpack = true;
+  dontPatch = true;
+  dontConfigure = true;
+  dontBuild = true;
+
+  nativeBuildInputs = [ makeWrapper nodejs_22 pnpm_10 ];
+
+  installPhase = ''
+    # Copy the base package
+    cp -r ${basePackage} $out
+    chmod -R +w $out
+
+    # Set up environment for openclaw plugins install
+    export HOME=$(mktemp -d)
+    export PATH="${nodejs_22}/bin:${pnpm_10}/bin:$PATH"
+    export OPENCLAW_STATE_DIR="$out/lib/openclaw"
+    export NODE_PATH="$out/lib/openclaw/node_modules"
     
-    echo "Adding @vector-im/matrix-bot-sdk dependency for Matrix plugin support..."
+    # Create a temporary package.json in the openclaw directory for pnpm to use
+    cd "$out/lib/openclaw"
     
-    # Find the matrix-bot-sdk in the pnpm store (it should be there from the main package build)
-    MATRIX_SDK_SRC=$(find "$out/lib/openclaw/node_modules/.pnpm" -path "*/node_modules/@vector-im/matrix-bot-sdk" -print -quit 2>/dev/null || true)
+    # Install the Matrix plugin using pnpm directly
+    # This will install @openclaw/matrix and its dependencies including @vector-im/matrix-bot-sdk
+    echo "Installing Matrix plugin with pnpm..."
+    ${pnpm_10}/bin/pnpm add @openclaw/matrix@latest --save-prod --no-lockfile || {
+      echo "Failed to install Matrix plugin, trying with npm..."
+      ${nodejs_22}/bin/npm install --no-save --no-package-lock @openclaw/matrix || {
+        echo "Warning: Matrix plugin installation failed"
+        echo "Service will start but Matrix channel will not be available"
+      }
+    }
     
-    if [ -n "$MATRIX_SDK_SRC" ] && [ -d "$MATRIX_SDK_SRC" ]; then
-      # Symlink it to the top level so the Matrix plugin can find it
-      mkdir -p "$out/lib/openclaw/node_modules/@vector-im"
-      if [ ! -e "$out/lib/openclaw/node_modules/@vector-im/matrix-bot-sdk" ]; then
-        ln -s "$MATRIX_SDK_SRC" "$out/lib/openclaw/node_modules/@vector-im/matrix-bot-sdk"
-        echo "Symlinked Matrix bot SDK from pnpm store"
+    # Verify the installation
+    if [ -d "$out/lib/openclaw/node_modules/@openclaw/matrix" ]; then
+      echo "Matrix plugin installed successfully"
+      if [ -d "$out/lib/openclaw/node_modules/@vector-im/matrix-bot-sdk" ]; then
+        echo "Matrix bot SDK found"
+      else
+        echo "Warning: Matrix bot SDK not found, Matrix plugin may not work"
       fi
-    else
-      echo "Warning: @vector-im/matrix-bot-sdk not found in pnpm store"
-      echo "Matrix plugin will not work until this dependency is available"
     fi
   '';
-})
+
+  passthru = basePackage.passthru or {};
+
+  meta = basePackage.meta // {
+    description = "${basePackage.meta.description or "OpenClaw gateway"} with Matrix plugin";
+  };
+}
 
