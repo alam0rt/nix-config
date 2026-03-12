@@ -49,13 +49,13 @@ in {
   };
 
   # --- Systemd hardening ---
-  # The upstream NixOS module sets zero hardening directives.
-  # Lock down the service to the minimum required for a pure chatbot
+  # The openclaw-gateway module provides the base serviceConfig.
+  # We extend it with additional hardening directives for a pure chatbot
   # (no tools, no plugins, no shell access).
   systemd.services.openclaw-gateway.serviceConfig = {
     # Logging - override upstream file logging to use journald
-    StandardOutput = "journal";
-    StandardError = "journal";
+    StandardOutput = pkgs.lib.mkForce "journal";
+    StandardError = pkgs.lib.mkForce "journal";
 
     # Filesystem
     ProtectSystem = "strict";
