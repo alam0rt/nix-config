@@ -42,6 +42,7 @@ in {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
           ];
+          dangerouslyDisableDeviceAuth = true;
         };
         trustedProxies = [
           "127.0.0.1"
