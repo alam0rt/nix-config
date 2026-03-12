@@ -42,7 +42,7 @@ in {
           mode = "trusted-proxy";
           allowTailscale = true;
           trustedProxy = {
-            userHeader = "x-tailscale-user";
+            userHeader = "x-webauth-user";
           };
         };
         controlUi = {
