@@ -30,7 +30,10 @@ in {
   # --- Service ---
   services.openclaw-gateway = {
     enable = true;
-    package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
+    package = let
+      basePackage = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
+    in
+      pkgs.callPackage ./openclaw-gateway-with-matrix.nix { inherit basePackage; };
     inherit port;
 
     # Empty config — the real config is in the agenix secret.
