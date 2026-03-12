@@ -58,10 +58,10 @@ in {
       agents = {
         defaults = {
           model = {
-            primary = "openrouter/nvidia/nemotron-3-super-120b-a12b:free";
+            primary = "openrouter/stepfun/step-3.5-flash";
           };
           models = {
-            "openrouter/nvidia/nemotron-3-super-120b-a12b" = {
+            "openrouter/stepfun/step-3.5-flash" = {
               alias = "free";
             };
           };
