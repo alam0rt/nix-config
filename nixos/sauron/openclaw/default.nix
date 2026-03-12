@@ -65,7 +65,7 @@ in {
     ExecStartPre = let
       installPlugin = pkgs.writeShellScript "install-matrix-plugin" ''
         export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
-        export PATH=/var/lib/openclaw/.npm-global/bin:${pkgs.nodejs_22}/bin:$PATH
+        export PATH=/var/lib/openclaw/.npm-global/bin:${pkgs.nodejs_22}/bin:${pkgs.python3}/bin:$PATH
         export NODE_PATH=/var/lib/openclaw/.npm-global/lib/node_modules
         if [ ! -d /var/lib/openclaw/.npm-global/lib/node_modules/@openclaw/matrix ]; then
           echo "Installing @openclaw/matrix plugin..."
