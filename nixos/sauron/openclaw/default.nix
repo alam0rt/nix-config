@@ -68,24 +68,64 @@ in {
         };
         list = [
           {
-            id = "main";
+            id = "admin";
             identity = {
               name = "OpenClaw Bot";
               theme = "helpful AI assistant and friend to the people";
             };
+            tools = {
+              profile = "full";
+              elevated = {
+                enabled = true;
+              };
+            };
+          }
+          {
+            id = "basic";
+            identity = {
+              name = "OpenClaw Bot";
+              theme = "helpful AI assistant and friend to the people";
+            };
+            tools = {
+              profile = "coding";
+              deny = ["edit" "write" "apply_patch"];
+            };
           }
         ];
       };
+      bindings = [
+        {
+          agentId = "admin";
+          match = {
+            channel = "matrix";
+            peer = {
+              kind = "direct";
+              id = "@sammm:chat.samlockart.com";
+            };
+          };
+        }
+        {
+          agentId = "basic";
+          match = {
+            channel = "matrix";
+          };
+        }
+      ];
       tools = {
-        allow = ["process" "read"];
-        deny = ["exec" "edit" "write" "apply_patch"];
         exec = {
           backgroundMs = 10000;
           timeoutSec = 1800;
         };
         elevated = {
-          enabled = false;
+          enabled = true;
+          # allowFrom is set in openclaw-config.age secret
         };
+      };
+      skills = {
+        autoInstall = true;
+        list = [
+          "pskoett/self-improving-agent"
+        ];
       };
       messages = {
         ackReaction = "✅";
@@ -136,6 +176,13 @@ in {
           echo "@openclaw/matrix plugin already installed"
         fi
       '';
+      installSkills = pkgs.writeShellScript "install-openclaw-skills" ''
+        export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
+        export PATH=/var/lib/openclaw/.npm-global/bin:${pkgs.nodejs_22}/bin:${pkgs.python3}/bin:$PATH
+        export NODE_PATH=/var/lib/openclaw/.npm-global/lib/node_modules
+        echo "Installing self-improving-agent skill..."
+        ${config.services.openclaw-gateway.package}/bin/openclaw skills install pskoett/self-improving-agent || true
+      '';
     in [
       # Merge base config with secrets using jq
       "${mergeConfig}"
@@ -143,6 +190,8 @@ in {
       "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
       # Install Matrix plugin
       "${installPlugin}"
+      # Install skills
+      "${installSkills}"
     ];
 
     # Filesystem
