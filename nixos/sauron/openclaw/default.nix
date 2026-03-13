@@ -38,6 +38,7 @@ in {
     config = {
       gateway = {
         mode = "local";
+        bind = "tailnet";
         auth = {
           mode = "trusted-proxy";
           allowTailscale = true;
@@ -48,6 +49,7 @@ in {
         controlUi = {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
+            "https://sauron.middleearth.samlockart.com"
           ];
         };
         trustedProxies = [
@@ -138,6 +140,9 @@ in {
       # Plugin extensions are in /var/lib/openclaw/extensions/<plugin>/node_modules
       NODE_PATH = "/var/lib/openclaw/extensions/matrix/node_modules";
     };
+
+    # Tailscale CLI needed for gateway.tailscale.mode = "serve"
+    servicePath = [config.services.tailscale.package];
 
     environmentFiles = [
       config.age.secrets."openclaw-env".path
@@ -239,7 +244,7 @@ in {
     forceSSL = true;
     useACMEHost = cfg.domain;
     locations."/" = {
-      proxyPass = "http://127.0.0.1:${toString port}";
+      proxyPass = "http://100.64.0.4:${toString port}";
       recommendedProxySettings = true;
       proxyWebsockets = true;
     };
