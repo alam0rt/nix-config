@@ -39,9 +39,7 @@ in {
       gateway = {
         mode = "local";
         auth = {
-          # Use token auth - internal agent backend uses OPENCLAW_GATEWAY_TOKEN
-          # External access via nginx uses Tailscale auth (allowTailscale = true)
-          mode = "token";
+          mode = "trusted-proxy";
           allowTailscale = true;
           trustedProxy = {
             userHeader = "x-webauth-user";
