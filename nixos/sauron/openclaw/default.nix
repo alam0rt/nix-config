@@ -112,6 +112,11 @@ in {
       ];
       tools = {
         exec = {
+          # Run exec on gateway host with allowlist-based security
+          # ask=off bypasses WS approval registration (breaks with trusted-proxy auth)
+          host = "gateway";
+          security = "allowlist";
+          ask = "off";
           backgroundMs = 10000;
           timeoutSec = 1800;
         };
@@ -158,6 +163,46 @@ in {
           ${config.age.secrets."openclaw-config".path} \
           > /var/lib/openclaw/openclaw.json
       '';
+      # Exec approvals allowlist - only these patterns can run
+      execApprovalsJson = pkgs.writeText "exec-approvals.json" (builtins.toJSON {
+        version = 1;
+        defaults = {
+          security = "allowlist";
+          ask = "off";
+          askFallback = "deny";
+        };
+        agents = {
+          admin = {
+            allowlist = [
+              # Valetudo/MQTT monitoring
+              { pattern = "nix-shell -p mosquitto --run *"; }
+              { pattern = "mosquitto_sub *"; }
+              { pattern = "mosquitto_pub *"; }
+              # Basic utilities
+              { pattern = "echo *"; }
+              { pattern = "cat *"; }
+              { pattern = "ls *"; }
+              { pattern = "head *"; }
+              { pattern = "tail *"; }
+              { pattern = "grep *"; }
+              # System info
+              { pattern = "uptime"; }
+              { pattern = "df *"; }
+              { pattern = "free *"; }
+              { pattern = "systemctl status *"; }
+              { pattern = "journalctl *"; }
+            ];
+          };
+          # basic agent gets no exec by default (empty allowlist = deny all)
+          basic = {
+            allowlist = [];
+          };
+        };
+      });
+      setupExecApprovals = pkgs.writeShellScript "setup-exec-approvals" ''
+        echo "Installing exec-approvals.json allowlist..."
+        cp ${execApprovalsJson} /var/lib/openclaw/exec-approvals.json
+      '';
       installPlugin = pkgs.writeShellScript "install-matrix-plugin" ''
         export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
         export PATH=/var/lib/openclaw/.npm-global/bin:${pkgs.nodejs_22}/bin:${pkgs.python3}/bin:$PATH
@@ -181,6 +226,10 @@ in {
       "${mergeConfig}"
       "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
       "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
+      # Setup exec approvals allowlist
+      "${setupExecApprovals}"
+      "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/exec-approvals.json"
+      "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/exec-approvals.json"
       # Install Matrix plugin
       "${installPlugin}"
       # Install skills
