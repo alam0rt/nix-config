@@ -175,28 +175,32 @@ in {
           admin = {
             allowlist = [
               # Valetudo/MQTT monitoring
-              { pattern = "nix-shell -p mosquitto --run *"; }
-              { pattern = "mosquitto_sub *"; }
-              { pattern = "mosquitto_pub *"; }
+              {pattern = "nix-shell -p mosquitto --run *";}
+              {pattern = "mosquitto_sub *";}
+              {pattern = "mosquitto_pub *";}
               # Basic utilities
-              { pattern = "echo *"; }
-              { pattern = "cat *"; }
-              { pattern = "ls *"; }
-              { pattern = "head *"; }
-              { pattern = "tail *"; }
-              { pattern = "grep *"; }
-              { pattern = "curl *"; }
-              { pattern = "jq *"; }
+              {pattern = "echo *";}
+              {pattern = "cat *";}
+              {pattern = "ls *";}
+              {pattern = "head *";}
+              {pattern = "tail *";}
+              {pattern = "grep *";}
+              {pattern = "curl *";}
+              {pattern = "jq *";}
               # System info
-              { pattern = "uptime"; }
-              { pattern = "df *"; }
-              { pattern = "free *"; }
-              { pattern = "systemctl status *"; }
-              { pattern = "journalctl *"; }
+              {pattern = "uptime";}
+              {pattern = "df *";}
+              {pattern = "free *";}
+              {pattern = "systemctl status *";}
+              {pattern = "journalctl *";}
               # Transmission
-              { pattern = "SESSION=* && curl *"; }
+              {pattern = "SESSION=* && curl *";}
               # Shell compound commands (be careful with this)
-              { pattern = "*curl*transmission*"; }
+              {pattern = "*curl*transmission*";}
+              {pattern = "nix-shell *";}
+              {pattern = "curl *";}
+              {pattern = "jq *";}
+              {pattern = "mosquitto_*";}
             ];
           };
           # basic agent gets no exec by default (empty allowlist = deny all)
