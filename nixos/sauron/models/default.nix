@@ -9,8 +9,9 @@
   # https://docs.vllm.ai/en/stable/features/quantization/gguf/
   #
   # Model: OmniCoder-9B, quantized to Q4_K_M (~5.7 GB) via GGUF.
-  # vLLM downloads the quant directly from HuggingFace on first start
-  # into cacheDir (/srv/data/vllm), so no local model path is needed.
+  # File pre-downloaded to /srv/share/public/models/OmniCoder-9B-GGUF/
+  # with: curl -L -C - -o .../omnicoder-9b-q4_k_m.gguf \
+  #   https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q4_k_m.gguf
   #
   # The --tokenizer flag is required for GGUF: vLLM cannot reliably
   # convert the tokenizer from the GGUF file itself, so we point it at
@@ -23,7 +24,7 @@
   # Example curl:
   #   curl http://localhost:8000/v1/chat/completions \
   #     -H "Content-Type: application/json" \
-  #     -d '{"model": "Tesslate/OmniCoder-9B-GGUF",
+  #     -d '{"model": "omnicoder-9b-q4_k_m.gguf",
   #          "messages": [{"role": "user", "content": "Write a Rust TCP server"}]}'
   #
   # Hardware notes for NVIDIA T1000 8GB (Turing, compute capability 7.5):
@@ -33,7 +34,8 @@
   #
   services.vllm = {
     enable = true;
-    model = "Tesslate/OmniCoder-9B-GGUF";
+    # Serve the local GGUF file directly - mounted as /model:ro in the container
+    modelPath = "/srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf";
     backend = "cuda";
     port = 8000; # matches OPENAI_API_BASE_URL in openwebui/default.nix
 
