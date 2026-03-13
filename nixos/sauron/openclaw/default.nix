@@ -185,12 +185,18 @@ in {
               { pattern = "head *"; }
               { pattern = "tail *"; }
               { pattern = "grep *"; }
+              { pattern = "curl *"; }
+              { pattern = "jq *"; }
               # System info
               { pattern = "uptime"; }
               { pattern = "df *"; }
               { pattern = "free *"; }
               { pattern = "systemctl status *"; }
               { pattern = "journalctl *"; }
+              # Transmission
+              { pattern = "SESSION=* && curl *"; }
+              # Shell compound commands (be careful with this)
+              { pattern = "*curl*transmission*"; }
             ];
           };
           # basic agent gets no exec by default (empty allowlist = deny all)
