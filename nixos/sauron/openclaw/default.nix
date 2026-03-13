@@ -40,7 +40,7 @@ in {
         mode = "local";
         bind = "tailnet";
         auth = {
-          mode = "trusted-proxy";
+          mode = "token";
           allowTailscale = true;
           trustedProxy = {
             userHeader = "x-webauth-user";
