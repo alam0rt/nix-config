@@ -4,59 +4,70 @@
   pkgs,
   ...
 }: {
-  # vLLM inference server - Liquid AI LFM2.5 model
-  # https://docs.liquid.ai/docs/inference/vllm
+  # vLLM inference server - Tesslate OmniCoder-9B (GGUF Q4_K_M)
+  # https://huggingface.co/Tesslate/OmniCoder-9B-GGUF
+  # https://docs.vllm.ai/en/stable/features/quantization/gguf/
   #
-  # Recommended client-side sampling params for LFM2.5:
-  #   temperature: 0.3
-  #   min_p: 0.15
-  #   repetition_penalty: 1.05
-  #   max_tokens: 512
+  # Model: OmniCoder-9B, quantized to Q4_K_M (~5.7 GB) via GGUF.
+  # vLLM downloads the quant directly from HuggingFace on first start
+  # into cacheDir (/srv/data/vllm), so no local model path is needed.
+  #
+  # The --tokenizer flag is required for GGUF: vLLM cannot reliably
+  # convert the tokenizer from the GGUF file itself, so we point it at
+  # the base (non-quantized) HuggingFace repo instead.
+  #
+  # If vLLM cannot infer the model architecture config from the GGUF
+  # header alone, add to serverArgs:
+  #   "hf-config-path" = "Tesslate/OmniCoder-9B";
   #
   # Example curl:
-  #   curl http://localhost:8100/v1/chat/completions \
+  #   curl http://localhost:8000/v1/chat/completions \
   #     -H "Content-Type: application/json" \
-  #     -d '{"model": "LiquidAI/LFM2.5-1.2B-Instruct",
-  #          "messages": [{"role": "user", "content": "Hello!"}],
-  #          "temperature": 0.3, "min_p": 0.15, "repetition_penalty": 1.05}'
+  #     -d '{"model": "Tesslate/OmniCoder-9B-GGUF",
+  #          "messages": [{"role": "user", "content": "Write a Rust TCP server"}]}'
   #
   # Hardware notes for NVIDIA T1000 8GB (Turing, compute capability 7.5):
-  #   - Does not support bfloat16, vLLM auto-casts to float16
-  #   - Flash Attention 2 requires compute 8.0+, use FLASHINFER instead
-  #   - Limited VRAM, use conservative memory settings
+  #   - Does not support bfloat16; use float16
+  #   - Flash Attention 2 requires compute 8.0+; use FLASHINFER instead
+  #   - Q4_K_M ~5.7 GB fits in 8 GB VRAM with gpuMemoryUtilization = 0.85
   #
   services.vllm = {
     enable = true;
-    modelPath = "/srv/share/public/models/LFM2.5-1.2B-Instruct";
+    model = "Tesslate/OmniCoder-9B-GGUF";
     backend = "cuda";
-    port = 8100;
+    port = 8000; # matches OPENAI_API_BASE_URL in openwebui/default.nix
+
+    # GGUF quantization - pin exact quant file to avoid ambiguity
+    quantization = "gguf";
 
     # Force float16 for Turing GPUs (T1000 doesn't support bfloat16)
     dtype = "float16";
 
-    # Memory settings for 8GB VRAM - minimal for simple chatbot
-    gpuMemoryUtilization = 0.70;
+    # 5.7 GB model needs more headroom than LFM2.5 did
+    gpuMemoryUtilization = 0.85;
     cacheDir = "/srv/data/vllm"; # persist on ZFS
 
     # Use FLASHINFER backend - compatible with compute capability 7.5
     # FA2 requires compute 8.0+ (Ampere), FLASHINFER works on Turing
     attentionBackend = "FLASHINFER";
 
-    # Performance optimizations
-    enablePrefixCaching = false; # disable to save memory
+    # Prefix caching is incompatible with chunked prefill for GGUF
+    enablePrefixCaching = false;
     enableChunkedPrefill = true; # better memory efficiency
 
-    # Minimal context for simple chatbot use case
-    # Short conversations don't need much context
-    maxModelLen = 2048;
+    # Context length for a coding assistant; reduce if OOM at startup
+    maxModelLen = 8192;
     maxNumBatchedTokens = 512;
-    maxNumSeqs = 2; # single user chatbot
+    maxNumSeqs = 2; # single-user server
 
-    # Any other vLLM flags can be passed via serverArgs
     # See: https://docs.vllm.ai/en/stable/cli/serve/
     serverArgs = {
+      # Required for GGUF: use the base (non-quantized) repo for tokenizer
+      "tokenizer" = "Tesslate/OmniCoder-9B";
+      # Pin the exact Q4_K_M quant file within the HF repo
+      "hf-file" = "omnicoder-9b-q4_k_m.gguf";
       "disable-log-stats" = true; # reduce log noise
-      "enforce-eager" = true; # disable CUDA graphs to save memory
+      "enforce-eager" = true; # disable CUDA graphs to save memory (Turing)
     };
   };
 
