@@ -64,8 +64,6 @@
     serverArgs = {
       # Required for GGUF: use the base (non-quantized) repo for tokenizer
       "tokenizer" = "Tesslate/OmniCoder-9B";
-      # Pin the exact Q4_K_M quant file within the HF repo
-      "hf-file" = "omnicoder-9b-q4_k_m.gguf";
       "disable-log-stats" = true; # reduce log noise
       "enforce-eager" = true; # disable CUDA graphs to save memory (Turing)
     };
