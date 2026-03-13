@@ -49,8 +49,8 @@
     gpuMemoryUtilization = 0.85;
     cacheDir = "/srv/data/vllm"; # persist on ZFS
 
-    # Use FLASHINFER backend - compatible with compute capability 7.5
-    # FA2 requires compute 8.0+ (Ampere), FLASHINFER works on Turing
+    # Use FLASHINFER backend via --attention-backend CLI flag
+    # FA2 requires compute 8.0+ (Ampere), FLASHINFER works on Turing 7.5
     attentionBackend = "FLASHINFER";
 
     # Prefix caching is incompatible with chunked prefill for GGUF
@@ -66,6 +66,9 @@
     serverArgs = {
       # Required for GGUF: use the base (non-quantized) repo for tokenizer
       "tokenizer" = "Tesslate/OmniCoder-9B";
+      # qwen35 architecture not supported in transformers' GGUF parser yet;
+      # fetch model config from HF instead of reading from the GGUF header
+      "hf-config-path" = "Tesslate/OmniCoder-9B";
       "disable-log-stats" = true; # reduce log noise
       "enforce-eager" = true; # disable CUDA graphs to save memory (Turing)
     };

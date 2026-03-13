@@ -241,10 +241,6 @@ in {
           # PyTorch memory allocation optimization (GPU only)
           PYTORCH_CUDA_ALLOC_CONF = "expandable_segments:True";
         }
-        // lib.optionalAttrs (cfg.attentionBackend != null) {
-          # Override attention backend (useful for older GPUs without FA2 support)
-          VLLM_ATTENTION_BACKEND = cfg.attentionBackend;
-        }
         // lib.optionalAttrs (cfg.backend == "rocm") {
           HIP_VISIBLE_DEVICES = "0";
         }
@@ -303,6 +299,7 @@ in {
         ++ lib.optionals (cfg.quantization != null) ["--quantization" cfg.quantization]
         ++ lib.optionals (cfg.maxNumSeqs != null) ["--max-num-seqs" (toString cfg.maxNumSeqs)]
         ++ lib.optionals (cfg.kvCacheDtype != null) ["--kv-cache-dtype" cfg.kvCacheDtype]
+        ++ lib.optionals (cfg.attentionBackend != null) ["--attention-backend" cfg.attentionBackend]
         # Generic serverArgs
         ++ (serverArgsToFlags cfg.serverArgs);
 
