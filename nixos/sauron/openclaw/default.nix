@@ -140,6 +140,8 @@ in {
       # Ensure Node.js can find the installed plugins and their dependencies
       # Plugin extensions are in /var/lib/openclaw/extensions/<plugin>/node_modules
       NODE_PATH = "/var/lib/openclaw/extensions/matrix/node_modules";
+      # Advertise tailnet MagicDNS name for discovery
+      OPENCLAW_TAILNET_DNS = "sauron.middleearth.samlockart.com";
     };
 
     # Tailscale CLI needed for gateway.tailscale.mode = "serve"
