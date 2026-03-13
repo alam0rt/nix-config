@@ -88,7 +88,6 @@ in {
             };
             tools = {
               profile = "coding";
-              deny = ["edit" "write" "apply_patch"];
             };
           }
         ];
@@ -120,12 +119,6 @@ in {
           enabled = true;
           # allowFrom is set in openclaw-config.age secret
         };
-      };
-      skills = {
-        autoInstall = true;
-        list = [
-          "pskoett/self-improving-agent"
-        ];
       };
       messages = {
         ackReaction = "✅";
