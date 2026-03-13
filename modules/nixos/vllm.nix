@@ -37,7 +37,20 @@ in {
       description = ''
         Path to a local model directory to serve directly.
         When set, this takes precedence over the `model` option.
-        The path will be mounted read-only into the container at /model.
+        The directory will be mounted read-only into the container at /model.
+        Use `modelFile` to specify a single GGUF file within the directory.
+      '';
+    };
+
+    modelFile = lib.mkOption {
+      type = lib.types.nullOr lib.types.str;
+      default = null;
+      example = "omnicoder-9b-q4_k_m.gguf";
+      description = ''
+        Filename of the model file within `modelPath` to serve.
+        When set alongside `modelPath`, vLLM is invoked with
+        `/model/<modelFile>` instead of `/model`.
+        Required for GGUF files in a directory.
       '';
     };
 
@@ -271,7 +284,11 @@ in {
         [
           (
             if cfg.modelPath != null
-            then "/model"
+            then (
+              if cfg.modelFile != null
+              then "/model/${cfg.modelFile}"
+              else "/model"
+            )
             else cfg.model
           )
           "--host"

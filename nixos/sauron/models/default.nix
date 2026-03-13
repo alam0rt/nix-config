@@ -34,8 +34,10 @@
   #
   services.vllm = {
     enable = true;
-    # Serve the local GGUF file directly - mounted as /model:ro in the container
-    modelPath = "/srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf";
+    # Serve the local GGUF file directly - directory mounted as /model:ro,
+    # file passed as /model/omnicoder-9b-q4_k_m.gguf to vllm serve
+    modelPath = "/srv/share/public/models/OmniCoder-9B-GGUF";
+    modelFile = "omnicoder-9b-q4_k_m.gguf";
     backend = "cuda";
     port = 8000; # matches OPENAI_API_BASE_URL in openwebui/default.nix
 
