@@ -113,16 +113,10 @@ in {
       tools = {
         exec = {
           host = "gateway";
-          security = "allowlist";
+          security = "full";
           ask = "off";
           backgroundMs = 10000;
           timeoutSec = 1800;
-          allowlist = [
-            {pattern = "nix-shell *";} # scope down
-            {pattern = "mosquitto_*";}
-            {pattern = "curl *";}
-            {pattern = "jq *";}
-          ];
         };
         elevated = {
           enabled = true;
