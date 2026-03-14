@@ -41,8 +41,6 @@
       "--top-p" "0.95"
       "--top-k" "20"
       "--jinja"          # enable jinja templating for tool calls
-      # Note: --ctx-checkpoints removed — triggers empty-batch loop bug in b8255
-      # (https://github.com/ggml-org/llama.cpp/pull/20277)
     ];
   };
 
