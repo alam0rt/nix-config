@@ -38,7 +38,7 @@ in {
     config = {
       gateway = {
         mode = "local";
-        bind = "tailnet";
+        bind = "local"; # listen on 127.0.0.1 so nginx can proxy locally
         auth = {
           mode = "token";
           allowTailscale = true;
@@ -261,8 +261,10 @@ in {
     forceSSL = true;
     useACMEHost = cfg.domain;
     locations."/" = {
-      proxyPass = "http://100.64.0.4:${toString port}";
-      recommendedProxySettings = true;
+      proxyPass = "http://127.0.0.1:${toString port}";
+      # Note: do NOT set recommendedProxySettings = true here — it sets
+      # proxy_set_header Connection "" which kills WebSocket upgrades.
+      # The global recommendedProxySettings handles common headers already.
       proxyWebsockets = true;
     };
   };
