@@ -1,63 +1,47 @@
-{pkgs, ...}: let
-  selected = "DeepSeek-R1-0528-Qwen3-8B-Q6_K";
-  port = 8000;
-  models = {
-    DeepSeek-R1-0528-Qwen3-8B-Q6_K = {
-      model = "/opt/models/DeepSeek-R1-0528-Qwen3-8B-Q6_K.gguf";
-      extraArgs = [
-        "--cache-type-k"
-        "q4_0"
-        "--threads"
-        "-1"
-        "--n-gpu-layers"
-        "99"
-        "--prio"
-        "3"
-        "--temp"
-        "0.6"
-        "--top_p"
-        "0.95"
-        "--min_p"
-        "0.01"
-        "--ctx-size"
-        "0"
-        "--seed"
-        "3407"
-        "-ot"
-        ".ffn_.*_exps.=CPU"
-      ];
-    };
-    gpt-oss-20b-F16 = {
-      model = "/opt/models/gpt-oss-20b-F16.gguf";
-      extraArgs = [
-        "--jinja"
-        "-ngl"
-        "8" # offload 8 layers to GPU
-        "--n-cpu-moe"
-        "16" # remaining can go to CPU
-        "--threads"
-        "-1"
-        "--ctx-size"
-        "16384"
-        "--temp"
-        "1.0"
-        "--top-p"
-        "1.0"
-        "--top-k"
-        "0"
-      ];
-    };
-    # You could define more models here:
-    # llama-7b = { model = "..."; extraArgs = [ ... ]; };
-  };
-in {
+{pkgs, ...}: {
+  # llama-server serving OmniCoder-9B Q4_K_M via llama.cpp
+  # https://huggingface.co/Tesslate/OmniCoder-9B-GGUF
+  #
+  # vLLM 0.17.1 doesn't support the qwen35 (Gated Delta Networks) architecture
+  # in GGUF format; llama.cpp handles it natively.
+  #
+  # Model file pre-downloaded with:
+  #   curl -L -C - -o /srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf \
+  #     https://huggingface.co/Tesslate/OmniCoder-9B-GGUF/resolve/main/omnicoder-9b-q4_k_m.gguf
+  #
+  # Hardware: NVIDIA T1000 8GB (Turing, compute capability 7.5)
+  #   - Flash Attention (-fa 1) works fine with llama.cpp on Turing
+  #   - Full GPU offload (-ngl 999)
+  #   - 32k context with Q4_K_M (~5.7 GB) fits in 8 GB VRAM
+  #     reduce -c to 16384 if VRAM is tight at startup
+  #
+  # Example curl:
+  #   curl http://localhost:8000/v1/chat/completions \
+  #     -H "Content-Type: application/json" \
+  #     -d '{"model": "omnicoder-9b-q4_k_m",
+  #          "messages": [{"role": "user", "content": "Write a Rust TCP server"}]}'
+  #
   services.llama-cpp = {
     enable = true;
     package = pkgs.llamaPackages.llama-cpp;
-    port = port;
-    host = "0.0.0.0";
-    openFirewall = true;
-    model = models.${selected}.model;
-    extraFlags = models.${selected}.extraArgs;
+    port = 8000; # matches OPENAI_API_BASE_URL in openwebui/default.nix
+    host = "127.0.0.1";
+    openFirewall = false;
+    model = "/srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf";
+    extraFlags = [
+      "-ngl" "999"       # full GPU offload
+      "-fa" "1"          # flash attention (works on Turing with llama.cpp)
+      "-b" "2048"        # batch size
+      "-ub" "512"        # micro-batch size
+      "-t" "8"           # CPU threads (for non-GPU ops)
+      "-c" "32768"       # context size (reduce to 16384 if VRAM is tight)
+      "--cache-type-k" "f16"  # KV cache type
+      "--cache-type-v" "q4_0" # compressed V cache to save VRAM
+      "--temp" "0.4"
+      "--top-p" "0.95"
+      "--top-k" "20"
+      "--jinja"          # enable jinja templating for tool calls
+      "--ctx-checkpoints" "1" # avoid full prompt reprocessing
+    ];
   };
 }

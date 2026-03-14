@@ -30,7 +30,7 @@
     ./models
     ./openclaw
     # ./pvpgn
-    # ./llama-cpp
+    ./llama-cpp
     # ../config/home-manager.nix # get working
   ];
 
