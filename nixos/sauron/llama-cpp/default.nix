@@ -66,7 +66,6 @@
       "--top-p" "0.95"
       "--top-k" "20"
       "--jinja"
-      "--log-format" "json"  # structured logs with timing info
     ];
   in pkgs.lib.mkForce "${pkg}/bin/llama-server ${pkgs.lib.escapeShellArgs flags}";
 }
