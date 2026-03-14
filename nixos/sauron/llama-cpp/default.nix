@@ -28,43 +28,27 @@
     host = "127.0.0.1";
     openFirewall = false;
     model = "/srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf";
+    # Server-level flags (not model-specific)
     extraFlags = [
-      "-ngl" "999"       # full GPU offload
-      "-fa" "1"          # flash attention (works on Turing with llama.cpp)
-      "-b" "2048"        # batch size
-      "-ub" "512"        # micro-batch size
-      "-t" "8"           # CPU threads (for non-GPU ops)
-      "-c" "65536"       # context size (64k; compaction needs >41k; reduce to 32768 if VRAM OOM)
-      "--cache-type-k" "f16"  # KV cache type
+      "-ngl" "999"            # full GPU offload
+      "-fa" "1"               # flash attention (works on Turing with llama.cpp)
+      "-b" "2048"             # batch size
+      "-ub" "512"             # micro-batch size
+      "-t" "8"                # CPU threads (for non-GPU ops)
+      "-c" "65536"            # context size (64k; openclaw compaction needs >41k)
+      "--cache-type-k" "f16"  # KV cache precision
       "--cache-type-v" "q4_0" # compressed V cache to save VRAM
-      "--temp" "0.4"
-      "--top-p" "0.95"
-      "--top-k" "20"
-      "--jinja"          # enable jinja templating for tool calls
+      "--ctx-checkpoints" "1" # reuse KV cache across slots for shared prompt prefixes
     ];
-  };
 
-  # The NixOS llama-cpp module hardcodes --log-disable in ExecStart.
-  # Override it to get request logs and token timing in journald.
-  systemd.services.llama-cpp.serviceConfig.ExecStart = let
-    pkg = pkgs.unstable.llama-cpp;
-    flags = [
-      "--host" "127.0.0.1"
-      "--port" "8000"
-      "-m" "/srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf"
-      "-ngl" "999"
-      "-fa" "1"
-      "-b" "2048"
-      "-ub" "512"
-      "-t" "8"
-      "-c" "65536"
-      "--cache-type-k" "f16"
-      "--cache-type-v" "q4_0"
-      "--temp" "0.4"
-      "--top-p" "0.95"
-      "--top-k" "20"
-      "--jinja"
-      "--ctx-checkpoints" "1" # cache prompt prefixes across slots — avoids reprocessing shared context
-    ];
-  in pkgs.lib.mkForce "${pkg}/bin/llama-server ${pkgs.lib.escapeShellArgs flags}";
+    # Model-specific flags — written to an INI file and passed via --model-preset
+    modelsPreset = {
+      "omnicoder-9b-q4_k_m.gguf" = {
+        temp = "0.4";
+        top-p = "0.95";
+        top-k = "20";
+        jinja = "on";
+      };
+    };
+  };
 }
