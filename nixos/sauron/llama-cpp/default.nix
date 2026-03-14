@@ -66,6 +66,7 @@
       "--top-p" "0.95"
       "--top-k" "20"
       "--jinja"
+      "--ctx-checkpoints" "1" # cache prompt prefixes across slots — avoids reprocessing shared context
     ];
   in pkgs.lib.mkForce "${pkg}/bin/llama-server ${pkgs.lib.escapeShellArgs flags}";
 }
