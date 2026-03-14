@@ -20,7 +20,7 @@
   #  - OpenWebUI and other clients can use this for RAG / semantic search
   #
   services.vllm = {
-    enable = true;
+    enable = false;
     backend = "cuda";
     model = "google/embeddinggemma-300m";
     runner = "pooling"; # embedding / pooling model
