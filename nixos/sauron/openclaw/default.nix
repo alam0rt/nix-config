@@ -38,7 +38,7 @@ in {
     config = {
       gateway = {
         mode = "local";
-        bind = "local"; # listen on 127.0.0.1 so nginx can proxy locally
+        bind = "loopback"; # listen on 127.0.0.1 so nginx can proxy locally
         auth = {
           mode = "token";
           allowTailscale = true;
