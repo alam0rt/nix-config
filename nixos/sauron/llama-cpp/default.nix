@@ -30,10 +30,12 @@
     model = "/srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf";
     # Server-level flags (not model-specific)
     extraFlags = [
+      "-ngl" "999"            # full GPU offload — REQUIRED, default is 0 (CPU only)
+      "-t" "8"                # CPU threads (for non-GPU ops)
       "-fa" "1"               # flash attention (works on Turing with llama.cpp)
       "-b" "2048"             # batch size
       "-ub" "512"             # micro-batch size
-      "-c" "65536"            # context size (64k; openclaw compaction needs >41k)
+      "-c" "49152"            # context size (48k; fits T1000 8GB; >41k needed for openclaw compaction)
       "--cache-type-k" "f16"  # KV cache precision
       "--cache-type-v" "q4_0" # compressed V cache to save VRAM
       "--ctx-checkpoints" "1" # reuse KV cache across slots for shared prompt prefixes
