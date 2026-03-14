@@ -160,6 +160,12 @@ in {
     ];
   };
 
+  # --- Systemd ordering ---
+  # Ensure openclaw-gateway starts after llama-cpp is ready, so vLLM provider
+  # discovery succeeds on first attempt rather than falling back to openrouter.
+  systemd.services.openclaw-gateway.after = ["llama-cpp.service"];
+  systemd.services.openclaw-gateway.wants = ["llama-cpp.service"];
+
   # --- Systemd hardening ---
   # The openclaw-gateway module provides the base serviceConfig.
   # We extend it with additional hardening directives for a pure chatbot
