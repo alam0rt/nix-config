@@ -23,7 +23,7 @@
   #
   services.llama-cpp = {
     enable = true;
-    package = pkgs.llamaPackages.llama-cpp;
+    package = pkgs.unstable.llama-cpp;
     port = 8000; # matches OPENAI_API_BASE_URL in openwebui/default.nix
     host = "127.0.0.1";
     openFirewall = false;

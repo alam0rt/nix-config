@@ -33,9 +33,6 @@
     nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";
     nvidia-patch.inputs.nixpkgs.follows = "nixpkgs";
 
-    # ai
-    llama-cpp.url = "github:ggml-org/llama.cpp";
-
     # openclaw
     nix-openclaw.url = "github:openclaw/nix-openclaw";
 
