@@ -39,16 +39,10 @@
       "--cache-type-k" "f16"  # KV cache precision
       "--cache-type-v" "q4_0" # compressed V cache to save VRAM
       "--ctx-checkpoints" "1" # reuse KV cache across slots for shared prompt prefixes
+      "--temp" "0.4"
+      "--top-p" "0.95"
+      "--top-k" "20"
+      "--jinja"
     ];
-
-    # Model-specific flags — written to an INI file and passed via --model-preset
-    modelsPreset = {
-      "omnicoder-9b-q4_k_m.gguf" = {
-        temp = "0.4";
-        top-p = "0.95";
-        top-k = "20";
-        jinja = "on";
-      };
-    };
   };
 }
