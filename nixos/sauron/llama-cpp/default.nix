@@ -45,4 +45,28 @@
       # (https://github.com/ggml-org/llama.cpp/pull/20277)
     ];
   };
+
+  # The NixOS llama-cpp module hardcodes --log-disable in ExecStart.
+  # Override it to get request logs and token timing in journald.
+  systemd.services.llama-cpp.serviceConfig.ExecStart = let
+    pkg = pkgs.unstable.llama-cpp;
+    flags = [
+      "--host" "127.0.0.1"
+      "--port" "8000"
+      "-m" "/srv/share/public/models/OmniCoder-9B-GGUF/omnicoder-9b-q4_k_m.gguf"
+      "-ngl" "999"
+      "-fa" "1"
+      "-b" "2048"
+      "-ub" "512"
+      "-t" "8"
+      "-c" "65536"
+      "--cache-type-k" "f16"
+      "--cache-type-v" "q4_0"
+      "--temp" "0.4"
+      "--top-p" "0.95"
+      "--top-k" "20"
+      "--jinja"
+      "--log-format" "json"  # structured logs with timing info
+    ];
+  in pkgs.lib.mkForce "${pkg}/bin/llama-server ${pkgs.lib.escapeShellArgs flags}";
 }
