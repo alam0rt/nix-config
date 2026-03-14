@@ -48,13 +48,10 @@ in {
         controlUi = {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
-            "https://sauron.middleearth.samlockart.com"
           ];
         };
         trustedProxies = [
-          "127.0.0.1"
-          "::1"
-          "100.64.0.4"
+          "127.0.0.1" # nginx runs on loopback; only source that will ever connect
         ];
       };
       agents = {
@@ -145,8 +142,6 @@ in {
       # Ensure Node.js can find the installed plugins and their dependencies
       # Plugin extensions are in /var/lib/openclaw/extensions/<plugin>/node_modules
       NODE_PATH = "/var/lib/openclaw/extensions/matrix/node_modules";
-      # Advertise tailnet MagicDNS name for discovery
-      OPENCLAW_TAILNET_DNS = "sauron.middleearth.samlockart.com";
       # Enable vLLM provider auto-discovery (points to llama-cpp on port 8000)
       VLLM_API_KEY = "vllm-local";
     };
