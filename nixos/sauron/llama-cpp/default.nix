@@ -12,8 +12,8 @@
   # Hardware: NVIDIA T1000 8GB (Turing, compute capability 7.5)
   #   - Flash Attention (-fa 1) works fine with llama.cpp on Turing
   #   - Full GPU offload (-ngl 999)
-  #   - 32k context with Q4_K_M (~5.7 GB) fits in 8 GB VRAM
-  #     reduce -c to 16384 if VRAM is tight at startup
+  #   - 64k context with Q4_K_M (~5.7 GB) + q4_0 V cache fits in 8 GB VRAM
+  #     reduce -c to 32768 if VRAM is tight at startup
   #
   # Example curl:
   #   curl http://localhost:8000/v1/chat/completions \
@@ -34,14 +34,15 @@
       "-b" "2048"        # batch size
       "-ub" "512"        # micro-batch size
       "-t" "8"           # CPU threads (for non-GPU ops)
-      "-c" "32768"       # context size (reduce to 16384 if VRAM is tight)
+      "-c" "65536"       # context size (64k; compaction needs >41k; reduce to 32768 if VRAM OOM)
       "--cache-type-k" "f16"  # KV cache type
       "--cache-type-v" "q4_0" # compressed V cache to save VRAM
       "--temp" "0.4"
       "--top-p" "0.95"
       "--top-k" "20"
       "--jinja"          # enable jinja templating for tool calls
-      "--ctx-checkpoints" "1" # avoid full prompt reprocessing
+      # Note: --ctx-checkpoints removed — triggers empty-batch loop bug in b8255
+      # (https://github.com/ggml-org/llama.cpp/pull/20277)
     ];
   };
 }
