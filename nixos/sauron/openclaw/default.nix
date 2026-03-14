@@ -61,9 +61,15 @@ in {
       agents = {
         defaults = {
           model = {
-            primary = "openrouter/stepfun/step-3.5-flash";
+            primary = "vllm/omnicoder-9b-q4_k_m.gguf"; # local llama-cpp on port 8000
+            fallbacks = [
+              "openrouter/stepfun/step-3.5-flash" # free fallback if llama-cpp is down
+            ];
           };
           models = {
+            "vllm/omnicoder-9b-q4_k_m.gguf" = {
+              alias = "omnicoder";
+            };
             "openrouter/stepfun/step-3.5-flash" = {
               alias = "free";
             };
@@ -142,6 +148,8 @@ in {
       NODE_PATH = "/var/lib/openclaw/extensions/matrix/node_modules";
       # Advertise tailnet MagicDNS name for discovery
       OPENCLAW_TAILNET_DNS = "sauron.middleearth.samlockart.com";
+      # Enable vLLM provider auto-discovery (points to llama-cpp on port 8000)
+      VLLM_API_KEY = "vllm-local";
     };
 
     # Tailscale CLI needed for gateway.tailscale.mode = "serve"
