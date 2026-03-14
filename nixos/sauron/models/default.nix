@@ -8,6 +8,36 @@
   # vLLM 0.17.1 does not support the qwen35 (Gated Delta Networks) architecture
   # used by OmniCoder-9B when loading from GGUF.
 
+  # EmbeddingGemma 300M — text embedding model from Google (Gemma 3 backbone)
+  # Architecture: Gemma3TextModel (natively supported by vLLM as pooling/embedding model)
+  # Docs: https://huggingface.co/google/embeddinggemma-300m
+  # vLLM architecture: Gemma3TextModelC  (see vLLM supported-models#embedding)
+  #
+  # Notes:
+  #  - float16 is NOT supported by EmbeddingGemma activations; use float32 or bfloat16
+  #  - T1000 (Turing cc 7.5) has no native bfloat16, so float32 is used (~1.2 GB VRAM)
+  #  - Served on port 8001 (8000 is reserved for llama-cpp / OmniCoder)
+  #  - OpenWebUI and other clients can use this for RAG / semantic search
+  #
+  services.vllm = {
+    enable = true;
+    backend = "cuda";
+    model = "google/embeddinggemma-300m";
+    runner = "pooling"; # embedding / pooling model
+    port = 8001;
+    host = "127.0.0.1";
+    openFirewall = false;
+    dtype = "float32"; # bfloat16 requires Ampere+; float16 unsupported by EmbeddingGemma
+    gpuMemoryUtilization = 0.25; # ~2 GB; leaves VRAM headroom for OmniCoder on llama-cpp
+    maxModelLen = 2048; # EmbeddingGemma max context
+    enablePrefixCaching = false; # prefix caching not meaningful for embedding models
+    cacheDir = "/var/cache/vllm-embedding";
+    serverArgs = {
+      # disable-log-requests reduces log noise for high-throughput embedding workloads
+      "disable-log-requests" = true;
+    };
+  };
+
   # Wyoming Faster Whisper - Speech-to-Text server
   # Uses Wyoming protocol for Home Assistant integration
   # Available at tcp://localhost:10300

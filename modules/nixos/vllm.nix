@@ -164,6 +164,17 @@ in {
       description = "KV cache data type (auto, fp8, fp8_e4m3, fp8_e5m2)";
     };
 
+    runner = lib.mkOption {
+      type = lib.types.nullOr (lib.types.enum ["generate" "pooling"]);
+      default = null;
+      description = ''
+        vLLM runner type. Use "pooling" for embedding/pooling models
+        (e.g. Gemma3TextModel, BertModel). If null, vLLM infers from the
+        model config. Must be set explicitly for models that support both
+        generative and pooling tasks.
+      '';
+    };
+
     attentionBackend = lib.mkOption {
       type = lib.types.nullOr (lib.types.enum ["FLASHINFER" "FLASH_ATTN" "XFORMERS" "TRITON_ATTN" "ROCM_FLASH" "TORCH_SDPA"]);
       default = null;
@@ -317,6 +328,7 @@ in {
         ++ lib.optionals (cfg.maxNumSeqs != null) ["--max-num-seqs" (toString cfg.maxNumSeqs)]
         ++ lib.optionals (cfg.kvCacheDtype != null) ["--kv-cache-dtype" cfg.kvCacheDtype]
         ++ lib.optionals (cfg.attentionBackend != null) ["--attention-backend" cfg.attentionBackend]
+        ++ lib.optionals (cfg.runner != null) ["--runner" cfg.runner]
         # Generic serverArgs
         ++ (serverArgsToFlags cfg.serverArgs);
 
