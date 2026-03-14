@@ -34,7 +34,7 @@
       "-b" "2048"        # batch size
       "-ub" "512"        # micro-batch size
       "-t" "8"           # CPU threads (for non-GPU ops)
-      "-c" "32768"       # context size (reduce to 16384 if VRAM is tight)
+      "-c" "102400"      # context size (100k; reduce to 32768 if VRAM OOM)
       "--cache-type-k" "f16"  # KV cache type
       "--cache-type-v" "q4_0" # compressed V cache to save VRAM
       "--temp" "0.4"
