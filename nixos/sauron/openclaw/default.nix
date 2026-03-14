@@ -40,7 +40,7 @@ in {
         mode = "local";
         bind = "loopback"; # listen on 127.0.0.1 so nginx can proxy locally
         auth = {
-          mode = "tailscale"; # authenticate via tailscale identity (fwd IP from nginx)
+          mode = "trusted-proxy"; # none | token | password | trusted-proxy 
           trustedProxy = {
             userHeader = "x-webauth-user";
           };
