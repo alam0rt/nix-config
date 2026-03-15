@@ -31,6 +31,7 @@
     # Server-level flags (not model-specific)
     extraFlags = [
       "-ngl" "999"            # full GPU offload — REQUIRED, default is 0 (CPU only)
+      "--fit-target" "512"    # VRAM margin for --fit auto-adjust (default 1024); T1000 has 921 MiB free at idle
       "-t" "8"                # CPU threads (for non-GPU ops)
       "-fa" "1"               # flash attention (works on Turing with llama.cpp)
       "-b" "2048"             # batch size
