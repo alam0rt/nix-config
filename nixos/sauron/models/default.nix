@@ -32,7 +32,10 @@
     maxModelLen = 2048; # EmbeddingGemma max context
     enablePrefixCaching = false; # prefix caching not meaningful for embedding models
     cacheDir = "/var/cache/vllm-embedding";
-
+    serverArgs = {
+      # Give the model a stable name instead of the container-internal path "/model"
+      "served-model-name" = "embeddinggemma-300m";
+    };
   };
 
   # Wyoming Faster Whisper - Speech-to-Text server
