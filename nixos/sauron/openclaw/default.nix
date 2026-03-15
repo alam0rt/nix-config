@@ -74,7 +74,7 @@ in {
           };
           memorySearch = {
             provider = "openai"; # openai-compatible provider
-            model = "google/embeddinggemma-300m";
+            model = "embeddinggemma-300m"; # matches vLLM --served-model-name
             fallback = "none"; # no remote fallback — local vLLM only
             remote = {
               baseUrl = "http://127.0.0.1:8001/v1/";
