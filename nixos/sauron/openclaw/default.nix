@@ -132,7 +132,7 @@ in {
           security = "full";
           ask = "off";
           backgroundMs = 10000;
-          timeoutSec = 1800;
+          timeoutSec = 30;
         };
         elevated = {
           enabled = true;
