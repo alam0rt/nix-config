@@ -21,7 +21,7 @@
   #          "messages": [{"role": "user", "content": "Write a Rust TCP server"}]}'
   #
   services.llama-cpp = {
-    enable = true;
+    enable = false; # still not quite good enough
     package = pkgs.unstable.llama-cpp; # b8255 — qwen35 arch support; cudaSupport=true via overlay
     port = 8000; # matches OPENAI_API_BASE_URL in openwebui/default.nix
     host = "127.0.0.1";
