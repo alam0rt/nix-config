@@ -32,10 +32,7 @@
     maxModelLen = 2048; # EmbeddingGemma max context
     enablePrefixCaching = false; # prefix caching not meaningful for embedding models
     cacheDir = "/var/cache/vllm-embedding";
-    serverArgs = {
-      # disable-log-requests reduces log noise for high-throughput embedding workloads
-      "disable-log-requests" = true;
-    };
+
   };
 
   # Wyoming Faster Whisper - Speech-to-Text server
