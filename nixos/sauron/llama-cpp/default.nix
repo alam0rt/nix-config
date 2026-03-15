@@ -41,7 +41,7 @@
       "-c" "49152"            # context size (48k; fits T1000 8GB; >41k needed for openclaw compaction)
       "--cache-type-k" "f16"  # KV cache precision
       "--cache-type-v" "q4_0" # compressed V cache to save VRAM
-      "--ctx-checkpoints" "1" # reuse KV cache across slots for shared prompt prefixes
+      "--ctx-checkpoints" "0" # disabled — causes CPU overhead on restore with qwen35 SSM arch
       "--temp" "0.4"
       "--top-p" "0.95"
       "--top-k" "20"
