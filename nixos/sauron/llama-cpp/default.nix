@@ -29,22 +29,14 @@
     model = "/srv/share/public/models/Qwen3.5-4B-GGUF/qwen3.5-4b-q4_k_m.gguf";
     # Server-level flags (not model-specific)
     extraFlags = [
-      "-ngl" "999"            # full GPU offload — REQUIRED, default is 0 (CPU only)
-      "--fit-target" "512"    # VRAM margin for --fit auto-adjust (default 1024)
-      "-np" "1"               # 1 parallel slot — auto=4 makes KV cache 4x larger, OOMing VRAM
-      "-no-kvu"               # disable unified KV buffer — issues with qwen35 SSM state management
-      "-dio"                  # Direct I/O — fixes hangs/slowdowns in llama-server (issue #19745)
-      "-t" "8"                # CPU threads (for non-GPU ops)
-      "-fa" "1"               # flash attention (works on Turing with llama.cpp)
-      "-b" "2048"             # batch size
-      "-ub" "512"             # micro-batch size
-      "-c" "131072"           # 128k context — fits easily with 4B model (~2.74 GB weights)
-      "--cache-type-k" "f16"  # KV cache precision
-      "--cache-type-v" "q4_0" # compressed V cache to save VRAM
-      "--ctx-checkpoints" "0" # disabled — CPU overhead on restore with qwen35 SSM arch
-      "--temp" "0.6"          # recommended for thinking mode / coding tasks
+      "-ngl" "999"
+      "-np" "1"
+      "-c" "131072"
+      "--temp" "0.6"
       "--top-p" "0.95"
       "--top-k" "20"
+      "--min-p" "0.0"
+      "--chat-template-kwargs" "{\"enable_thinking\":true}"
       "--jinja"
     ];
   };
