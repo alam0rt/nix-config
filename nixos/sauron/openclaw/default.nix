@@ -64,6 +64,15 @@ in {
               alias = "nemotron";
             };
           };
+          memorySearch = {
+            provider = "openai"; # openai-compatible provider
+            model = "google/embeddinggemma-300m";
+            fallback = "none"; # no remote fallback — local vLLM only
+            remote = {
+              baseUrl = "http://127.0.0.1:8001/v1/";
+              apiKey = "vllm-local";
+            };
+          };
         };
         list = [
           {
