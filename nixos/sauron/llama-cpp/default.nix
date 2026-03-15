@@ -45,4 +45,8 @@
       "--jinja"
     ];
   };
+
+  # PrivateUsers=true (set by the module) breaks CUDA device access under systemd.
+  # The DynamicUser can't see /dev/nvidia* in the private user namespace.
+  systemd.services.llama-cpp.serviceConfig.PrivateUsers = pkgs.lib.mkForce false;
 }
