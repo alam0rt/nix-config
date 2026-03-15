@@ -103,7 +103,10 @@ in {
               theme = "helpful AI assistant and friend to the people";
             };
             tools = {
-              profile = "coding";
+              profile = "full";
+              elevated = {
+                enabled = true;
+              };
             };
           }
         ];
@@ -136,7 +139,9 @@ in {
         };
         elevated = {
           enabled = true;
-          # allowFrom is set in openclaw-config.age secret
+          allowFrom = {
+            matrix = ["@sammm:chat.samlockart.com"];
+          };
         };
       };
       messages = {
