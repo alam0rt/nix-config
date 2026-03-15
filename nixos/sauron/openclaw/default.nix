@@ -58,16 +58,10 @@ in {
         defaults = {
           model = {
             primary = "openrouter/nvidia/nemotron-3-super-120b-a12b:free";
-            fallbacks = [
-              "vllm/qwen3.5-4b-q4_k_m.gguf" # local llama-cpp on port 8000
-            ];
           };
           models = {
             "openrouter/nvidia/nemotron-3-super-120b-a12b:free" = {
               alias = "nemotron";
-            };
-            "vllm/qwen3.5-4b-q4_k_m.gguf" = {
-              alias = "qwen3.5-4b";
             };
           };
         };
