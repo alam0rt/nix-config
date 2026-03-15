@@ -22,7 +22,7 @@
   services.vllm = {
     enable = true;
     backend = "cuda";
-    modelPath = /srv/share/public/models/embeddinggemma-300m;
+    modelPath = "/srv/share/public/models/embeddinggemma-300m";
     runner = "pooling"; # embedding / pooling model
     port = 8001;
     host = "127.0.0.1";
