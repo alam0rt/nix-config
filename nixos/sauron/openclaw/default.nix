@@ -57,14 +57,14 @@ in {
       agents = {
         defaults = {
           model = {
-            primary = "vllm/omnicoder-9b-q4_k_m.gguf"; # local llama-cpp on port 8000
+            primary = "vllm/qwen3.5-4b-q4_k_m.gguf"; # local llama-cpp on port 8000
             fallbacks = [
               "openrouter/stepfun/step-3.5-flash" # free fallback if llama-cpp is down
             ];
           };
           models = {
-            "vllm/omnicoder-9b-q4_k_m.gguf" = {
-              alias = "omnicoder";
+            "vllm/qwen3.5-4b-q4_k_m.gguf" = {
+              alias = "qwen3.5-4b";
             };
             "openrouter/stepfun/step-3.5-flash" = {
               alias = "free";
