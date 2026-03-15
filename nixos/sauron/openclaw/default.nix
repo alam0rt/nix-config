@@ -170,6 +170,28 @@ in {
     ];
   };
 
+  # Allow the openclaw service account to read the system journal
+  # Pin the UID so the cgroup slice name is stable across rebuilds
+  users.users.openclaw = {
+    uid = 976;
+    extraGroups = ["systemd-journal"];
+  };
+
+  # --- Cgroup resource limits for openclaw ---
+  # Mirror the raf user slice to constrain the gateway process
+  systemd.slices."user-976" = {
+    overrideStrategy = "asDropin";
+    # https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
+    sliceConfig = {
+      "CPUWeight" = "20";
+      "CPUQuota" = "3200%"; # out of 6400%
+      "MemoryHigh" = "32G";
+      "MemoryMax" = "40G";
+      "TasksMax" = "2048";
+      "IOWeight" = "20";
+    };
+  };
+
   # --- Systemd ordering ---
   # Ensure openclaw-gateway starts after llama-cpp is ready, so vLLM provider
   # discovery succeeds on first attempt rather than falling back to openrouter.

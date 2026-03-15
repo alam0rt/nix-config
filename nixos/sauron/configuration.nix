@@ -73,6 +73,7 @@
         "MemoryHigh" = "32G";
         "MemoryMax" = "40G";
         "TasksMax" = "2048";
+        "IOWeight" = "20";
       };
     };
   };
