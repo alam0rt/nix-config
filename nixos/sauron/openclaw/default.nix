@@ -54,6 +54,14 @@ in {
           "127.0.0.1" # nginx runs on loopback; only source that will ever connect
         ];
       };
+      channels = {
+        matrix = {
+          dm = {
+            policy = "open";
+            allowFrom = ["*"];
+          };
+        };
+      };
       agents = {
         defaults = {
           model = {
