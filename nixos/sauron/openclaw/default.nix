@@ -171,6 +171,7 @@ in {
 
     # Point the gateway at the writable copy
     environment = {
+      OPENCLAW_STATE_DIR = "/var/lib/openclaw";
       OPENCLAW_CONFIG_PATH = "/var/lib/openclaw/openclaw.json";
       # Configure npm to use writable directory for plugins
       NPM_CONFIG_PREFIX = "/var/lib/openclaw/.npm-global";
