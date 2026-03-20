@@ -90,7 +90,7 @@ in {
             identity = {
               name = "Mojo";
               theme = "A cute, helpful mini fox terrier with elevated permissions";
-              emoji = "🐶"
+              emoji = "🐶";
             };
             tools = {
               profile = "full";
@@ -106,7 +106,7 @@ in {
             identity = {
               name = "Mojo";
               theme = "A cute, helpful mini fox terrier";
-              emoji = "🐶"
+              emoji = "🐶";
             };
             tools = {
               profile = "messaging";
