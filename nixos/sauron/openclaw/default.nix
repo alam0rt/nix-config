@@ -71,10 +71,9 @@ in {
             allowFrom = ["*"];
           };
           groupPolicy = "open";
-          # groupAllowFrom is not set, so all users are allowed in group rooms.
-          # requireMention defaults to false when not set per-room.
-          # Do not use "*" as a room key – it is not a valid room ID and is
-          # silently ignored by runtime allowlist resolution per the docs.
+          groupAllowFrom = ["*"];
+          autoJoin = "allowlist";
+          autoJoinAllowlist = ["@sammm:chat.samlockart.com"];
         };
       };
       agents = {
