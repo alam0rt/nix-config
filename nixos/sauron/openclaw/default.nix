@@ -54,6 +54,10 @@ in {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
           ];
+          # Device identity (WebCrypto challenge) can't complete when the
+          # forwarded IP is a Tailscale address (non-loopback). Auth is already
+          # enforced by nginx + tailscaleAuth upstream, so this is safe.
+          dangerouslyDisableDeviceAuth = true;
         };
         # trustedProxies not needed with auth.mode = "none"
       };
