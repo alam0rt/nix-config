@@ -60,6 +60,10 @@ in {
             policy = "open";
             allowFrom = ["*"];
           };
+          group = {
+            policy = "open";
+            allowFrom = ["*"];
+          };
         };
       };
       agents = {
@@ -133,6 +137,16 @@ in {
           };
         }
         {
+          agentId = "admin";
+          match = {
+            channel = "matrix";
+            peer = {
+              kind = "group";
+            };
+            sender = "@sammm:chat.samlockart.com";
+          };
+        }
+        {
           agentId = "basic";
           match = {
             channel = "matrix";
@@ -153,7 +167,11 @@ in {
       };
       messages = {
         ackReaction = "🐶";
-        ackReactionScope = "group-mentions";
+        ackReactionScope = "all";
+        trigger = {
+          keywords = ["mojo"];
+          caseSensitive = false;
+        };
       };
       session = {
         scope = "per-sender";
