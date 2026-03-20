@@ -70,6 +70,7 @@ in {
             policy = "open";
             allowFrom = ["*"];
           };
+          requireMention = false;
           groupPolicy = "open";
           groupAllowFrom = ["*"];
           autoJoin = "allowlist";
