@@ -97,6 +97,7 @@ in {
               emoji = "🐶";
             };
             groupChat = {
+              requireMention = false;
               mentionPatterns = ["@mojo" "mojo"];
             };
             tools = {
@@ -116,6 +117,7 @@ in {
               emoji = "🐶";
             };
             groupChat = {
+              requireMention = false;
               mentionPatterns = ["@mojo" "mojo"];
             };
             tools = {
@@ -149,6 +151,7 @@ in {
             channel = "matrix";
             peer = {
               kind = "group";
+              id = "!YklebwnHIvUKRFeXgY:chat.samlockart.com";
             };
           };
         }
