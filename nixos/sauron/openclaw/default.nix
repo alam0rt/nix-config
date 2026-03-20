@@ -96,6 +96,9 @@ in {
               theme = "A cute, helpful mini fox terrier with elevated permissions";
               emoji = "🐶";
             };
+            groupChat = {
+              mentionPatterns = ["@mojo" "mojo"];
+            };
             tools = {
               profile = "full";
               elevated = {
@@ -111,6 +114,9 @@ in {
               name = "Mojo";
               theme = "A cute, helpful mini fox terrier";
               emoji = "🐶";
+            };
+            groupChat = {
+              mentionPatterns = ["@mojo" "mojo"];
             };
             tools = {
               profile = "messaging";
@@ -168,10 +174,6 @@ in {
       messages = {
         ackReaction = "🐶";
         ackReactionScope = "all";
-        trigger = {
-          keywords = ["mojo"];
-          caseSensitive = false;
-        };
       };
       session = {
         scope = "per-sender";
