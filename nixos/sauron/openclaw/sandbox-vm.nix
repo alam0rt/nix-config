@@ -139,7 +139,7 @@ in {
       # Sandbox user with UID matching host openclaw user for virtiofs compat
       users.users.sandbox = {
         uid = 976;
-        isNormalUser = true;
+        isNormalUser = false;
         home = "/home/sandbox";
         group = "sandbox";
       };
