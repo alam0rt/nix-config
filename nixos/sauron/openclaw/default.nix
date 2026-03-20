@@ -30,7 +30,22 @@ in {
   # --- Service ---
   services.openclaw-gateway = {
     enable = true;
-    package = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
+    # Workaround for https://github.com/openclaw/nix-openclaw/issues/82:
+    # The nix build omits openclaw.plugin.json manifests from dist/extensions/.
+    # They exist at extensions/ — copy them into dist/extensions/ via postFixup.
+    package = let
+      base = inputs.nix-openclaw.packages.${pkgs.stdenv.hostPlatform.system}.openclaw-gateway;
+    in base.overrideAttrs (old: {
+      postFixup = (old.postFixup or "") + ''
+        for manifest in $out/lib/openclaw/extensions/*/openclaw.plugin.json; do
+          plugin=$(basename $(dirname $manifest))
+          destDir=$out/lib/openclaw/dist/extensions/$plugin
+          if [ -d "$destDir" ]; then
+            cp $manifest $destDir/openclaw.plugin.json
+          fi
+        done
+      '';
+    });
     inherit port;
 
     # Public/non-secret configuration
