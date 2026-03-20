@@ -245,9 +245,16 @@ in {
     # Install Matrix plugin at runtime (avoids Nix sandbox network restrictions)
     ExecStartPre = let
       mergeConfig = pkgs.writeShellScript "merge-openclaw-config" ''
-        ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
+        # Merge order: base <- secret <- gateway-overrides
+        # The secret config wins over base for channels/agents/etc,
+        # but the Nix-managed gateway block always wins last so that
+        # infrastructure settings (trustedProxies, auth, controlUi) are
+        # never overridden by the secret config.
+        gatewayOverride='${builtins.toJSON { gateway = config.services.openclaw-gateway.config.gateway; }}'
+        ${pkgs.jq}/bin/jq -s '.[0] * .[1] * .[2]' \
           ${pkgs.writeText "openclaw-base-config.json" (builtins.toJSON config.services.openclaw-gateway.config)} \
           ${config.age.secrets."openclaw-config".path} \
+          <(echo "$gatewayOverride") \
           > /var/lib/openclaw/openclaw.json
       '';
       installPlugin = pkgs.writeShellScript "install-matrix-plugin" ''
@@ -341,14 +348,11 @@ in {
       proxyPass = "http://127.0.0.1:${toString port}";
       # Note: do NOT set recommendedProxySettings = true here — it sets
       # proxy_set_header Connection "" which kills WebSocket upgrades.
-      # The global recommendedProxySettings handles common headers already.
+      # The global recommendedProxySettings handles common headers already
+      # (Host, X-Real-IP, X-Forwarded-For, X-Forwarded-Proto).
+      # Adding them again here would double X-Forwarded-For, breaking
+      # openclaw's trusted-proxy IP parsing.
       proxyWebsockets = true;
-      extraConfig = ''
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-      '';
     };
   };
 
