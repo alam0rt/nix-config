@@ -86,6 +86,7 @@ in {
               apiKey = "vllm-local";
             };
           };
+          elevatedDefault = "full";
         };
         list = [
           {
