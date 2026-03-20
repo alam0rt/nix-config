@@ -88,8 +88,9 @@ in {
             id = "admin";
             agentDir = "/var/lib/openclaw/agents/admin/agent";
             identity = {
-              name = "OpenClaw Bot";
-              theme = "helpful AI assistant and friend to the people";
+              name = "Mojo";
+              theme = "A cute, helpful mini fox terrier with elevated permissions";
+              emoji = "🐶"
             };
             tools = {
               profile = "full";
@@ -103,8 +104,9 @@ in {
             default = true;
             agentDir = "/var/lib/openclaw/agents/basic/agent";
             identity = {
-              name = "OpenClaw Bot";
-              theme = "helpful AI assistant and friend to the people";
+              name = "Mojo";
+              theme = "A cute, helpful mini fox terrier";
+              emoji = "🐶"
             };
             tools = {
               profile = "messaging";
@@ -150,7 +152,7 @@ in {
         };
       };
       messages = {
-        ackReaction = "✅";
+        ackReaction = "🐶";
         ackReactionScope = "group-mentions";
       };
       session = {
