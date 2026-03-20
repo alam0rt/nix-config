@@ -60,9 +60,9 @@ in {
             policy = "open";
             allowFrom = ["*"];
           };
-          group = {
-            policy = "open";
-            allowFrom = ["*"];
+          groupPolicy = "open";
+          groups = {
+            "*" = { requireMention = false; };
           };
         };
       };
@@ -89,11 +89,12 @@ in {
         };
         list = [
           {
-            id = "admin";
-            agentDir = "/var/lib/openclaw/agents/admin/agent";
+            id = "main";
+            default = true;
+            agentDir = "/var/lib/openclaw/agents/main/agent";
             identity = {
               name = "Mojo";
-              theme = "A cute, helpful mini fox terrier with elevated permissions";
+              theme = "A cute, helpful mini fox terrier";
               emoji = "🐶";
             };
             groupChat = {
@@ -106,55 +107,11 @@ in {
               };
             };
           }
-          {
-            id = "basic";
-            default = true;
-            agentDir = "/var/lib/openclaw/agents/basic/agent";
-            identity = {
-              name = "Mojo";
-              theme = "A cute, helpful mini fox terrier";
-              emoji = "🐶";
-            };
-            groupChat = {
-              mentionPatterns = ["@mojo" "mojo"];
-            };
-            tools = {
-              profile = "messaging";
-              allow = ["group:memory"];
-              elevated = {
-                enabled = false;
-              };
-              deny = [
-                "exec" "process" "write" "edit" "apply_patch"
-                "browser" "canvas" "cron" "gateway" "nodes"
-              ];
-            };
-          }
         ];
       };
       bindings = [
         {
-          agentId = "admin";
-          match = {
-            channel = "matrix";
-            peer = {
-              kind = "direct";
-              id = "@sammm:chat.samlockart.com";
-            };
-          };
-        }
-        {
-          agentId = "admin";
-          match = {
-            channel = "matrix";
-            peer = {
-              kind = "group";
-              id = "!YklebwnHIvUKRFeXgY:chat.samlockart.com";
-            };
-          };
-        }
-        {
-          agentId = "basic";
+          agentId = "main";
           match = {
             channel = "matrix";
           };
@@ -287,8 +244,7 @@ in {
         ${config.services.openclaw-gateway.package}/bin/openclaw skills install pskoett/self-improving-agent || true
       '';
       ensureAgentDirs = pkgs.writeShellScript "ensure-openclaw-agent-dirs" ''
-        for dir in /var/lib/openclaw/agents/admin/agent \
-                   /var/lib/openclaw/agents/basic/agent \
+        for dir in /var/lib/openclaw/agents/main/agent \
                    /var/lib/openclaw/workspace \
                    /var/lib/openclaw/skills; do
           ${pkgs.coreutils}/bin/mkdir -p "$dir"
