@@ -64,6 +64,7 @@ in {
       };
       agents = {
         defaults = {
+          workspace = "/var/lib/openclaw/workspace";
           model = {
             primary = "openrouter/nvidia/nemotron-3-super-120b-a12b:free";
           };
@@ -73,9 +74,9 @@ in {
             };
           };
           memorySearch = {
-            provider = "openai"; # openai-compatible provider
-            model = "embeddinggemma-300m"; # matches vLLM --served-model-name
-            fallback = "none"; # no remote fallback — local vLLM only
+            provider = "openai";
+            model = "embeddinggemma-300m";
+            fallback = "none";
             remote = {
               baseUrl = "http://127.0.0.1:8001/v1/";
               apiKey = "vllm-local";
@@ -85,6 +86,7 @@ in {
         list = [
           {
             id = "admin";
+            agentDir = "/var/lib/openclaw/agents/admin/agent";
             identity = {
               name = "OpenClaw Bot";
               theme = "helpful AI assistant and friend to the people";
@@ -98,15 +100,21 @@ in {
           }
           {
             id = "basic";
+            default = true;
+            agentDir = "/var/lib/openclaw/agents/basic/agent";
             identity = {
               name = "OpenClaw Bot";
               theme = "helpful AI assistant and friend to the people";
             };
             tools = {
-              profile = "full";
+              profile = "messaging";
               elevated = {
-                enabled = true;
+                enabled = false;
               };
+              deny = [
+                "exec" "process" "write" "edit" "apply_patch"
+                "browser" "canvas" "cron" "gateway" "nodes"
+              ];
             };
           }
         ];
@@ -131,9 +139,6 @@ in {
       ];
       tools = {
         exec = {
-          host = "gateway";
-          security = "full";
-          ask = "off";
           backgroundMs = 10000;
           timeoutSec = 30;
         };
@@ -147,6 +152,18 @@ in {
       messages = {
         ackReaction = "✅";
         ackReactionScope = "group-mentions";
+      };
+      session = {
+        scope = "per-sender";
+        reset = {
+          mode = "idle";
+          idleMinutes = 240;
+        };
+        maintenance = {
+          mode = "enforce";
+          pruneAfter = "30d";
+          maxEntries = 500;
+        };
       };
     };
 
@@ -200,8 +217,9 @@ in {
 
   # --- Systemd hardening ---
   # The openclaw-gateway module provides the base serviceConfig.
-  # We extend it with additional hardening directives for a pure chatbot
-  # (no tools, no plugins, no shell access).
+  # We extend it as a second layer of defense. The admin agent has full tool
+  # access (exec, elevated); the basic agent is restricted to messaging only
+  # at the OpenClaw config level. Systemd guards below limit blast radius.
   systemd.services.openclaw-gateway.serviceConfig = {
     # Logging - override upstream file logging to use journald
     StandardOutput = pkgs.lib.mkForce "journal";
@@ -233,11 +251,20 @@ in {
         echo "Installing self-improving-agent skill..."
         ${config.services.openclaw-gateway.package}/bin/openclaw skills install pskoett/self-improving-agent || true
       '';
+      ensureAgentDirs = pkgs.writeShellScript "ensure-openclaw-agent-dirs" ''
+        for dir in /var/lib/openclaw/agents/admin/agent \
+                   /var/lib/openclaw/agents/basic/agent \
+                   /var/lib/openclaw/workspace; do
+          ${pkgs.coreutils}/bin/mkdir -p "$dir"
+        done
+      '';
     in [
       # Merge base config with secrets using jq
       "${mergeConfig}"
       "+${pkgs.coreutils}/bin/chown openclaw:openclaw /var/lib/openclaw/openclaw.json"
       "+${pkgs.coreutils}/bin/chmod 0600 /var/lib/openclaw/openclaw.json"
+      # Create per-agent directories and shared workspace
+      "${ensureAgentDirs}"
       # Install Matrix plugin
       "${installPlugin}"
       # Install skills
