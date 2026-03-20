@@ -40,19 +40,22 @@ in {
         mode = "local";
         bind = "loopback"; # listen on 127.0.0.1 so nginx can proxy locally
         auth = {
-          mode = "trusted-proxy"; # none | token | password | trusted-proxy 
-          trustedProxy = {
-            userHeader = "x-webauth-user";
-          };
+          # "none" is safe here: bind = "loopback" means only processes on
+          # this host can reach port 18789. nginx + tailscaleAuth is the
+          # actual auth boundary for browser/UI access.
+          #
+          # trusted-proxy was causing `trusted_proxy_user_missing` (1008)
+          # because the agent's internal `gateway` tool connects directly to
+          # ws://127.0.0.1:18789 without going through nginx, so it never
+          # carries the x-webauth-user header that tailscaleAuth injects.
+          mode = "none"; # none | token | password | trusted-proxy
         };
         controlUi = {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
           ];
         };
-        trustedProxies = [
-          "127.0.0.1" # nginx runs on loopback; only source that will ever connect
-        ];
+        # trustedProxies not needed with auth.mode = "none"
       };
       channels = {
         matrix = {
