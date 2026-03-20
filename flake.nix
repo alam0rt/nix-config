@@ -36,6 +36,10 @@
     # openclaw
     nix-openclaw.url = "github:openclaw/nix-openclaw";
 
+    # microvm sandbox
+    microvm.url = "github:microvm-nix/microvm.nix";
+    microvm.inputs.nixpkgs.follows = "nixpkgs";
+
     # hardware modules
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -95,6 +99,7 @@
           inputs.agenix.nixosModules.default
           inputs.agenix-rekey.nixosModules.default
           inputs.nix-openclaw.nixosModules.openclaw-gateway
+          inputs.microvm.nixosModules.host
           self.nixosModules.vllm
         ];
       };

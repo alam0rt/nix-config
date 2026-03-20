@@ -7,6 +7,8 @@
   cfg = config.server;
   port = 18789;
 in {
+  imports = [./sandbox-vm.nix];
+
   # --- Secrets ---
   # Single config file containing the full openclaw JSON config.
   # All Matrix addresses, usernames, room IDs, DM policies etc. stay out of
@@ -91,11 +93,10 @@ in {
         list = [
           {
             id = "main";
-            default = true;
             agentDir = "/var/lib/openclaw/agents/main/agent";
             identity = {
               name = "Mojo";
-              theme = "A cute, helpful mini fox terrier";
+              theme = "A cute, helpful mini fox terrier with elevated permissions";
               emoji = "🐶";
             };
             groupChat = {
@@ -108,11 +109,57 @@ in {
               };
             };
           }
+          {
+            id = "basic";
+            default = true;
+            agentDir = "/var/lib/openclaw/agents/basic/agent";
+            identity = {
+              name = "Mojo";
+              theme = "A cute, helpful mini fox terrier";
+              emoji = "🐶";
+            };
+            groupChat = {
+              mentionPatterns = ["@mojo" "mojo"];
+            };
+            tools = {
+              profile = "messaging";
+              allow = ["group:memory" "exec" "process"];
+              elevated = {
+                enabled = false;
+              };
+              deny = [
+                "write" "edit" "apply_patch"
+                "browser" "canvas" "cron" "gateway" "nodes"
+              ];
+            };
+            sandbox = {
+              mode = "all";
+              backend = "ssh";
+              scope = "agent";
+              workspaceAccess = "rw";
+              ssh = {
+                target = "sandbox@10.0.100.2:22";
+                workspaceRoot = "/workspace";
+                identityFile = "/var/lib/openclaw/.ssh/sandbox_ed25519";
+                strictHostKeyChecking = false;
+              };
+            };
+          }
         ];
       };
       bindings = [
         {
           agentId = "main";
+          match = {
+            channel = "matrix";
+            peer = {
+              kind = "direct";
+              id = "@sammm:chat.samlockart.com";
+            };
+          };
+        }
+        {
+          agentId = "basic";
           match = {
             channel = "matrix";
           };
@@ -204,14 +251,22 @@ in {
   # --- Systemd ordering ---
   # Ensure openclaw-gateway starts after llama-cpp is ready, so vLLM provider
   # discovery succeeds on first attempt rather than falling back to openrouter.
-  systemd.services.openclaw-gateway.after = ["llama-cpp.service"];
-  systemd.services.openclaw-gateway.wants = ["llama-cpp.service"];
+  systemd.services.openclaw-gateway.after = [
+    "llama-cpp.service"
+    "microvm@openclaw-sandbox.service"
+    "openclaw-sandbox-keygen.service"
+  ];
+  systemd.services.openclaw-gateway.wants = [
+    "llama-cpp.service"
+    "microvm@openclaw-sandbox.service"
+    "openclaw-sandbox-keygen.service"
+  ];
 
   # --- Systemd hardening ---
   # The openclaw-gateway module provides the base serviceConfig.
-  # We extend it as a second layer of defense. The admin agent has full tool
-  # access (exec, elevated); the basic agent is restricted to messaging only
-  # at the OpenClaw config level. Systemd guards below limit blast radius.
+  # Three layers of defense: (1) the main agent has full host tool access,
+  # (2) the basic agent is sandboxed in a MicroVM via SSH with restricted
+  # tool policy, (3) systemd guards below limit the gateway's own blast radius.
   systemd.services.openclaw-gateway.serviceConfig = {
     # Logging - override upstream file logging to use journald
     StandardOutput = pkgs.lib.mkForce "journal";
@@ -246,6 +301,7 @@ in {
       '';
       ensureAgentDirs = pkgs.writeShellScript "ensure-openclaw-agent-dirs" ''
         for dir in /var/lib/openclaw/agents/main/agent \
+                   /var/lib/openclaw/agents/basic/agent \
                    /var/lib/openclaw/workspace \
                    /var/lib/openclaw/skills; do
           ${pkgs.coreutils}/bin/mkdir -p "$dir"
