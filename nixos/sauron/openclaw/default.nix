@@ -140,11 +140,6 @@ in {
         };
       };
       plugins = {
-        # Explicitly allowlist the matrix plugin to suppress the
-        # "duplicate plugin id detected" warning caused by the plugin being
-        # both auto-discovered from /var/lib/openclaw/extensions/ and declared
-        # in plugins.entries in the merged config.
-        allow = ["matrix"];
         entries = {
           matrix = {
             enabled = true;
@@ -266,14 +261,7 @@ in {
           echo "@openclaw/matrix plugin already installed"
         fi
       '';
-      installSkills = pkgs.writeShellScript "install-openclaw-skills" ''
-        export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
-        export PATH=/var/lib/openclaw/.npm-global/bin:${pkgs.nodejs_22}/bin:${pkgs.python3}/bin:$PATH
-        export NODE_PATH=/var/lib/openclaw/.npm-global/lib/node_modules
-        cd /var/lib/openclaw/skills
-        echo "Installing self-improving-agent skill..."
-        ${config.services.openclaw-gateway.package}/bin/openclaw skills install pskoett/self-improving-agent || true
-      '';
+
       ensureAgentDirs = pkgs.writeShellScript "ensure-openclaw-agent-dirs" ''
         for dir in /var/lib/openclaw/agents/main/agent \
                    /var/lib/openclaw/workspace \
@@ -290,8 +278,6 @@ in {
       "${ensureAgentDirs}"
       # Install Matrix plugin
       "${installPlugin}"
-      # Install skills
-      "${installSkills}"
     ];
 
     # Filesystem
