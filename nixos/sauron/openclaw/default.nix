@@ -59,7 +59,12 @@ in {
           # enforced by nginx + tailscaleAuth upstream, so this is safe.
           dangerouslyDisableDeviceAuth = true;
         };
-        # trustedProxies not needed with auth.mode = "none"
+        # Trust the nginx loopback proxy so that X-Forwarded-For headers from
+        # 127.0.0.1 are accepted. Without this openclaw refuses the WS
+        # connection with code=4008 ("connect failed") because it sees proxy
+        # headers from an "untrusted address" and won't treat the client as
+        # local — which surfaces in the UI as "device identity required".
+        trustedProxies = ["127.0.0.1" "::1"];
       };
       channels = {
         matrix = {
@@ -132,6 +137,18 @@ in {
         };
         entries = {
           "self-improving-agent" = {
+            enabled = true;
+          };
+        };
+      };
+      plugins = {
+        # Explicitly allowlist the matrix plugin to suppress the
+        # "duplicate plugin id detected" warning caused by the plugin being
+        # both auto-discovered from /var/lib/openclaw/extensions/ and declared
+        # in plugins.entries in the merged config.
+        allow = ["matrix"];
+        entries = {
+          matrix = {
             enabled = true;
           };
         };
@@ -326,6 +343,12 @@ in {
       # proxy_set_header Connection "" which kills WebSocket upgrades.
       # The global recommendedProxySettings handles common headers already.
       proxyWebsockets = true;
+      extraConfig = ''
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+      '';
     };
   };
 
