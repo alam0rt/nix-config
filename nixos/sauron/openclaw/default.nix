@@ -97,7 +97,6 @@ in {
               emoji = "🐶";
             };
             groupChat = {
-              requireMention = false;
               mentionPatterns = ["@mojo" "mojo"];
             };
             tools = {
@@ -117,7 +116,6 @@ in {
               emoji = "🐶";
             };
             groupChat = {
-              requireMention = false;
               mentionPatterns = ["@mojo" "mojo"];
             };
             tools = {
