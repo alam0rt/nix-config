@@ -40,30 +40,28 @@ in {
         mode = "local";
         bind = "loopback"; # listen on 127.0.0.1 so nginx can proxy locally
         auth = {
-          # "none" is safe here: bind = "loopback" means only processes on
-          # this host can reach port 18789. nginx + tailscaleAuth is the
-          # actual auth boundary for browser/UI access.
-          #
-          # trusted-proxy was causing `trusted_proxy_user_missing` (1008)
-          # because the agent's internal `gateway` tool connects directly to
-          # ws://127.0.0.1:18789 without going through nginx, so it never
-          # carries the x-webauth-user header that tailscaleAuth injects.
-          mode = "none"; # none | token | password | trusted-proxy
+          # trusted-proxy: tailscaleAuth injects x-webauth-user which openclaw
+          # uses to identify the Control UI user — this is what makes the
+          # "device identity required" error go away (code=4008).
+          # The agent's internal gateway tool connects directly on loopback
+          # without going through nginx, so it won't have x-webauth-user.
+          # We handle that by NOT setting requiredHeaders, so direct loopback
+          # connections that lack the header still get through (the
+          # trusted-proxy check only enforces the IP, not the header presence,
+          # when requiredHeaders is unset — user just comes through as anonymous).
+          mode = "trusted-proxy";
+          trustedProxy = {
+            userHeader = "x-webauth-user";
+          };
         };
         controlUi = {
           allowedOrigins = [
             "https://openclaw.${cfg.domain}"
           ];
-          # Device identity (WebCrypto challenge) can't complete when the
-          # forwarded IP is a Tailscale address (non-loopback). Auth is already
-          # enforced by nginx + tailscaleAuth upstream, so this is safe.
           dangerouslyDisableDeviceAuth = true;
         };
-        # Trust the nginx loopback proxy so that X-Forwarded-For headers from
-        # 127.0.0.1 are accepted. Without this openclaw refuses the WS
-        # connection with code=4008 ("connect failed") because it sees proxy
-        # headers from an "untrusted address" and won't treat the client as
-        # local — which surfaces in the UI as "device identity required".
+        # Trust nginx on loopback so X-Forwarded-For / x-webauth-user headers
+        # from 127.0.0.1 are accepted.
         trustedProxies = ["127.0.0.1" "::1"];
       };
       channels = {
