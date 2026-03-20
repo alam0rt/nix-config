@@ -120,6 +120,7 @@ in {
             };
             tools = {
               profile = "messaging";
+              allow = ["group:memory"];
               elevated = {
                 enabled = false;
               };
@@ -149,7 +150,6 @@ in {
             peer = {
               kind = "group";
             };
-            sender = "@sammm:chat.samlockart.com";
           };
         }
         {
@@ -159,6 +159,16 @@ in {
           };
         }
       ];
+      skills = {
+        load = {
+          extraDirs = ["/var/lib/openclaw/skills"];
+        };
+        entries = {
+          "self-improving-agent" = {
+            enabled = true;
+          };
+        };
+      };
       tools = {
         exec = {
           backgroundMs = 10000;
@@ -271,13 +281,15 @@ in {
         export NPM_CONFIG_PREFIX=/var/lib/openclaw/.npm-global
         export PATH=/var/lib/openclaw/.npm-global/bin:${pkgs.nodejs_22}/bin:${pkgs.python3}/bin:$PATH
         export NODE_PATH=/var/lib/openclaw/.npm-global/lib/node_modules
+        cd /var/lib/openclaw/skills
         echo "Installing self-improving-agent skill..."
         ${config.services.openclaw-gateway.package}/bin/openclaw skills install pskoett/self-improving-agent || true
       '';
       ensureAgentDirs = pkgs.writeShellScript "ensure-openclaw-agent-dirs" ''
         for dir in /var/lib/openclaw/agents/admin/agent \
                    /var/lib/openclaw/agents/basic/agent \
-                   /var/lib/openclaw/workspace; do
+                   /var/lib/openclaw/workspace \
+                   /var/lib/openclaw/skills; do
           ${pkgs.coreutils}/bin/mkdir -p "$dir"
         done
       '';
