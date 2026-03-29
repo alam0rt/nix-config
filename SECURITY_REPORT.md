@@ -10,7 +10,7 @@ Generated: 2026-03-29
 |----------|-------|-------|
 | Critical | 3     | 3     |
 | High     | 2     | 2     |
-| Medium   | 7     | 1     |
+| Medium   | 7     | 2     |
 
 The overall architecture is solid: Tailscale VPN gates most internal services, agenix-rekey with YubiKey FIDO2 manages secrets, SSH is key-only with no root login, and service accounts are isolated. The issues below are mostly around services binding to `0.0.0.0` or missing authentication where it should be present.
 
@@ -81,7 +81,7 @@ Downloads and media shares allow guest (unauthenticated) access, relying solely 
 
 ---
 
-### M3 — Known-insecure packages explicitly permitted
+### M3 — Known-insecure packages explicitly permitted ✓ PARTIALLY FIXED
 **File:** `nixos/sauron/configuration.nix`
 ```nix
 dotnet-sdk-6.0.428       # EOL — Jackett
@@ -91,7 +91,7 @@ openssl-1.1.1w           # EOL — Home Assistant
 ```
 These are acknowledged end-of-life/vulnerable packages. They expand the attack surface for services exposed to the internet (Matrix, Home Assistant).
 
-**Fix:** Track upstream updates; migrate Jackett to a maintained fork or replacement; check if current Home Assistant supports a newer OpenSSL.
+Verified against the running system: `dotnet-sdk-6`, `aspnetcore-runtime-6`, and `openssl-1.1.1w` are no longer present in the system closure — nixpkgs has updated Jackett and Home Assistant to use newer runtimes. Those three entries have been removed. `olm-3.2.16` remains, still required by maubot → mautrix → python-olm.
 
 ---
 
