@@ -97,6 +97,11 @@ in {
 
     # whitelisting
     commonHttpConfig = ''
+      # Brute-force / credential-stuffing protection.
+      # 5 login attempts per minute per IP; burst of 3 allowed before rejecting.
+      limit_req_zone $binary_remote_addr zone=login:10m rate=5r/m;
+      limit_req_status 429;
+
       # Add HSTS header with preloading to HTTPS requests.
       # Adding this header to HTTP requests is discouraged
       map $scheme $hsts_header {

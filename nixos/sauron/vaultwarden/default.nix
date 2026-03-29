@@ -9,6 +9,13 @@ in {
       proxyPass = "http://127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}";
       recommendedProxySettings = true;
     };
+    locations."~ ^/(identity/connect/token|api/accounts/(login|prelogin|two-factor))" = {
+      proxyPass = "http://127.0.0.1:${toString config.services.vaultwarden.config.ROCKET_PORT}";
+      recommendedProxySettings = true;
+      extraConfig = ''
+        limit_req zone=login burst=3 nodelay;
+      '';
+    };
   };
 
   services.vaultwarden = {

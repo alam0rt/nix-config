@@ -72,6 +72,13 @@ in {
         proxyPass = "http://127.0.0.1:8096";
         recommendedProxySettings = true;
       };
+      locations."~* /Users/AuthenticateByName" = {
+        proxyPass = "http://127.0.0.1:8096";
+        recommendedProxySettings = true;
+        extraConfig = ''
+          limit_req zone=login burst=3 nodelay;
+        '';
+      };
     };
     virtualHosts."requests.iced.cool" = {
       forceSSL = true;
@@ -79,6 +86,13 @@ in {
       locations."/" = {
         proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}";
         recommendedProxySettings = true;
+      };
+      locations."/api/v1/auth/local" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}";
+        recommendedProxySettings = true;
+        extraConfig = ''
+          limit_req zone=login burst=3 nodelay;
+        '';
       };
     };
     virtualHosts."jellyseerr.${cfg.domain}" = {

@@ -83,11 +83,11 @@ in {
         matrix = {
           dm = {
             policy = "open";
-            allowFrom = ["*"];
+            allowFrom = ["@sammm:chat.samlockart.com"];
           };
-          requireMention = false;
+          requireMention = true;
           groupPolicy = "open";
-          groupAllowFrom = ["*"];
+          groupAllowFrom = ["@sammm:chat.samlockart.com"];
           autoJoin = "allowlist";
           autoJoinAllowlist = ["@sammm:chat.samlockart.com"];
         };

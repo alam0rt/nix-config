@@ -8,16 +8,16 @@
 in {
   networking.firewall.allowedTCPPorts = [
     8123 # remove once setup with reverse proxy
-    1883 # mosquitto
   ];
 
   services.mosquitto = {
     enable = true;
     listeners = [
       {
+        address = "127.0.0.1";
         acl = ["pattern readwrite #"];
         omitPasswordAuth = true;
-        settings.allow_anonymous = true; # TODO: lock down
+        settings.allow_anonymous = true;
       }
     ];
   };
