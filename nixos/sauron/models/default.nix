@@ -48,7 +48,7 @@
   #
   services.wyoming.faster-whisper.servers.whisper = {
     enable = true;
-    uri = "tcp://0.0.0.0:10300";
+    uri = "tcp://127.0.0.1:10300";
     model = "small-int8"; # good balance of speed/accuracy
     language = "en";
     device = "cpu"; # CUDA has nixpkgs compilation issues
