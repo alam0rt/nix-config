@@ -163,13 +163,8 @@
 
   # does not support automatic merging so cannot put these into modules
   nixpkgs.config.permittedInsecurePackages = [
-    # for jackett
-    "dotnet-sdk-6.0.428"
-    "aspnetcore-runtime-6.0.36"
-    # maubot
+    # maubot → mautrix → python-olm
     "olm-3.2.16"
-    # home-assistant
-    "openssl-1.1.1w"
   ];
 
   # Before changing this value read the documentation for this option
