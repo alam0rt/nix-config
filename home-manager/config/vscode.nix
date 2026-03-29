@@ -49,6 +49,7 @@
           github.copilot
           github.copilot-chat
           ms-vscode.makefile-tools
+          anthropic.claude-code
         ]
         ++ lib.optionals pkgs.stdenv.isLinux (with pkgs.unstable.vscode-extensions; [
           # embedded
