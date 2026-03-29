@@ -52,6 +52,7 @@
   networking.interfaces = {
     eno2 = {
       mtu = 9000;
+      useDHCP = true;
     };
   };
 
