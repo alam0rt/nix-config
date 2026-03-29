@@ -203,7 +203,7 @@
       openscad-lsp
 
       # AI
-      unstable.openclaw
+      unstable.claude-code
 
       comma
     ]
