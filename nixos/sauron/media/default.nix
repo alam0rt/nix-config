@@ -71,7 +71,12 @@ in {
       forceSSL = true;
       enableACME = true;
       locations."/metrics" = {
-        return = "403";
+        extraConfig = ''
+          allow 127.0.0.1;
+          deny all;
+        '';
+        proxyPass = "http://127.0.0.1:8096";
+        recommendedProxySettings = true;
       };
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
