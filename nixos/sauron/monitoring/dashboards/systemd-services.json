@@ -1,0 +1,151 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "options": { "0": { "text": "INACTIVE", "color": "red" }, "1": { "text": "ACTIVE", "color": "green" } }, "type": "value" }
+          ]
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      },
+      "title": "Critical Services",
+      "type": "stat",
+      "targets": [
+        { "expr": "node_systemd_unit_state{name=\"nginx.service\",state=\"active\"}", "legendFormat": "nginx" },
+        { "expr": "node_systemd_unit_state{name=\"prometheus.service\",state=\"active\"}", "legendFormat": "prometheus" },
+        { "expr": "node_systemd_unit_state{name=\"grafana.service\",state=\"active\"}", "legendFormat": "grafana" },
+        { "expr": "node_systemd_unit_state{name=\"matrix-synapse.service\",state=\"active\"}", "legendFormat": "matrix-synapse" },
+        { "expr": "node_systemd_unit_state{name=\"jellyfin.service\",state=\"active\"}", "legendFormat": "jellyfin" },
+        { "expr": "node_systemd_unit_state{name=\"home-assistant.service\",state=\"active\"}", "legendFormat": "home-assistant" },
+        { "expr": "node_systemd_unit_state{name=\"vaultwarden.service\",state=\"active\"}", "legendFormat": "vaultwarden" },
+        { "expr": "node_systemd_unit_state{name=\"mosquitto.service\",state=\"active\"}", "legendFormat": "mosquitto" },
+        { "expr": "node_systemd_unit_state{name=\"transmission.service\",state=\"active\"}", "legendFormat": "transmission" },
+        { "expr": "node_systemd_unit_state{name=\"tailscaled.service\",state=\"active\"}", "legendFormat": "tailscale" },
+        { "expr": "node_systemd_unit_state{name=\"sshd.service\",state=\"active\"}", "legendFormat": "sshd" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "options": { "0": { "text": "INACTIVE", "color": "red" }, "1": { "text": "ACTIVE", "color": "green" } }, "type": "value" }
+          ]
+        }
+      },
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 8 },
+      "id": 2,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      },
+      "title": "Media Services",
+      "type": "stat",
+      "targets": [
+        { "expr": "node_systemd_unit_state{name=\"sonarr.service\",state=\"active\"}", "legendFormat": "sonarr" },
+        { "expr": "node_systemd_unit_state{name=\"radarr.service\",state=\"active\"}", "legendFormat": "radarr" },
+        { "expr": "node_systemd_unit_state{name=\"lidarr.service\",state=\"active\"}", "legendFormat": "lidarr" },
+        { "expr": "node_systemd_unit_state{name=\"bazarr.service\",state=\"active\"}", "legendFormat": "bazarr" },
+        { "expr": "node_systemd_unit_state{name=\"jackett.service\",state=\"active\"}", "legendFormat": "jackett" },
+        { "expr": "node_systemd_unit_state{name=\"jellyseerr.service\",state=\"active\"}", "legendFormat": "jellyseerr" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 14 },
+      "id": 3,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      },
+      "title": "Failed Units",
+      "type": "stat",
+      "targets": [
+        {
+          "expr": "node_systemd_unit_state{state=\"failed\"} == 1",
+          "legendFormat": "{{name}}"
+        }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "color": { "mode": "palette-classic" },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 22 },
+      "id": 10,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Systemd Units by State",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "count(node_systemd_unit_state{state=\"active\"} == 1)", "legendFormat": "active" },
+        { "expr": "count(node_systemd_unit_state{state=\"failed\"} == 1)", "legendFormat": "failed" },
+        { "expr": "count(node_systemd_unit_state{state=\"inactive\"} == 1)", "legendFormat": "inactive" }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["systemd", "services"],
+  "templating": { "list": [] },
+  "time": { "from": "now-3h", "to": "now" },
+  "title": "Systemd Services",
+  "uid": "systemd-services"
+}

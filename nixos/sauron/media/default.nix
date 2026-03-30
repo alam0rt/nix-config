@@ -20,12 +20,14 @@ in {
     rekeyFile = ./sonarr-api-key.age;
     owner = "recyclarr";
     group = "recyclarr";
+    mode = "0440";
   };
 
   age.secrets."radarr-api-key" = {
     rekeyFile = ./radarr-api-key.age;
     owner = "recyclarr";
     group = "recyclarr";
+    mode = "0440";
   };
 
   services.recyclarr = {

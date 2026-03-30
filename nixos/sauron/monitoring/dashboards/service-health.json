@@ -1,0 +1,196 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+          ]
+        }
+      },
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      },
+      "title": "Current Status",
+      "type": "stat",
+      "targets": [
+        { "expr": "probe_success{instance=~\".*8096.*\"}", "legendFormat": "Jellyfin" },
+        { "expr": "probe_success{instance=~\".*8989.*\"}", "legendFormat": "Sonarr" },
+        { "expr": "probe_success{instance=~\".*7878.*\"}", "legendFormat": "Radarr" },
+        { "expr": "probe_success{instance=~\".*8686.*\"}", "legendFormat": "Lidarr" },
+        { "expr": "probe_success{instance=~\".*6767.*\"}", "legendFormat": "Bazarr" },
+        { "expr": "probe_success{instance=~\".*9117.*\"}", "legendFormat": "Jackett" },
+        { "expr": "probe_success{instance=~\".*5055.*\"}", "legendFormat": "Jellyseerr" },
+        { "expr": "probe_success{instance=~\".*9091.*\"}", "legendFormat": "Transmission" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 95 },
+              { "color": "yellow", "value": 99 },
+              { "color": "green", "value": 99.9 }
+            ]
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100,
+          "decimals": 2
+        }
+      },
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 5 },
+      "id": 2,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      },
+      "title": "Uptime (24h)",
+      "type": "stat",
+      "targets": [
+        { "expr": "avg_over_time(probe_success{instance=~\".*8096.*\"}[24h]) * 100", "legendFormat": "Jellyfin" },
+        { "expr": "avg_over_time(probe_success{instance=~\".*8989.*\"}[24h]) * 100", "legendFormat": "Sonarr" },
+        { "expr": "avg_over_time(probe_success{instance=~\".*7878.*\"}[24h]) * 100", "legendFormat": "Radarr" },
+        { "expr": "avg_over_time(probe_success{instance=~\".*8686.*\"}[24h]) * 100", "legendFormat": "Lidarr" },
+        { "expr": "avg_over_time(probe_success{instance=~\".*6767.*\"}[24h]) * 100", "legendFormat": "Bazarr" },
+        { "expr": "avg_over_time(probe_success{instance=~\".*9117.*\"}[24h]) * 100", "legendFormat": "Jackett" },
+        { "expr": "avg_over_time(probe_success{instance=~\".*5055.*\"}[24h]) * 100", "legendFormat": "Jellyseerr" },
+        { "expr": "avg_over_time(probe_success{instance=~\".*9091.*\"}[24h]) * 100", "legendFormat": "Transmission" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 10, "w": 24, "x": 0, "y": 10 },
+      "id": 3,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Response Time",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "probe_http_duration_seconds{instance=~\".*8096.*\"}", "legendFormat": "Jellyfin" },
+        { "expr": "probe_http_duration_seconds{instance=~\".*8989.*\"}", "legendFormat": "Sonarr" },
+        { "expr": "probe_http_duration_seconds{instance=~\".*7878.*\"}", "legendFormat": "Radarr" },
+        { "expr": "probe_http_duration_seconds{instance=~\".*8686.*\"}", "legendFormat": "Lidarr" },
+        { "expr": "probe_http_duration_seconds{instance=~\".*6767.*\"}", "legendFormat": "Bazarr" },
+        { "expr": "probe_http_duration_seconds{instance=~\".*9117.*\"}", "legendFormat": "Jackett" },
+        { "expr": "probe_http_duration_seconds{instance=~\".*5055.*\"}", "legendFormat": "Jellyseerr" },
+        { "expr": "probe_http_duration_seconds{instance=~\".*9091.*\"}", "legendFormat": "Transmission" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "continuous-GrYlRd" },
+          "custom": {
+            "drawStyle": "points",
+            "pointSize": 5,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "mappings": [
+            { "options": { "0": { "text": "FAIL", "color": "red" }, "1": { "text": "OK", "color": "green" } }, "type": "value" }
+          ],
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 20 },
+      "id": 4,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Probe Success History",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "probe_success{instance=~\".*8096.*\"}", "legendFormat": "Jellyfin" },
+        { "expr": "probe_success{instance=~\".*8989.*\"}", "legendFormat": "Sonarr" },
+        { "expr": "probe_success{instance=~\".*7878.*\"}", "legendFormat": "Radarr" },
+        { "expr": "probe_success{instance=~\".*8686.*\"}", "legendFormat": "Lidarr" },
+        { "expr": "probe_success{instance=~\".*6767.*\"}", "legendFormat": "Bazarr" },
+        { "expr": "probe_success{instance=~\".*9117.*\"}", "legendFormat": "Jackett" },
+        { "expr": "probe_success{instance=~\".*5055.*\"}", "legendFormat": "Jellyseerr" },
+        { "expr": "probe_success{instance=~\".*9091.*\"}", "legendFormat": "Transmission" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.5 },
+              { "color": "red", "value": 2 }
+            ]
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 5, "w": 24, "x": 0, "y": 28 },
+      "id": 5,
+      "options": {
+        "reduceOptions": { "calcs": ["mean"] },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto"
+      },
+      "title": "Average Response Time (24h)",
+      "type": "stat",
+      "targets": [
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*8096.*\"}[24h])", "legendFormat": "Jellyfin" },
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*8989.*\"}[24h])", "legendFormat": "Sonarr" },
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*7878.*\"}[24h])", "legendFormat": "Radarr" },
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*8686.*\"}[24h])", "legendFormat": "Lidarr" },
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*6767.*\"}[24h])", "legendFormat": "Bazarr" },
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*9117.*\"}[24h])", "legendFormat": "Jackett" },
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*5055.*\"}[24h])", "legendFormat": "Jellyseerr" },
+        { "expr": "avg_over_time(probe_http_duration_seconds{instance=~\".*9091.*\"}[24h])", "legendFormat": "Transmission" }
+      ]
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 39,
+  "tags": ["health", "blackbox", "uptime"],
+  "templating": { "list": [] },
+  "time": { "from": "now-24h", "to": "now" },
+  "title": "Service Health",
+  "uid": "service-health"
+}
