@@ -164,6 +164,7 @@ in {
   # --- Prometheus ---
   services.prometheus = {
     enable = true;
+    retentionTime = "30d";
     globalConfig.scrape_interval = "10s";
 
     scrapeConfigs = [
