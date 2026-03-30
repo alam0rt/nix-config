@@ -70,6 +70,9 @@ in {
     virtualHosts."tv.samlockart.com" = {
       forceSSL = true;
       enableACME = true;
+      locations."/metrics" = {
+        return = "403";
+      };
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
         recommendedProxySettings = true;

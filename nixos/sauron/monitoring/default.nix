@@ -248,6 +248,17 @@ in {
         ];
       }
       {
+        job_name = "jellyfin";
+        scrape_interval = "30s";
+        static_configs = [
+          {
+            targets = ["localhost:8096"];
+            labels.instance = "sauron";
+          }
+        ];
+        metrics_path = "/metrics";
+      }
+      {
         job_name = "exportarr-sonarr";
         scrape_interval = "60s";
         static_configs = [
