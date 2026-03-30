@@ -1,0 +1,491 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "panels": [
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+          ]
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 0 },
+      "id": 1,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "title": "Jellyfin Status",
+      "type": "stat",
+      "targets": [
+        { "expr": "up{job=\"jellyfin\"}", "legendFormat": "Jellyfin" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "s",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 86400 },
+              { "color": "blue", "value": 604800 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 4, "y": 0 },
+      "id": 2,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "title": "Uptime",
+      "type": "stat",
+      "targets": [
+        { "expr": "time() - process_start_time_seconds{job=\"jellyfin\"}", "legendFormat": "Uptime" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "bytes",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 536870912 },
+              { "color": "red", "value": 2147483648 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 8, "y": 0 },
+      "id": 3,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto"
+      },
+      "title": "Working Set Memory",
+      "type": "stat",
+      "targets": [
+        { "expr": "process_working_set_bytes{job=\"jellyfin\"}", "legendFormat": "Working Set" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "short",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 50 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 12, "y": 0 },
+      "id": 4,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto"
+      },
+      "title": "Active Connections",
+      "type": "stat",
+      "targets": [
+        { "expr": "microsoft_aspnetcore_server_kestrel_current_connections{job=\"jellyfin\"}", "legendFormat": "Connections" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "short",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "red", "value": 20 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 16, "y": 0 },
+      "id": 5,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "area",
+        "textMode": "auto"
+      },
+      "title": "Active HTTP Requests",
+      "type": "stat",
+      "targets": [
+        { "expr": "http_requests_in_progress{job=\"jellyfin\"}", "legendFormat": "In Progress" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "unit": "short",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 10 },
+              { "color": "red", "value": 50 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 4, "w": 4, "x": 20, "y": 0 },
+      "id": 6,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "none",
+        "textMode": "auto"
+      },
+      "title": "Threads",
+      "type": "stat",
+      "targets": [
+        { "expr": "process_num_threads{job=\"jellyfin\"}", "legendFormat": "Threads" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 4 },
+      "id": 10,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "HTTP Request Rate",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "sum(rate(http_requests_received_total{job=\"jellyfin\"}[5m]))", "legendFormat": "Total" },
+        { "expr": "sum(rate(http_requests_received_total{job=\"jellyfin\", code=~\"5..\"}[5m]))", "legendFormat": "5xx Errors" },
+        { "expr": "sum(rate(http_requests_received_total{job=\"jellyfin\", code=~\"4..\"}[5m]))", "legendFormat": "4xx Errors" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "s"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 4 },
+      "id": 11,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "HTTP Request Duration (p50 / p95 / p99)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket{job=\"jellyfin\"}[5m])) by (le))", "legendFormat": "p50" },
+        { "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{job=\"jellyfin\"}[5m])) by (le))", "legendFormat": "p95" },
+        { "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket{job=\"jellyfin\"}[5m])) by (le))", "legendFormat": "p99" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 12 },
+      "id": 12,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Kestrel Connections",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "microsoft_aspnetcore_server_kestrel_current_connections{job=\"jellyfin\"}", "legendFormat": "Active" },
+        { "expr": "microsoft_aspnetcore_server_kestrel_current_upgraded_requests{job=\"jellyfin\"}", "legendFormat": "Upgraded (WebSocket)" },
+        { "expr": "microsoft_aspnetcore_server_kestrel_connection_queue_length{job=\"jellyfin\"}", "legendFormat": "Queued" },
+        { "expr": "rate(microsoft_aspnetcore_server_kestrel_connections_per_second_total{job=\"jellyfin\"}[5m])", "legendFormat": "New/sec" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "Bps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 12 },
+      "id": 13,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Network Throughput",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(dotnet_sockets_bytes_sent_total{job=\"jellyfin\"}[5m])", "legendFormat": "Sent" },
+        { "expr": "rate(dotnet_sockets_bytes_received_total{job=\"jellyfin\"}[5m])", "legendFormat": "Received" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": false,
+            "stacking": { "mode": "normal" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 20 },
+      "id": 20,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Memory Usage",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "process_working_set_bytes{job=\"jellyfin\"}", "legendFormat": "Working Set" },
+        { "expr": "process_private_memory_bytes{job=\"jellyfin\"}", "legendFormat": "Private Memory" },
+        { "expr": "process_virtual_memory_bytes{job=\"jellyfin\"}", "legendFormat": "Virtual Memory" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "spanNulls": false,
+            "stacking": { "mode": "normal" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "bytes"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 20 },
+      "id": 21,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "GC Heap Breakdown",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "dotnet_gc_heap_size_bytes{job=\"jellyfin\", gc_generation=\"0\"}", "legendFormat": "Gen 0" },
+        { "expr": "dotnet_gc_heap_size_bytes{job=\"jellyfin\", gc_generation=\"1\"}", "legendFormat": "Gen 1" },
+        { "expr": "dotnet_gc_heap_size_bytes{job=\"jellyfin\", gc_generation=\"2\"}", "legendFormat": "Gen 2" },
+        { "expr": "dotnet_gc_heap_size_bytes{job=\"jellyfin\", gc_generation=\"loh\"}", "legendFormat": "LOH" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "ops"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 28 },
+      "id": 30,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "GC Collection Rate",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(dotnet_gc_collection_count_total{job=\"jellyfin\", gc_generation=\"0\"}[5m])", "legendFormat": "Gen 0" },
+        { "expr": "rate(dotnet_gc_collection_count_total{job=\"jellyfin\", gc_generation=\"1\"}[5m])", "legendFormat": "Gen 1" },
+        { "expr": "rate(dotnet_gc_collection_count_total{job=\"jellyfin\", gc_generation=\"2\"}[5m])", "legendFormat": "Gen 2" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "percentunit"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 28 },
+      "id": 31,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "GC Pause Ratio & CPU Usage",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "dotnet_gc_pause_ratio{job=\"jellyfin\"}", "legendFormat": "GC Pause Ratio" },
+        { "expr": "rate(process_cpu_seconds_total{job=\"jellyfin\"}[5m])", "legendFormat": "CPU Usage" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 36 },
+      "id": 40,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Thread Pool",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "dotnet_threadpool_num_threads{job=\"jellyfin\"}", "legendFormat": "Active Threads" },
+        { "expr": "dotnet_threadpool_timer_count{job=\"jellyfin\"}", "legendFormat": "Active Timers" },
+        { "expr": "rate(dotnet_threadpool_throughput_total{job=\"jellyfin\"}[5m])", "legendFormat": "Work Items/sec" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "spanNulls": false,
+            "stacking": { "mode": "none" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "short"
+        }
+      },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 36 },
+      "id": 41,
+      "options": { "legend": { "displayMode": "list", "placement": "bottom" }, "tooltip": { "mode": "multi" } },
+      "title": "Lock Contention & Exceptions",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "rate(dotnet_contention_total{job=\"jellyfin\"}[5m])", "legendFormat": "Lock Contentions/sec" },
+        { "expr": "rate(dotnet_exceptions_total{job=\"jellyfin\"}[5m])", "legendFormat": "Exceptions/sec" }
+      ]
+    },
+    {
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 1,
+            "fillOpacity": 80,
+            "stacking": { "mode": "normal" },
+            "thresholdsStyle": { "mode": "off" }
+          },
+          "unit": "reqps"
+        }
+      },
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 44 },
+      "id": 50,
+      "options": { "legend": { "displayMode": "table", "placement": "right", "calcs": ["sum", "mean", "max"] }, "tooltip": { "mode": "multi" } },
+      "title": "Request Rate by Endpoint (Top 10)",
+      "type": "timeseries",
+      "targets": [
+        { "expr": "topk(10, sum(rate(http_requests_received_total{job=\"jellyfin\"}[5m])) by (endpoint))", "legendFormat": "{{ endpoint }}" }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["jellyfin", "media"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "title": "Jellyfin",
+  "uid": "jellyfin"
+}
