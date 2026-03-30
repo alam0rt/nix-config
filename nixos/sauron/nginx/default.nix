@@ -92,6 +92,17 @@ in {
     recommendedGzipSettings = true;
     recommendedOptimisation = true;
 
+    # Large media file serving optimisation:
+    # - directio bypasses the page cache for files >4MB, avoiding cache thrashing
+    #   when streaming multi-GB video files and letting ZFS ARC do the caching instead.
+    # - aio threads offloads disk I/O to a thread pool so nginx workers stay non-blocking.
+    # - larger output_buffers reduce the number of syscalls per response for big files.
+    appendHttpConfig = ''
+      directio 4m;
+      aio threads;
+      output_buffers 2 1m;
+    '';
+
     # Only allow PFS-enabled ciphers with AES256
     sslCiphers = "AES256+EECDH:AES256+EDH:!aNULL";
 
