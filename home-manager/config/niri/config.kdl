@@ -75,6 +75,15 @@ input {
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Outputs
 // Remember to uncomment the node by removing "/-"!
+output "Microstep MPG272UX OLED 0x01010101" {
+    position x=0 y=0
+    scale 1.5
+}
+
+output "ASUSTek COMPUTER INC VG27A L7LMQS122807" {
+    position x=2560 y=0
+}
+
 /-output "eDP-1" {
     // Uncomment this line to disable this output.
     // off

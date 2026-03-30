@@ -8,7 +8,15 @@
   programs.waybar.systemd.enable = true;
   programs.waybar.style = ./waybar-style.css;
   services.mako.enable = true; # notification daemon
-  services.swayidle.enable = true; # idle management daemon
+  services.swayidle = {
+    enable = true;
+    timeouts = [
+      {
+        timeout = 300;
+        command = "niri msg action power-off-monitors";
+      }
+    ];
+  };
   services.polkit-gnome.enable = true; # polkit
   home.packages = with pkgs; [
     waybar
