@@ -78,7 +78,7 @@ in {
         "open-webui.${cfg.domain}"
         "maubot.${cfg.domain}"
         "sync.${cfg.domain}"
-        "transmission.${cfg.domain}"
+        "qbittorrent.${cfg.domain}"
         "grafana.${cfg.domain}"
         "tv.${cfg.domain}"
         "jellyseerr.${cfg.domain}"

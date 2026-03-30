@@ -15,7 +15,7 @@
     ./borg
     ./tailscale
     ./vaultwarden
-    ./transmission
+    ./qbittorrent
     ./nas
     ./unifi
     ./mail

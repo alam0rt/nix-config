@@ -229,7 +229,7 @@ in {
               "http://localhost:${toString config.services.bazarr.listenPort}" # bazarr
               "http://localhost:9117" # jackett
               "http://localhost:${toString config.services.jellyseerr.port}" # jellyseerr
-              "http://localhost:${toString config.services.transmission.settings.rpc-port}" # transmission
+              "http://localhost:${toString config.services.qbittorrent.webuiPort}" # qbittorrent
             ];
           }
         ];
@@ -275,6 +275,16 @@ in {
         static_configs = [
           {
             targets = ["localhost:${toString exportarrPorts.radarr}"];
+            labels.instance = "sauron";
+          }
+        ];
+      }
+      {
+        job_name = "qbittorrent";
+        scrape_interval = "30s";
+        static_configs = [
+          {
+            targets = ["localhost:9716"];
             labels.instance = "sauron";
           }
         ];
@@ -460,7 +470,7 @@ in {
               }
               {
                 alert = "MediaServiceDown";
-                expr = ''node_systemd_unit_state{name=~"(jellyfin|sonarr|radarr|lidarr|bazarr|jackett|jellyseerr|transmission)\\.service",state="failed"} == 1'';
+                expr = ''node_systemd_unit_state{name=~"(jellyfin|sonarr|radarr|lidarr|bazarr|jackett|jellyseerr|qbittorrent)\\.service",state="failed"} == 1'';
                 for = "2m";
                 labels.severity = "critical";
                 annotations = {

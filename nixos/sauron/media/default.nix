@@ -175,21 +175,21 @@ in {
     dataDir = "/srv/data/lidarr";
     openFirewall = true;
   };
-  users.users.lidarr.extraGroups = ["transmission"];
+  users.users.lidarr.extraGroups = ["qbittorrent"];
 
   services.radarr = {
     enable = true;
     dataDir = "/srv/data/radarr";
     openFirewall = true;
   };
-  users.users.radarr.extraGroups = ["transmission"];
+  users.users.radarr.extraGroups = ["qbittorrent"];
 
   services.sonarr = {
     enable = true;
     dataDir = "/srv/data/sonarr";
     openFirewall = true;
   };
-  users.users.sonarr.extraGroups = ["transmission"];
+  users.users.sonarr.extraGroups = ["qbittorrent"];
 
   services.jackett = {
     enable = true;

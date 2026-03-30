@@ -39,7 +39,7 @@
         { "expr": "node_systemd_unit_state{name=\"home-assistant.service\",state=\"active\"}", "legendFormat": "home-assistant" },
         { "expr": "node_systemd_unit_state{name=\"vaultwarden.service\",state=\"active\"}", "legendFormat": "vaultwarden" },
         { "expr": "node_systemd_unit_state{name=\"mosquitto.service\",state=\"active\"}", "legendFormat": "mosquitto" },
-        { "expr": "node_systemd_unit_state{name=\"transmission.service\",state=\"active\"}", "legendFormat": "transmission" },
+        { "expr": "node_systemd_unit_state{name=\"qbittorrent.service\",state=\"active\"}", "legendFormat": "qbittorrent" },
         { "expr": "node_systemd_unit_state{name=\"tailscaled.service\",state=\"active\"}", "legendFormat": "tailscale" },
         { "expr": "node_systemd_unit_state{name=\"sshd.service\",state=\"active\"}", "legendFormat": "sshd" }
       ]
