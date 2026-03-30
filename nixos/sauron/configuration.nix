@@ -40,8 +40,33 @@
       "b43"
       "bcma"
     ];
-    # insecure and wireless not used
-    # extraModulePackages = [config.boot.kernelPackages.broadcom_sta];
+  };
+
+  boot.kernel.sysctl = {
+    # BBR congestion control — models actual bottleneck bandwidth instead of
+    # reacting to packet loss, improving throughput on lossy/long-distance paths.
+    # fq (fair queueing) is required for BBR's pacing to work correctly.
+    "net.core.default_qdisc" = "fq";
+    "net.ipv4.tcp_congestion_control" = "bbr";
+
+    # 16MB socket buffer ceilings — allows the kernel's auto-tuning to scale
+    # buffers up for high-bandwidth, high-latency connections (large transfers).
+    "net.core.rmem_max" = 16777216;
+    "net.core.wmem_max" = 16777216;
+
+    # Per-socket buffer auto-tuning range (min, default, max in bytes).
+    # Large max lets long-fat-pipe transfers fill the window properly.
+    "net.ipv4.tcp_rmem" = "4096 131072 16777216";
+    "net.ipv4.tcp_wmem" = "4096 65536 16777216";
+
+    # Don't reset the congestion window after a connection goes idle.
+    # Without this, pauses between chunks (e.g. video buffering, HTTP/2 streams)
+    # force TCP to slow-start again, killing throughput on large file transfers.
+    "net.ipv4.tcp_slow_start_after_idle" = 0;
+
+    # Discover path MTU instead of relying on ICMP. Some internet paths block
+    # ICMP, causing silent fragmentation and reduced throughput for large transfers.
+    "net.ipv4.tcp_mtu_probing" = 1;
   };
 
   networking.hostName = "sauron"; # Define your hostname.
