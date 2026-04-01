@@ -70,6 +70,9 @@ in {
       Preferences = {
         "WebUI\\Address" = "127.0.0.1";
         "WebUI\\Port" = webuiPort;
+        "WebUI\\Username" = "omar";
+        "WebUI\\Password_PBKDF2" = "@ByteArray(sXHUKbtrwuMZDQSf9NkSnw==:GPsZiEsuzyJzZDnY6YsmcXYjp54ptR2QcCH28m6tuR45LjnzNOTdpTldYiISoQC1G7yTwsNo8Ao4PB4+Wu+26Q==)";
+        "LegalNotice\\Accepted" = true;
       };
     };
   };
