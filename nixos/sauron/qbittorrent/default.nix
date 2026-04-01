@@ -70,6 +70,7 @@ in {
       Preferences = {
         "WebUI\\Address" = "127.0.0.1";
         "WebUI\\Port" = webuiPort;
+        "WebUI\\MaxAuthenticationFailCount" = 0; # disable localhost ban on failed auth
         "WebUI\\Username" = "omar";
         "WebUI\\Password_PBKDF2" = "@ByteArray(/n9OsMRzfu8xiXDDsOBSzw==:skh7xP3pSe0JVmtgsVq30cAA9Ix6W2jJ+y4zv+2ptw8i65TIk4B+xthz5BCUdlothRcZs7iPRLG5dyEJNbcTSA==)";
         "LegalNotice\\Accepted" = true;
