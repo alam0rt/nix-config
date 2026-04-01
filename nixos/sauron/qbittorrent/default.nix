@@ -40,7 +40,7 @@ in {
         # Seeding policy: stop immediately after download (ratio 0, pause action)
         "Session\\GlobalMaxSeedingMinutes" = 5;
         "Session\\MaxRatio" = 0;
-        "Session\\MaxRatioAction" = 1; # pause
+        "Session\\MaxRatioAction" = 0; # pause
 
         # Connection limits — 10GbE can sustain thousands of peers; was 800/40
         "Session\\MaxConnections" = 3000;
