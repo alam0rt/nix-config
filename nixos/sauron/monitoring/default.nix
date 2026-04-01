@@ -279,16 +279,16 @@ in {
           }
         ];
       }
-      {
-        job_name = "qbittorrent";
-        scrape_interval = "30s";
-        static_configs = [
-          {
-            targets = ["localhost:9716"];
-            labels.instance = "sauron";
-          }
-        ];
-      }
+      # {
+      #   job_name = "qbittorrent";
+      #   scrape_interval = "30s";
+      #   static_configs = [
+      #     {
+      #       targets = ["localhost:9716"];
+      #       labels.instance = "sauron";
+      #     }
+      #   ];
+      # }
     ];
 
     # --- Alerting rules ---
