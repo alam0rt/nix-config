@@ -44,7 +44,16 @@ in {
     };
   };
 
-  services.borgbackup.jobs = {
+  services.borgbackup.jobs = let
+    # Retention for daily jobs: ~1 year of history with thinning
+    dailyPrune = {
+      keep = {
+        daily = 7;
+        weekly = 4;
+        monthly = 12;
+      };
+    };
+  in {
     mordor-vault = {
       paths = "/srv/vault";
       repo = "${repo}:mordor/vault";
@@ -57,6 +66,7 @@ in {
       environment = environment;
       compression = "auto,zstd";
       startAt = "daily";
+      prune = dailyPrune;
     };
     mordor-srv-data = {
       paths = "/srv/data";
@@ -75,6 +85,12 @@ in {
       compression = "auto,zstd";
       failOnWarnings = true;
       startAt = "hourly";
+      prune.keep = {
+        hourly = 48; # 2 days of hourly snapshots
+        daily = 14;
+        weekly = 8;
+        monthly = 12;
+      };
     };
     mordor-share-sam = {
       paths = "/srv/share/sam";
@@ -88,6 +104,7 @@ in {
       environment = environment;
       compression = "auto,zstd";
       startAt = "daily";
+      prune = dailyPrune;
     };
     mordor-share-emma = {
       paths = "/srv/share/emma";
@@ -101,6 +118,7 @@ in {
       environment = environment;
       compression = "auto,zstd";
       startAt = "daily";
+      prune = dailyPrune;
     };
   };
 }
