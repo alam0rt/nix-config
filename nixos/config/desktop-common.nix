@@ -94,6 +94,8 @@
     niri
     kdePackages.dolphin
     kdePackages.dolphin-plugins
+    pavucontrol # PulseAudio-compatible volume control (works with PipeWire)
+    pwvucontrol # native PipeWire volume control
   ];
 
   fonts.packages = with pkgs; [

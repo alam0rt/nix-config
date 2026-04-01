@@ -49,15 +49,28 @@
     "net.core.default_qdisc" = "fq";
     "net.ipv4.tcp_congestion_control" = "bbr";
 
-    # 16MB socket buffer ceilings — allows the kernel's auto-tuning to scale
-    # buffers up for high-bandwidth, high-latency connections (large transfers).
-    "net.core.rmem_max" = 16777216;
-    "net.core.wmem_max" = 16777216;
+    # 128MB socket buffer ceilings — 10GbE with jumbo frames (MTU 9000) and thousands
+    # of concurrent torrent connections needs headroom well beyond the 16MB default.
+    # eno2 was dropping 2162 RX packets; larger buffers absorb bursts before qBittorrent
+    # can drain them.
+    "net.core.rmem_max" = 134217728; # 128 MiB
+    "net.core.wmem_max" = 134217728; # 128 MiB
 
     # Per-socket buffer auto-tuning range (min, default, max in bytes).
-    # Large max lets long-fat-pipe transfers fill the window properly.
-    "net.ipv4.tcp_rmem" = "4096 131072 16777216";
-    "net.ipv4.tcp_wmem" = "4096 65536 16777216";
+    "net.ipv4.tcp_rmem" = "4096 131072 134217728";
+    "net.ipv4.tcp_wmem" = "4096 65536 134217728";
+
+    # UDP receive/send buffers — qBittorrent uses uTP (UDP-based) heavily;
+    # default 212992 is too small for 10GbE torrent loads.
+    "net.core.rmem_default" = 1048576; # 1 MiB default for new sockets
+    "net.core.wmem_default" = 1048576;
+
+    # NIC RX backlog — eno2 logged 2162 dropped packets due to backlog overflow;
+    # raise from 1000 → 10000 so bursts don't hit the driver drop counter.
+    "net.core.netdev_max_backlog" = 10000;
+
+    # Socket option memory — needed when many sockets have large option payloads.
+    "net.core.optmem_max" = 65536;
 
     # Don't reset the congestion window after a connection goes idle.
     # Without this, pauses between chunks (e.g. video buffering, HTTP/2 streams)
