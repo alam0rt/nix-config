@@ -71,7 +71,7 @@ in {
         "WebUI\\Address" = "127.0.0.1";
         "WebUI\\Port" = webuiPort;
         "WebUI\\Username" = "omar";
-        "WebUI\\Password_PBKDF2" = "@ByteArray(gd8D2Nqh+3uOAe3NygEF5g==:HKVwhQhwtsc6SlcQq+CAWPM5MM2ypjtiJbwSBDSf4Lfvg/XHv6P4hFt/jtNLyd7FdCM/2hCroclyZZJ2Ht23wg==)";
+        "WebUI\\Password_PBKDF2" = "@ByteArray(/n9OsMRzfu8xiXDDsOBSzw==:skh7xP3pSe0JVmtgsVq30cAA9Ix6W2jJ+y4zv+2ptw8i65TIk4B+xthz5BCUdlothRcZs7iPRLG5dyEJNbcTSA==)";
         "LegalNotice\\Accepted" = true;
       };
     };
