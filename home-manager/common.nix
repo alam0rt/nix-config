@@ -263,6 +263,47 @@
   programs.jujutsu.settings.user.name = config.programs.git.settings.user.name;
   programs.jujutsu.settings.user.email = config.programs.git.settings.user.email;
   programs.jujutsu.settings.git.push-new-bookmarks = true;
+  programs.jujutsu.settings.aliases = {
+    # https://news.ycombinator.com/item?id=47687273
+    "what-changes-most" = [
+      "log"
+      "--no-graph"
+      "-r"
+      ''ancestors(trunk()) & committer_date(after:"1 year ago")''
+      "-T"
+      ''self.diff().files().map(|f| f.path() ++ "\n").join("")''
+    ];
+    "who-built-this" = [
+      "log"
+      "--no-graph"
+      "-r"
+      "ancestors(trunk()) & ~merges()"
+      "-T"
+      ''self.author().name() ++ "\n"''
+    ];
+    "where-bugs-cluster" = [
+      "log"
+      "--no-graph"
+      "-r"
+      ''ancestors(trunk()) & description(regex:"(?i)fix|bug|broken")''
+      "-T"
+      ''self.diff().files().map(|f| f.path() ++ "\n").join("")''
+    ];
+    "commit-pace" = [
+      "log"
+      "--no-graph"
+      "-r"
+      "ancestors(trunk())"
+      "-T"
+      ''self.committer().timestamp().format("%Y-%m") ++ "\n"''
+    ];
+    "firefighting" = [
+      "log"
+      "--no-graph"
+      "-r"
+      ''ancestors(trunk()) & committer_date(after:"1 year ago") & description(regex:"(?i)revert|hotfix|emergency|rollback")''
+    ];
+  };
 
   programs.ssh = {
     enable = true;
