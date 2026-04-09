@@ -341,6 +341,7 @@
       ".envrc"
       ".direnv/"
       ".DS_Store"
+      ".claude"
     ];
     settings = {
       user.name = "alam0rt";
