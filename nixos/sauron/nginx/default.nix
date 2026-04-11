@@ -52,6 +52,13 @@ in {
         # https://www.freedesktop.org/software/systemd/man/latest/systemd.exec.html#EnvironmentFile=
         environmentFile = config.age.secrets.cloudflare-api-token.path;
       };
+      "iced.cool" = {
+        domain = "*.iced.cool";
+        group = "nginx";
+        dnsProvider = "cloudflare";
+        webroot = null;
+        environmentFile = config.age.secrets.cloudflare-api-token.path;
+      };
     };
   };
 
@@ -183,6 +190,21 @@ in {
       locations."/" = {
         extraConfig = ''
           autoindex on;
+        '';
+      };
+    };
+
+    # Wildcard vhost: <name>.iced.cool → /srv/share/public/www/<name>/
+    # Any directory created in /srv/share/public/www/ is automatically served.
+    virtualHosts."wildcard.iced.cool" = {
+      serverName = "~^(?<subdomain>.+)\.iced\.cool$";
+      forceSSL = true;
+      useACMEHost = "iced.cool";
+      root = "/srv/share/public/www/$subdomain";
+      locations."/" = {
+        extraConfig = ''
+          autoindex on;
+          try_files $uri $uri/ =404;
         '';
       };
     };
