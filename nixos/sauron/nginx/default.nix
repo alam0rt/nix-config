@@ -176,7 +176,7 @@ in {
     virtualHosts."www.iced.cool" = {
       # catch all
       forceSSL = true;
-      enableACME = true;
+      useACMEHost = "iced.cool";
       default = true;
       locations."/" = {
         return = 404;
@@ -185,7 +185,7 @@ in {
 
     virtualHosts."library.iced.cool" = {
       forceSSL = true;
-      enableACME = true;
+      useACMEHost = "iced.cool";
       root = "/srv/share/public/muay_thai_library";
       locations."/" = {
         extraConfig = ''

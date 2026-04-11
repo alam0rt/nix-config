@@ -40,6 +40,14 @@
     ];
   };
 
+  # TODO: mordor/data currently inherits recordsize=1M and sync=disabled from mordor.
+  # This is problematic for SQLite databases (e.g. Jellyfin at /srv/data/jellyfin):
+  #   - recordsize=1M causes 256x write amplification on 4K SQLite pages (read-modify-write)
+  #   - sync=disabled means fsync is ignored, risking DB corruption on power loss
+  # Fix: create a child dataset for database workloads:
+  #   zfs create -o recordsize=8K -o sync=standard -o compression=zstd mordor/data/jellyfin-db
+  # Or if changing mordor/data directly, note recordsize only applies to newly written blocks —
+  # existing files must be copied in-place (cp + mv) to rewrite at the new recordsize.
   fileSystems."/srv/data" = {
     device = "mordor/data";
     fsType = "zfs";
