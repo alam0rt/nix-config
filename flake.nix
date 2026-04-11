@@ -33,9 +33,6 @@
     nvidia-patch.url = "github:icewind1991/nvidia-patch-nixos";
     nvidia-patch.inputs.nixpkgs.follows = "nixpkgs";
 
-    # openclaw
-    nix-openclaw.url = "github:openclaw/nix-openclaw";
-
     # hardware modules
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -94,7 +91,6 @@
           ./nixos/sauron/configuration.nix
           inputs.agenix.nixosModules.default
           inputs.agenix-rekey.nixosModules.default
-          inputs.nix-openclaw.nixosModules.openclaw-gateway
           self.nixosModules.vllm
         ];
       };
