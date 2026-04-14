@@ -115,6 +115,8 @@ output "ASUSTek COMPUTER INC VG27A L7LMQS122807" {
     position x=1280 y=0
 }
 
+spawn-at-startup "swaybg" "-c" "#000000"
+
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
 // https://yalter.github.io/niri/Configuration:-Layout
