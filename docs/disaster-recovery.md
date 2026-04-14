@@ -81,7 +81,7 @@ Two raidz2 vdevs (8+4 disks). Can survive 2 disk failures per vdev.
 
 **Exclusions from `mordor-srv-data`:** `*.db-wal`, `*.db-shm` (SQLite temp files).
 
-**No retention/prune policy is configured** — archives accumulate indefinitely on rsync.net.
+**Retention policies are configured** on all Borg jobs. Daily jobs keep 7 daily, 4 weekly, 12 monthly. The hourly `mordor-srv-data` job keeps 48 hourly, 14 daily, 8 weekly, 12 monthly.
 
 ### ZFS Auto-Snapshots (local only)
 
@@ -255,7 +255,8 @@ nixos-rebuild switch --flake .#sauron
 - [ ] Syncthing connected to desktop/laptop
 - [ ] Tailscale connected
 - [ ] ACME certificates renewed
-- [ ] Monitoring dashboards loading at `grafana.iced.cool`
+- [ ] Home Assistant accessible at `home-assistant.middleearth.samlockart.com` (via Tailscale)
+- [ ] Monitoring dashboards loading at `grafana.middleearth.samlockart.com` (via Tailscale)
 
 ---
 
@@ -346,7 +347,7 @@ systemctl start <service>
 | Radarr | `/srv/data/radarr` | `radarr:radarr` | Movie database, custom formats |
 | Lidarr | `/srv/data/lidarr` | `lidarr:lidarr` | Music database |
 | Jackett | `/srv/data/jackett` | `jackett:jackett` | Indexer configs |
-| Transmission | `/srv/data/transmission` | `transmission:transmission` | Torrent state |
+| qBittorrent | `/srv/media/downloads` | `qbittorrent:qbittorrent` | Torrent state, downloads |
 | Syncthing | `/srv/data/syncthing` | `syncthing:syncthing` | Device keys, folder config |
 | Vaultwarden | `/srv/data/vaultwarden` | `vaultwarden:vaultwarden` | Password vault (SQLite) |
 | Maubot | `/srv/data/maubot` | `maubot:maubot` | Matrix bot DB and plugins |
@@ -533,20 +534,9 @@ services.postgresql.dataDir = "/srv/data/postgresql/16";
 
 **Recommendation (when needed):** Either move `configDir` to `/srv/data/hass/` or add a backup job.
 
-### G4: No Borg Prune/Retention Policy
+### G4: No Borg Prune/Retention Policy ✓ RESOLVED
 
-**Risk:** Archives accumulate forever on rsync.net. Storage costs grow unbounded and `borg list` becomes slow.
-
-**Recommendation:** Add prune settings to each Borg job:
-
-```nix
-prune.keep = {
-  hourly = 48;
-  daily = 30;
-  weekly = 12;
-  monthly = 12;
-};
-```
+Prune policies are now configured on all Borg jobs in `nixos/sauron/borg/default.nix`. Daily jobs: 7 daily, 4 weekly, 12 monthly. Hourly job: 48 hourly, 14 daily, 8 weekly, 12 monthly.
 
 ### G5: Media Files (21.6T) Not Backed Up
 

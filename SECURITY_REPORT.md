@@ -6,11 +6,11 @@ Generated: 2026-03-29
 
 ## Summary
 
-| Severity | Count | Fixed |
-|----------|-------|-------|
-| Critical | 3     | 3     |
-| High     | 2     | 2     |
-| Medium   | 7     | 2     |
+| Severity | Count | Fixed/Resolved |
+|----------|-------|----------------|
+| Critical | 3     | 3              |
+| High     | 2     | 2              |
+| Medium   | 7     | 4 (M3 open, M4 open, M5 open) |
 
 The overall architecture is solid: Tailscale VPN gates most internal services, agenix-rekey with YubiKey FIDO2 manages secrets, SSH is key-only with no root login, and service accounts are isolated. The issues below are mostly around services binding to `0.0.0.0` or missing authentication where it should be present.
 
@@ -52,12 +52,10 @@ Bound Mosquitto listener to `127.0.0.1` and removed the firewall rule for port 1
 
 ---
 
-### H2 — OpenClaw unrestricted Matrix access ✓ FIXED (partially)
-**File:** `nixos/sauron/openclaw/default.nix`
+### H2 — OpenClaw unrestricted Matrix access ✓ RESOLVED (service removed)
+**File:** `nixos/sauron/openclaw/default.nix` (deleted)
 
-Restricted `dm.allowFrom` and `groupAllowFrom` to `["@sammm:chat.samlockart.com"]` and enabled `requireMention = true`. The bot now only responds to DMs and group mentions from the owner.
-
-`dangerouslyDisableDeviceAuth = true` was left in place — the inline comment explains it is required by the `trusted-proxy` auth mode (Tailscale injects `x-webauth-user` to satisfy the device identity check; removing the flag would cause code=4008 errors on the Control UI). The effective auth boundary is Tailscale VPN membership.
+OpenClaw has been entirely removed from the configuration (commit `a6131e4`). The service, its secrets (`openclaw-config.age`, `openclaw-env.age`), and the `scripts/openclaw.sh` wrapper were all deleted. This finding is no longer applicable.
 
 ---
 
@@ -81,8 +79,8 @@ Downloads and media shares allow guest (unauthenticated) access, relying solely 
 
 ---
 
-### M3 — Known-insecure packages explicitly permitted ✓ PARTIALLY FIXED
-**File:** `nixos/sauron/configuration.nix`
+### M3 — Known-insecure packages explicitly permitted
+**File:** `nixos/sauron/configuration.nix:164-172`
 ```nix
 dotnet-sdk-6.0.428       # EOL — Jackett
 aspnetcore-runtime-6.0.36 # EOL — Jackett
@@ -91,7 +89,7 @@ openssl-1.1.1w           # EOL — Home Assistant
 ```
 These are acknowledged end-of-life/vulnerable packages. They expand the attack surface for services exposed to the internet (Matrix, Home Assistant).
 
-Verified against the running system: `dotnet-sdk-6`, `aspnetcore-runtime-6`, and `openssl-1.1.1w` are no longer present in the system closure — nixpkgs has updated Jackett and Home Assistant to use newer runtimes. Those three entries have been removed. `olm-3.2.16` remains, still required by maubot → mautrix → python-olm.
+All four entries remain in `permittedInsecurePackages`. Consider switching Jackett to Prowlarr (modern .NET) and checking if newer maubot has dropped the olm dependency.
 
 ---
 
@@ -113,17 +111,10 @@ The containers/policy.json config disables all image signature verification for 
 
 ---
 
-### M6 — OpenClaw unrestricted Matrix access
-**File:** `nixos/sauron/openclaw/default.nix`
-```nix
-allowFrom = ["*"];         # DMs from anyone
-groupAllowFrom = ["*"];    # group rooms unrestricted
-requireMention = false;    # responds to all group messages
-elevatedDefault = "full";  # full privileges by default
-```
-Any Matrix user (federated or local) can DM the bot or trigger it in shared rooms. With full elevated privileges as default, this is a significant blast radius.
+### M6 — OpenClaw unrestricted Matrix access ✓ RESOLVED (service removed)
+**File:** `nixos/sauron/openclaw/default.nix` (deleted)
 
-**Fix:** Restrict `allowFrom` and `groupAllowFrom` to specific trusted Matrix IDs/rooms. Enable `requireMention`. Consider lowering `elevatedDefault`.
+OpenClaw has been entirely removed from the configuration (commit `a6131e4`). This finding is no longer applicable.
 
 ---
 
@@ -154,5 +145,19 @@ Matrix/Synapse skipped — it has built-in `rc_login` rate limiting.
 - **Agenix-rekey with 3 YubiKeys** is a strong secrets management approach. Ensure all three keys are stored in separate physical locations.
 - **Tailscale correctly gates** internal tools (Transmission, Sonarr/Radarr/etc., Grafana, OpenWebUI, Maubot).
 - **`sam` is in `docker`/`wireshark`/`dialout` groups** — expected for a dev workstation, but these groups allow container escapes and packet capture if the user account is compromised.
-- **Systemd hardening on OpenClaw** is well-configured (ProtectSystem, NoNewPrivileges, capability bounding, namespace restrictions).
 - **Borg backups** are encrypted (Blake2 + repokey) and managed via agenix.
+
+---
+
+## 2026-04-14 CSO Audit Update
+
+A follow-up security audit identified and fixed two HIGH findings:
+
+- **Home Assistant port 8123 was directly exposed** on all interfaces without nginx or Tailscale auth. Fixed: removed firewall port, added nginx reverse proxy with Tailscale auth at `home-assistant.middleearth.samlockart.com`.
+- **Flaresolverr container had `--network=host` and used `:latest` with `pull=always`**. A compromised image could reach every localhost-bound service. Fixed: pinned to `v3.3.21`, removed host networking, bound to `127.0.0.1:8191`.
+
+Remaining MEDIUM findings from the 2026-04-14 audit (see `.gstack/security-reports/2026-04-14-131300.json`):
+- Unpinned container images (rarbg, unifi) still use `:latest`
+- Multiple services still have `openFirewall = true` (overlaps with M4 above)
+- EOL insecure packages (overlaps with M3 above)
+- `initialHashedPassword` for sam user committed to public repo

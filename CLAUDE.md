@@ -64,7 +64,7 @@ This is a NixOS + home-manager flake managing multiple hosts and a shared home e
 - **`nixos/config/common/`** — nix GC/optimise, users, server defaults
 - **`nixos/config/secrets/`** — agenix-rekey configuration; rekeyed secrets stored in `secrets/rekeyed/<hostname>/`
 - **`nixos/<hostname>/configuration.nix`** — host-specific config that imports the shared base plus host services
-- `sauron` is the primary server and runs many services (Matrix, Nginx, NAS, media, monitoring, mail, Home Assistant, vaultwarden, mumble, transmission, etc.)
+- `sauron` is the primary server and runs many services (Matrix, Nginx, NAS, media, monitoring, mail, Home Assistant, vaultwarden, mumble, qbittorrent, etc.)
 - `desktop` and `laptop` are workstation configs
 
 ### Home-manager layer (`home-manager/`)
