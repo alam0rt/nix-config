@@ -6,9 +6,15 @@
 }: let
   cfg = config.server;
 in {
-  networking.firewall.allowedTCPPorts = [
-    8123 # remove once setup with reverse proxy
-  ];
+  services.nginx.virtualHosts."home-assistant.${cfg.domain}" = {
+    forceSSL = true;
+    useACMEHost = cfg.domain;
+    locations."/" = {
+      proxyPass = "http://127.0.0.1:8123";
+      proxyWebsockets = true;
+      recommendedProxySettings = true;
+    };
+  };
 
   services.mosquitto = {
     enable = true;

@@ -89,6 +89,7 @@ in {
         "grafana.${cfg.domain}"
         "tv.${cfg.domain}"
         "jellyseerr.${cfg.domain}"
+        "home-assistant.${cfg.domain}"
         "library.iced.cool"
       ];
     };

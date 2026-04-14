@@ -230,11 +230,9 @@ in {
     };
 
     flaresolverr = {
-      image = "ghcr.io/flaresolverr/flaresolverr:latest";
-      ports = ["8191:8191"];
-      pull = "always";
+      image = "ghcr.io/flaresolverr/flaresolverr:v3.3.21";
+      ports = ["127.0.0.1:8191:8191"];
       serviceName = "flaresolverr";
-      extraOptions = ["--network=host"];
     };
   };
 }
