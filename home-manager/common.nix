@@ -307,6 +307,7 @@
 
   programs.ssh = {
     enable = true;
+    addKeysToAgent = "yes";
     matchBlocks = {
       # TODO: enumate all of my hosts
       "sauron" = {

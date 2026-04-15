@@ -48,6 +48,8 @@
     };
   };
 
+  services.ssh-agent.enable = true;
+
   home.username = "sam";
   home.homeDirectory = "/home/${config.home.username}";
 
