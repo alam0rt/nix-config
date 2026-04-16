@@ -1,4 +1,8 @@
-{pkgs, ...}: {
+{
+  pkgs,
+  lib,
+  ...
+}: {
   # llama-server serving Qwen3.5-4B Q4_K_M via llama.cpp
   # https://huggingface.co/unsloth/Qwen3.5-4B-GGUF
   #
@@ -29,19 +33,27 @@
     model = "/srv/share/public/models/Qwen3.5-4B-GGUF/qwen3.5-4b-q4_k_m.gguf";
     # Server-level flags (not model-specific)
     extraFlags = [
-      "-ngl" "999"
-      "-np" "1"
-      "-c" "131072"
-      "--temp" "0.6"
-      "--top-p" "0.95"
-      "--top-k" "20"
-      "--min-p" "0.0"
-      "--chat-template-kwargs" "{\"enable_thinking\":true}"
+      "-ngl"
+      "999"
+      "-np"
+      "1"
+      "-c"
+      "131072"
+      "--temp"
+      "0.6"
+      "--top-p"
+      "0.95"
+      "--top-k"
+      "20"
+      "--min-p"
+      "0.0"
+      "--chat-template-kwargs"
+      "{\"enable_thinking\":true}"
       "--jinja"
     ];
   };
 
   # PrivateUsers=true (set by the module) breaks CUDA device access under systemd.
   # The DynamicUser can't see /dev/nvidia* in the private user namespace.
-  systemd.services.llama-cpp.serviceConfig.PrivateUsers = pkgs.lib.mkForce false;
+  systemd.services.llama-cpp.serviceConfig.PrivateUsers = lib.mkForce false;
 }

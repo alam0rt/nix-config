@@ -110,6 +110,7 @@
       ignoreSpace = true;
       ignoreDups = true;
       expireDuplicatesFirst = true;
+      ignorePatterns = ["GITHUB_TOKEN"];
     };
     shellAliases = {
       gst = "git status -s -b";
@@ -123,9 +124,6 @@
     };
     dirHashes = {
       projects = "$HOME/projects";
-    };
-    history = {
-      ignorePatterns = ["GITHUB_TOKEN"];
     };
     autosuggestion = {
       enable = true;
@@ -213,7 +211,7 @@
 
       comma
     ]
-    ++ lib.optionals stdenv.isDarwin [
+    ++ lib.optionals stdenv.hostPlatform.isDarwin [
       # macOS only packages
 
       unstable.vfkit # for podman
@@ -229,7 +227,7 @@
       scaffold
       argocd
     ]
-    ++ lib.optionals stdenv.isLinux [
+    ++ lib.optionals stdenv.hostPlatform.isLinux [
       # chat
       mumble
 
@@ -313,8 +311,10 @@
 
   programs.ssh = {
     enable = true;
-    addKeysToAgent = "yes";
     matchBlocks = {
+      "*" = {
+        addKeysToAgent = "yes";
+      };
       # TODO: enumate all of my hosts
       "sauron" = {
         setEnv = {

@@ -2,13 +2,13 @@
   programs.ghostty = {
     enable = true;
     package =
-      if pkgs.stdenv.isDarwin
+      if pkgs.stdenv.hostPlatform.isDarwin
       then pkgs.ghostty-bin
       else pkgs.ghostty;
 
     # quick start-up
     systemd.enable =
-      if pkgs.stdenv.isDarwin
+      if pkgs.stdenv.hostPlatform.isDarwin
       then false
       else true;
 

@@ -52,7 +52,7 @@ in {
         requests
         yt-dlp
       ]
-      ++ prev.lib.optionals prev.stdenv.isLinux [
+      ++ prev.lib.optionals prev.stdenv.hostPlatform.isLinux [
         # Additional Linux-specific dependencies if needed
       ];
 

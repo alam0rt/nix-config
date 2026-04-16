@@ -295,11 +295,12 @@ in {
         [
           (
             if cfg.modelPath != null
-            then (
-              if cfg.modelFile != null
-              then "/model/${cfg.modelFile}"
-              else "/model"
-            )
+            then
+              (
+                if cfg.modelFile != null
+                then "/model/${cfg.modelFile}"
+                else "/model"
+              )
             else cfg.model
           )
           "--host"
