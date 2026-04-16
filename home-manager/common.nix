@@ -209,6 +209,7 @@
 
       # AI
       unstable.claude-code
+      unstable.bun
 
       comma
     ]
