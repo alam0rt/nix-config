@@ -95,6 +95,11 @@
       if [ -e '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh' ]; then
         . '/nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh'
       fi
+
+      # Source user-managed local config (API keys, etc.)
+      if [ -f "$HOME/.zshrc.local" ]; then
+        . "$HOME/.zshrc.local"
+      fi
     '';
     history = {
       extended = true;
