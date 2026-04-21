@@ -23,14 +23,12 @@
     ./nginx
     ./syncthing
     ./openwebui
-    # ./whisper # moved to ./models
-    ./matrix
     ./monitoring
-    ./home-assistant
-    ./models
+    # ./matrix
+    # ./home-assistant
+    # ./models
     # ./pvpgn
-    ./llama-cpp
-    # ../config/home-manager.nix # get working
+    # ./llama-cpp
   ];
 
   boot = {
