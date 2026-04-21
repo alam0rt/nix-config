@@ -81,9 +81,6 @@ in {
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
         recommendedProxySettings = true;
-        extraConfig = ''
-          proxy_buffering off;
-        '';
       };
       locations."~* /Users/AuthenticateByName" = {
         proxyPass = "http://127.0.0.1:8096";
@@ -122,9 +119,6 @@ in {
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
         recommendedProxySettings = true;
-        extraConfig = ''
-          proxy_buffering off;
-        '';
       };
     };
     virtualHosts."sonarr.${cfg.domain}" = {
