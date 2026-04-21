@@ -11,3 +11,7 @@ build:
 		--target-host $(USER)@$(TARGET_HOST) \
 		--build-host $(USER)@$(BUILD_HOST) \
 		--use-remote-sudo
+
+diff: build
+	nvd diff /run/current-system result
+.PHONY: diff

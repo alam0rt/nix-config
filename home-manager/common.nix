@@ -200,6 +200,10 @@
       # AI
       unstable.claude-code
 
+      # nix
+      nvd
+      nix-diff
+
       comma
     ]
     ++ lib.optionals stdenv.hostPlatform.isDarwin [
