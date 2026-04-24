@@ -49,7 +49,7 @@
           github.copilot
           github.copilot-chat
           ms-vscode.makefile-tools
-          anthropic.claude-code
+          # anthropic.claude-code # failing due to mismatched hash
         ]
         ++ lib.optionals pkgs.stdenv.hostPlatform.isLinux (with pkgs.unstable.vscode-extensions; [
           # embedded
