@@ -237,7 +237,10 @@
       # design and 3d
       godot
       super-slicer-latest
-      freecad
+      (freecad.customize {
+        modules = [freecad-mcp.addon];
+      })
+      freecad-mcp
 
       try # utility to try out commands in temporary containers
 
