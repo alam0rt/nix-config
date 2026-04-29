@@ -165,7 +165,6 @@
       ast-grep
       yq-go
       ripgrep
-      direnv
 
       # encryption
       gnupg
@@ -184,19 +183,12 @@
       qemu
       shellcheck
       go-jsonnet # preferred over jsonnet
-      fzf
       hyperfine
       fd
-      bat
-      unstable.go
-      direnv
       unstable.delve
       nil # nix lsp
       rust-analyzer
       uv
-
-      # terminals
-      kitty
 
       # graphical
       p7zip-rar

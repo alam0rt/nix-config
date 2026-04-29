@@ -19,7 +19,6 @@
   };
   services.polkit-gnome.enable = true; # polkit
   home.packages = with pkgs; [
-    waybar
     swaybg # wallpaper
     xwayland-satellite # xwayland support
   ];

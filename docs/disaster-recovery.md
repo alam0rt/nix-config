@@ -1,6 +1,6 @@
 # Disaster Recovery Plan
 
-**Last updated:** 2026-03-31
+**Last updated:** 2026-04-24
 
 ---
 
@@ -45,11 +45,8 @@ Two raidz2 vdevs (8+4 disks). Can survive 2 disk failures per vdev.
 
 ### Root NVMe (ext4, `/dev/nvme0n1p2`)
 
-234G total, 180G used (82%). Contains:
+234G total. Contains:
 
-- `/var/lib/postgresql/16/` — **Matrix Synapse database (NOT BACKED UP)**
-- `/var/lib/hass/` — **Home Assistant state (NOT BACKED UP)**
-- `/var/lib/matrix-synapse/` — Synapse signing keys
 - `/var/lib/acme/` — TLS certificates (auto-renewable)
 - `/var/lib/containers/` — Podman container storage
 - `/var/lib/grafana/`, `/var/lib/prometheus2/` — Monitoring data (rebuildable)
@@ -91,13 +88,20 @@ Two raidz2 vdevs (8+4 disks). Can survive 2 disk failures per vdev.
 
 | Data | Location | Risk |
 |------|----------|------|
-| **PostgreSQL (Matrix Synapse)** | `/var/lib/postgresql/16/` (root NVMe) | Low (not actively used yet) |
-| **Home Assistant** | `/var/lib/hass/` (root NVMe) | Low (not actively used yet) |
 | **Media files** | `/srv/media` (21.6T) | Low — re-downloadable, but time-consuming |
 | **Public share** | `/srv/share/public` (1.18T) | Low — AI models re-downloadable, containers rebuildable |
 | **Prometheus metrics** | `/var/lib/prometheus2/` (root NVMe) | Low — 30-day retention, informational only |
 | **Grafana state** | `/var/lib/grafana/` (root NVMe) | Low — dashboards are declarative in Nix |
 | **TLS certificates** | `/var/lib/acme/` (root NVMe) | None — auto-renewed by ACME |
+
+### Deferred Services (currently disabled)
+
+Matrix/Synapse, Home Assistant, `llama-cpp`, `models`, and `pvpgn` are commented out in `nixos/sauron/configuration.nix`. They have no running state on sauron and no backup requirements today.
+
+**Before re-enabling any of these**, add its state directory to a Borg job and update this doc:
+
+- **Matrix/Synapse** — enables PostgreSQL (`/var/lib/postgresql/16/`) and signing keys at `/var/lib/matrix-synapse/`. Either move `services.postgresql.dataDir` under `/srv/data/` so it lands in the hourly job, or add a `pg_dumpall` → `/srv/data/postgres-backups/` systemd timer. Signing keys must be backed up separately (small, copy to `/srv/vault/`).
+- **Home Assistant** — state at `/var/lib/hass/`. Either set `configDir` to `/srv/data/hass/` or add a backup job.
 
 ### Also Protected (non-backup)
 
@@ -224,11 +228,7 @@ borg extract hk1068@hk1068.rsync.net:mordor/share/emma::ARCHIVE_NAME
 
 Replace `ARCHIVE_NAME` with the latest archive from `borg list`.
 
-### Step 5: Restore PostgreSQL (Matrix Synapse)
-
-PostgreSQL data is on the root NVMe and is NOT in any Borg job. If the NVMe is recoverable, copy `/var/lib/postgresql/16/` from it. Otherwise, Matrix Synapse data is lost. **Currently low impact — Matrix is not actively used.** See [Gap G2](#11-gaps-and-recommendations) for when this needs addressing.
-
-### Step 6: Fix Ownership and Restart Services
+### Step 5: Fix Ownership and Restart Services
 
 ```bash
 # Fix service directory ownership (borg restores as root)
@@ -246,16 +246,14 @@ chown -R maubot:maubot /srv/data/maubot
 nixos-rebuild switch --flake .#sauron
 ```
 
-### Step 7: Post-Recovery Verification
+### Step 6: Post-Recovery Verification
 
 - [ ] Vaultwarden accessible at `pass.iced.cool`
 - [ ] Jellyfin serving media at `tv.iced.cool`
-- [ ] Matrix Synapse federating (check `/_matrix/federation/v1/version`)
 - [ ] Borg backup timers active: `systemctl list-timers 'borgbackup-*'`
 - [ ] Syncthing connected to desktop/laptop
 - [ ] Tailscale connected
 - [ ] ACME certificates renewed
-- [ ] Home Assistant accessible at `home-assistant.middleearth.samlockart.com` (via Tailscale)
 - [ ] Monitoring dashboards loading at `grafana.middleearth.samlockart.com` (via Tailscale)
 
 ---
@@ -293,11 +291,10 @@ The NVMe dies. ZFS pool `mordor` is fine.
 
 ### What's Lost
 
-- PostgreSQL (Matrix Synapse) — **see [Gap G2](#11-gaps-and-recommendations)**
-- Home Assistant state
 - Boot loader, NixOS system
 - Prometheus/Grafana data (rebuildable)
 - ACME certificates (auto-renewable)
+- Podman container storage (rebuildable)
 
 ### Recovery
 
@@ -307,7 +304,6 @@ The NVMe dies. ZFS pool `mordor` is fine.
 4. Rekey secrets if host key changed (see Scenario A, Step 3)
 5. Rebuild: `nixos-rebuild switch --flake .#sauron`
 6. All `/srv/*` data is intact — services should start normally
-7. Matrix Synapse will start with an empty database (low impact — not actively used yet)
 
 ---
 
@@ -508,67 +504,41 @@ cp /etc/ssh/ssh_host_* /srv/vault/ssh-host-keys/
 
 Or add a systemd service to copy them periodically.
 
-### G2: PostgreSQL (Matrix Synapse) Not Backed Up
-
-**Risk:** Matrix Synapse's PostgreSQL database lives on the root NVMe at `/var/lib/postgresql/16/`. It is not on ZFS and not in any Borg job. **Currently low priority — Matrix is not actively used yet.** When it becomes active, add a backup.
-
-**Recommendation (when needed):** Add a `pg_dump` pre-backup hook or move the dataDir to ZFS:
-
-```nix
-# Option A: pg_dump to /srv/data (gets picked up by hourly Borg)
-systemd.services.postgres-backup = {
-  script = ''
-    ${pkgs.postgresql}/bin/pg_dumpall -U postgres | ${pkgs.gzip}/bin/gzip > /srv/data/postgres-backup.sql.gz
-  '';
-  serviceConfig.User = "postgres";
-  startAt = "hourly";
-};
-
-# Option B: Move PostgreSQL dataDir to ZFS
-services.postgresql.dataDir = "/srv/data/postgresql/16";
-```
-
-### G3: Home Assistant State Not Backed Up
-
-**Risk:** Home Assistant data at `/var/lib/hass/` is on the root NVMe. **Currently low priority — Home Assistant is not actively used yet.**
-
-**Recommendation (when needed):** Either move `configDir` to `/srv/data/hass/` or add a backup job.
-
-### G4: No Borg Prune/Retention Policy ✓ RESOLVED
+### G2: No Borg Prune/Retention Policy ✓ RESOLVED
 
 Prune policies are now configured on all Borg jobs in `nixos/sauron/borg/default.nix`. Daily jobs: 7 daily, 4 weekly, 12 monthly. Hourly job: 48 hourly, 14 daily, 8 weekly, 12 monthly.
 
-### G5: Media Files (21.6T) Not Backed Up
+### G3: Media Files (21.6T) Not Backed Up
 
 **Risk:** Low — media is re-downloadable. But re-downloading 21.6T takes significant time and the Sonarr/Radarr configurations to re-fetch would need to be set up.
 
 **Recommendation:** Accept the risk. Media can be re-acquired. The *arr databases (which track what you have) are backed up hourly.
 
-### G6: No Backup Monitoring/Alerting
+### G4: No Backup Monitoring/Alerting
 
 **Risk:** If a Borg job silently fails, you won't know until you need to restore.
 
 **Recommendation:** Add a Prometheus alert or simple check. Borg jobs are systemd services, so you could alert on `borgbackup-job-*.service` failures via the existing alertmanager setup.
 
-### G7: No Documented Disk Serial Mapping
+### G5: No Documented Disk Serial Mapping
 
 **Risk:** When a disk fails, you need to know which physical bay corresponds to which `wwn-*` identifier. The disk with write errors (`wwn-0x5000cca05c76cbd8`) may need proactive replacement.
 
 **Recommendation:** Document the physical-to-WWN mapping. Run `lsblk -o NAME,WWN,SIZE,MODEL,SERIAL` and record it.
 
-### G8: Root NVMe at 82% — Approaching Full
+### G6: Root NVMe Usage Monitoring
 
-**Risk:** At 180G/234G, the root NVMe could fill up, which would crash services that write to `/var/lib/`.
+**Risk:** If the root NVMe fills up, services that write to `/var/lib/` will crash. Pressure dropped significantly after disabling Matrix/HASS/llama-cpp/models, but there's still no alert.
 
-**Recommendation:** Move PostgreSQL data to ZFS (fixes G2 and G8 simultaneously), or add monitoring alerts for root disk usage. The existing Prometheus node exporter + alertmanager can handle this.
+**Recommendation:** Add a Prometheus alert on `node_filesystem_avail_bytes{mountpoint="/"}` below some threshold (e.g. 20G). The existing Prometheus + alertmanager setup can handle this with a one-file change.
 
-### G9: `borg.sh` Uses `~/.ssh/id_rsa` Instead of agenix Key
+### G7: `borg.sh` Uses `~/.ssh/id_rsa` Instead of agenix Key
 
 **Risk:** The `scripts/borg.sh` wrapper hardcodes `BORG_RSH="ssh -i ${HOME}/.ssh/id_rsa"` which may not be authorized on rsync.net. It also uses `agenix -d` (old-style) rather than the rekey workflow.
 
 **Recommendation:** Update `borg.sh` to use the agenix-rekey decrypt path, or document that your personal SSH key must be independently authorized on rsync.net for manual operations.
 
-### G10: YubiKey Physical Location Not Documented
+### G8: YubiKey Physical Location Not Documented
 
 **Risk:** In a disaster, you need to locate a YubiKey quickly.
 

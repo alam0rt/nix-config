@@ -4,9 +4,10 @@ This configuration uses [agenix-rekey](https://github.com/oddlama/agenix-rekey) 
 
 ## Master Identities
 
-Two YubiKey FIDO2-HMAC identities are configured as master identities:
+Three YubiKey FIDO2-HMAC identities are configured as master identities. Any one can decrypt all secrets:
 - `yubikey-22916238.pub`
 - `yubikey-15498888.pub`
+- `yubikey-18103415.pub`
 
 ## Commands
 
