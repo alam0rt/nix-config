@@ -177,6 +177,7 @@
       unstable.go
       unstable.podman
       unstable.podman-compose
+      python3
       opentofu # terraform fork - aliased to terraform
       imhex
 
@@ -193,9 +194,11 @@
       # graphical
       p7zip-rar
 
-      # CAD / 3d
+      # CAD / 3d / stuff
       openscad
       openscad-lsp
+      platformio
+      avrdude
 
       # AI
       unstable.claude-code
@@ -229,6 +232,9 @@
       # misc
       kdePackages.kdeconnect-kde
       calibre
+
+      # health + fitness
+      garmindb
 
       # design and 3d
       godot
