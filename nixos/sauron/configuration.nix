@@ -22,8 +22,8 @@
     ./media
     ./nginx
     ./syncthing
-    ./openwebui
     ./monitoring
+    #./openwebui
     # ./home-assistant
     # ./models
     # ./pvpgn

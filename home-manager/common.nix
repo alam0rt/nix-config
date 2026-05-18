@@ -172,6 +172,7 @@
       yubikey-manager
       age-plugin-fido2-hmac
       age
+      unstable.bitwarden-cli
 
       # dev
       unstable.go

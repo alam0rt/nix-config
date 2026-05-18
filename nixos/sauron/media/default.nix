@@ -224,9 +224,27 @@ in {
     };
 
     flaresolverr = {
-      image = "ghcr.io/flaresolverr/flaresolverr:v3.3.21";
+      image = "ghcr.io/flaresolverr/flaresolverr:v3.4.6";
       ports = ["127.0.0.1:8191:8191"];
       serviceName = "flaresolverr";
+    };
+  };
+
+  systemd.services.podman-prune = {
+    description = "Prune unused podman containers, images, networks, and build cache";
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.podman}/bin/podman system prune -af";
+    };
+  };
+
+  systemd.timers.podman-prune = {
+    description = "Weekly podman system prune";
+    wantedBy = ["timers.target"];
+    timerConfig = {
+      OnCalendar = "weekly";
+      Persistent = true;
+      RandomizedDelaySec = "1h";
     };
   };
 }
