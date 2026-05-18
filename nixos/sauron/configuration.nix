@@ -83,6 +83,14 @@
   networking.hostId = "acfb04f9"; # head -c 8 /etc/machine-id
   networking.enableIPv6 = true;
 
+  # Prefer IPv4 over IPv6 for outbound (RFC 3484 precedence override).
+  # FlareSolverr runs in a podman container with IPv4-only egress; Jackett runs on
+  # the host and was egressing IPv6, so Cloudflare's cf_clearance issued to the
+  # container's IPv4 source was rejected on Jackett's follow-up request.
+  environment.etc."gai.conf".text = ''
+    precedence ::ffff:0:0/96  100
+  '';
+
   networking.networkmanager.enable = false; # Easiest to use and most distros use this by default.
   networking.interfaces = {
     eno2 = {
