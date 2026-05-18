@@ -229,22 +229,4 @@ in {
       serviceName = "flaresolverr";
     };
   };
-
-  systemd.services.podman-prune = {
-    description = "Prune unused podman containers, images, networks, and build cache";
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.podman}/bin/podman system prune -af";
-    };
-  };
-
-  systemd.timers.podman-prune = {
-    description = "Weekly podman system prune";
-    wantedBy = ["timers.target"];
-    timerConfig = {
-      OnCalendar = "weekly";
-      Persistent = true;
-      RandomizedDelaySec = "1h";
-    };
-  };
 }
