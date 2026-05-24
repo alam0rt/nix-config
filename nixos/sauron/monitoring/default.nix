@@ -228,6 +228,7 @@ in {
               "http://localhost:${toString config.services.lidarr.settings.server.port}" # lidarr
               "http://localhost:${toString config.services.bazarr.listenPort}" # bazarr
               "http://localhost:9117" # jackett
+              "http://localhost:${toString config.services.prowlarr.settings.server.port}" # prowlarr
               "http://localhost:${toString config.services.jellyseerr.port}" # jellyseerr
               # "http://localhost:${toString config.services.qbittorrent.webuiPort}" # qbittorrent - causes localhost ban due to failed auth
             ];
@@ -470,7 +471,7 @@ in {
               }
               {
                 alert = "MediaServiceDown";
-                expr = ''node_systemd_unit_state{name=~"(jellyfin|sonarr|radarr|lidarr|bazarr|jackett|jellyseerr|qbittorrent)\\.service",state="failed"} == 1'';
+                expr = ''node_systemd_unit_state{name=~"(jellyfin|sonarr|radarr|lidarr|bazarr|jackett|prowlarr|jellyseerr|qbittorrent)\\.service",state="failed"} == 1'';
                 for = "2m";
                 labels.severity = "critical";
                 annotations = {

@@ -78,6 +78,7 @@ in {
       enable = true;
       virtualHosts = [
         "jackett.${cfg.domain}"
+        "prowlarr.${cfg.domain}"
         "sonarr.${cfg.domain}"
         "radarr.${cfg.domain}"
         "bazarr.${cfg.domain}"

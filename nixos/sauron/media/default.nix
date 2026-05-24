@@ -137,6 +137,14 @@ in {
         recommendedProxySettings = true;
       };
     };
+    virtualHosts."prowlarr.${cfg.domain}" = {
+      forceSSL = true;
+      useACMEHost = cfg.domain;
+      locations."/" = {
+        proxyPass = "http://127.0.0.1:${toString config.services.prowlarr.settings.server.port}";
+        recommendedProxySettings = true;
+      };
+    };
     virtualHosts."bazarr.${cfg.domain}" = {
       forceSSL = true;
       useACMEHost = cfg.domain;
@@ -195,6 +203,13 @@ in {
     enable = true;
     dataDir = "/srv/data/jackett";
     package = pkgs.unstable.jackett;
+    openFirewall = true;
+  };
+
+  services.prowlarr = {
+    enable = true;
+    dataDir = "/srv/data/prowlarr";
+    package = pkgs.unstable.prowlarr;
     openFirewall = true;
   };
 
