@@ -260,11 +260,35 @@
   # terminal
   programs.kitty = {
     enable = true;
-    shellIntegration = {
-      enableZshIntegration = true;
-    };
+    shellIntegration.enableZshIntegration = true;
     settings = {
       window_padding_width = 10;
+      enabled_layouts = "splits,stack";
+      macos_option_as_alt = "yes";
+      scrollback_pager = ''nvim -u NONE -c "set clipboard=unnamedplus" -c "nnoremap q :qa!<cr>" -c "nnoremap Y y$" +'';
+    };
+    keybindings = {
+      # Splits
+      "ctrl+grave_accent>minus" = "launch --location=hsplit --cwd=current";
+      "ctrl+grave_accent>backslash" = "launch --location=vsplit --cwd=current";
+
+      # Navigation (hjkl)
+      "ctrl+grave_accent>h" = "neighboring_window left";
+      "ctrl+grave_accent>j" = "neighboring_window bottom";
+      "ctrl+grave_accent>k" = "neighboring_window top";
+      "ctrl+grave_accent>l" = "neighboring_window right";
+
+      # Resize
+      "ctrl+grave_accent>shift+h" = "resize_window narrower 3";
+      "ctrl+grave_accent>shift+j" = "resize_window shorter 3";
+      "ctrl+grave_accent>shift+k" = "resize_window taller 3";
+      "ctrl+grave_accent>shift+l" = "resize_window wider 3";
+
+      # Zoom (stack toggle)
+      "ctrl+grave_accent>z" = "toggle_layout stack";
+
+      # Scrollback in nvim
+      "ctrl+grave_accent>i" = "show_scrollback";
     };
   };
 
