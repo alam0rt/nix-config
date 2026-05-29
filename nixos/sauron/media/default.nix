@@ -1,9 +1,63 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: let
   cfg = config.server;
+
+  janitorrConfig = pkgs.writeText "janitorr-application.yml" ''
+    server:
+      port: 8978
+
+    logging:
+      level:
+        com.github.schaka: INFO
+      file:
+        name: "/logs/janitorr.log"
+
+    clients:
+      sonarr:
+        enabled: true
+        base-url: "http://127.0.0.1:${toString config.services.sonarr.settings.server.port}"
+      radarr:
+        enabled: true
+        base-url: "http://127.0.0.1:${toString config.services.radarr.settings.server.port}"
+      jellyfin:
+        enabled: true
+        base-url: "http://127.0.0.1:8096"
+      jellyseerr:
+        enabled: true
+        base-url: "http://127.0.0.1:${toString config.services.jellyseerr.port}"
+
+    file-system:
+      access: true
+      validate-seeding: true
+      free-space-check-dir: "/srv/media"
+
+    application:
+      dry-run: true
+      run-once: true
+      whole-tv-show: false
+      leaving-soon: 7d
+      leaving-soon-threshold-offset-percent: 5
+      exclusion-tags:
+        - "kino"
+
+    media-deletion:
+      enabled: true
+      delete-requests: true
+      movie-expiration:
+        5: 30d
+        10: 60d
+        15: 90d
+        20: 120d
+      season-expiration:
+        5: 30d
+        10: 60d
+        15: 90d
+        20: 120d
+  '';
 in {
   environment.systemPackages = with pkgs; [
     unstable.jellyfin
@@ -27,6 +81,11 @@ in {
     rekeyFile = ./radarr-api-key.age;
     owner = "recyclarr";
     group = "recyclarr";
+    mode = "0440";
+  };
+
+  age.secrets."janitorr-env" = {
+    rekeyFile = ./janitorr-env.age;
     mode = "0440";
   };
 
@@ -228,6 +287,39 @@ in {
   ]; # dlna
   networking.firewall.allowedTCPPorts = [8191]; # flaresolverr
 
+  users.users.janitorr = {
+    uid = 977;
+    isSystemUser = true;
+    group = "janitorr";
+    description = "Janitorr media cleanup";
+    home = "/srv/data/janitorr";
+    createHome = true;
+    extraGroups = ["sonarr" "radarr"];
+  };
+  users.groups.janitorr.gid = 968;
+
+  systemd.tmpfiles.rules = [
+    "d /srv/data/janitorr 0750 janitorr janitorr -"
+    "d /srv/data/janitorr/logs 0750 janitorr janitorr -"
+  ];
+
+  systemd.services.podman-janitorr = {
+    serviceConfig = {
+      Type = lib.mkForce "oneshot";
+      Restart = lib.mkForce "no";
+    };
+  };
+
+  systemd.timers.janitorr = {
+    description = "Weekly janitorr media cleanup";
+    # wantedBy = ["timers.target"];  # enable after janitorr-env.age is created, rekey is run, and dry-run logs verified
+    timerConfig = {
+      OnCalendar = "Sun 03:00:00";
+      Persistent = true;
+      Unit = "podman-janitorr.service";
+    };
+  };
+
   virtualisation.oci-containers.containers = {
     rarbg = {
       # https://github.com/mgdigital/rarbg-selfhosted
@@ -236,6 +328,25 @@ in {
       volumes = ["/srv/data/rarbg_db.sqlite:/rarbg_db.sqlite"];
       pull = "always";
       serviceName = "rarbg-selfhosted";
+    };
+
+    janitorr = {
+      image = "ghcr.io/schaka/janitorr:jvm-stable";
+      volumes = [
+        "${janitorrConfig}:/config/application.yml:ro"
+        "/srv/data/janitorr/logs:/logs"
+        "/srv/media:/srv/media"
+      ];
+      environmentFiles = [config.age.secrets."janitorr-env".path];
+      user = "${toString config.users.users.janitorr.uid}:${toString config.users.groups.janitorr.gid}";
+      pull = "always";
+      serviceName = "janitorr";
+      autoStart = false;
+      extraOptions = [
+        "--memory=256m"
+        "--userns=host"
+        "--network=host"
+      ];
     };
 
     flaresolverr = {
