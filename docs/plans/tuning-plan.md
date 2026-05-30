@@ -16,6 +16,64 @@ Prometheus/Grafana, mail, Transmission, and NAS duties over ZFS.
 - `tcp_mtu_probing = 1`
 - ZFS I/O scheduler disabled (udev rule)
 - Nginx: `directio 4m`, `aio threads`, large `output_buffers`
+- Listen backlog: `somaxconn=4096`, `tcp_max_syn_backlog=4096`, `netdev_max_backlog=10000` *(landed since plan was written)*
+- MGLRU: `/sys/kernel/mm/lru_gen/enabled = 0x0007` (all flags) *(landed since plan was written)*
+- ZFS compression: `mordor/data` & `mordor/share` on zstd, others on lz4
+- Node exporter pressure (PSI) collector — already exporting `node_pressure_*` metrics
+
+---
+
+## Current State Observations (2026-05-30)
+
+Live metrics pulled from Prometheus and sysfs. Recommendations below reflect what
+the data actually justifies vs. the original plan.
+
+### Act on these — evidence-backed
+
+| # | Change | Current | Why |
+|---|--------|---------|-----|
+| 1 | **zswap on** | `enabled=N` | Live swap-in rate ~640 pages/s; 24h swap-out peak ~828 pages/s (~3.4 MiB/s) during pressure windows. Continuous low-grade swap traffic — zswap absorbs cheaply. |
+| 2 | **TCP Fast Open → 3** | `tcp_fastopen=1` (client only) | Server-side TFO is free if client-side is already on. One sysctl. |
+| 3 | **systemd-oomd on** | (likely off) | 105 s cumulative PSI memory-stalled since boot. Low but non-zero. oomd preempts OOM cliffs using the PSI signal already being scraped. |
+| 4 | **`vm.swappiness = 10`** | `60` | ARC hit rate **99.88%** (5.73B hits / 6.94M misses). Keep page cache + ARC resident; reduce eagerness to evict anon pages. Pairs with zswap. (Not in original plan; warranted by ARC data.) |
+
+### Skip — data does not justify
+
+- **`performance` cpufreq governor**: CPU is **98.3% idle** (24h avg, max 99.3%). schedutil downclocking to ~1.28 GHz on a 2.2 GHz ceiling is correct behavior. No workload here is losing to ramp-up jitter.
+- **RPS/RFS**: NIC softirq is concentrated on CPU 0 (avg 2% there vs ~0.001% elsewhere), but the NIC has 4 hardware RX queues and `softnet_dropped = 0` over the last 24h. No drops, no contention. Skip until evidence changes.
+- **`init_on_alloc`**: ~1–2% throughput cost for no concrete threat model. Skip until one exists.
+
+### Worth a one-off check
+
+- **NUMA balancing**: System exposes 4 NUMA nodes (AMD Zen CCD-as-NUMA). Check `kernel.numa_balancing` value and `node_vmstat_numa_miss` rate before deciding. No urgent symptom.
+
+### Suggested diff
+
+A single block in `nixos/sauron/configuration.nix` (or a new `nixos/config/common/tuning.nix`):
+
+```nix
+{
+  boot.kernel.sysctl = {
+    "net.ipv4.tcp_fastopen" = 3;
+    "vm.swappiness" = 10;
+  };
+
+  boot.kernelParams = [
+    "zswap.enabled=1"
+    "zswap.compressor=zstd"
+    "zswap.zpool=z3fold"
+  ];
+
+  systemd.oomd = {
+    enable = true;
+    enableRootSlice = true;
+    enableUserSlices = true;
+  };
+}
+```
+
+zswap requires a reboot (kernel param). The sysctls and oomd take effect on
+`nixos-rebuild switch`.
 
 ---
 
