@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# Run on sauron as root. Emits janitorr's four API keys as env vars on stdout.
-# Prerequisite: a Jellyfin API key named "janitorr" (Dashboard -> API Keys -> +).
+# Run on sauron as root. Emits janitorr's API keys + Jellyfin creds on stdout.
+# Prerequisites:
+#   - Jellyfin API key named "janitorr" (Dashboard -> API Keys -> +)
+#   - A Jellyfin user named "janitorr" with delete permissions
 #
 # Typical invocation from your laptop:
 #   scp scripts/janitorr-env.sh sauron:/tmp/
@@ -21,9 +23,17 @@ if [[ -z "$JELLYFIN" ]]; then
   exit 1
 fi
 
+# Jellyfin requires user creds for deletes (API key alone is insufficient).
+# Supply via env when piping into the agenix editor, e.g.:
+#   JELLYFIN_USER=janitorr JELLYFIN_PASS='...' sudo -E bash /tmp/janitorr-env.sh
+: "${JELLYFIN_USER:=janitorr}"
+: "${JELLYFIN_PASS:=}"
+
 cat <<EOF
 CLIENTS_SONARR_APIKEY=$SONARR
 CLIENTS_RADARR_APIKEY=$RADARR
 CLIENTS_JELLYFIN_APIKEY=$JELLYFIN
+CLIENTS_JELLYFIN_USERNAME=$JELLYFIN_USER
+CLIENTS_JELLYFIN_PASSWORD=$JELLYFIN_PASS
 CLIENTS_JELLYSEERR_APIKEY=$JELLYSEERR
 EOF

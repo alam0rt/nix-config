@@ -16,19 +16,29 @@
       file:
         name: "/logs/janitorr.log"
 
+    file-system:
+      access: true
+      validate-seeding: true
+      from-scratch: true
+      leaving-soon-dir: "/srv/data/janitorr/leaving-soon"
+      media-server-leaving-soon-dir: "/srv/data/janitorr/leaving-soon"
+      free-space-check-dir: "/srv/media"
+
     clients:
       sonarr:
         enabled: true
-        base-url: "http://127.0.0.1:${toString config.services.sonarr.settings.server.port}"
+        url: "http://127.0.0.1:${toString config.services.sonarr.settings.server.port}"
       radarr:
         enabled: true
-        base-url: "http://127.0.0.1:${toString config.services.radarr.settings.server.port}"
+        url: "http://127.0.0.1:${toString config.services.radarr.settings.server.port}"
       jellyfin:
         enabled: true
-        base-url: "http://127.0.0.1:8096"
+        url: "http://127.0.0.1:8096"
+        username: ""
+        password: ""
       jellyseerr:
         enabled: true
-        base-url: "http://127.0.0.1:${toString config.services.jellyseerr.port}"
+        url: "http://127.0.0.1:${toString config.services.jellyseerr.port}"
 
     application:
       dry-run: true
@@ -38,13 +48,8 @@
       leaving-soon-threshold-offset-percent: 5
       exclusion-tags:
         - "kino"
-      file-system:
-        access: true
-        validate-seeding: true
-        free-space-check-dir: "/srv/media"
       media-deletion:
         enabled: true
-        delete-requests: true
         movie-expiration:
           5: 30d
           10: 60d
@@ -59,6 +64,8 @@
         enabled: false
         minimum-free-disk-percent: 100
         schedules: []
+      episode-deletion:
+        enabled: false
   '';
 in {
   environment.systemPackages = with pkgs; [
@@ -303,6 +310,7 @@ in {
   systemd.tmpfiles.rules = [
     "d /srv/data/janitorr 0750 janitorr janitorr -"
     "d /srv/data/janitorr/logs 0750 janitorr janitorr -"
+    "d /srv/data/janitorr/leaving-soon 0750 janitorr janitorr -"
   ];
 
   systemd.services.janitorr = {
@@ -337,6 +345,7 @@ in {
       volumes = [
         "${janitorrConfig}:/config/application.yml:ro"
         "/srv/data/janitorr/logs:/logs"
+        "/srv/data/janitorr/leaving-soon:/srv/data/janitorr/leaving-soon"
         "/srv/media:/srv/media"
       ];
       environmentFiles = [config.age.secrets."janitorr-env".path];
