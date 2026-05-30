@@ -77,6 +77,32 @@
     # Discover path MTU instead of relying on ICMP. Some internet paths block
     # ICMP, causing silent fragmentation and reduced throughput for large transfers.
     "net.ipv4.tcp_mtu_probing" = 1;
+
+    # Server-side TCP Fast Open. Client side was already on (mode 1); mode 3
+    # enables both, saving a round-trip on repeat connections (Nginx, Matrix
+    # federation, outbound HTTP). Falls back gracefully through middleboxes.
+    "net.ipv4.tcp_fastopen" = 3;
+
+    # ARC hit rate is ~99.88% — keep page cache + ARC resident and reduce
+    # eagerness to evict anon pages. Pairs with zswap below.
+    "vm.swappiness" = 10;
+  };
+
+  # zswap compresses swap pages in RAM before hitting the swap file. Live swap-in
+  # rate ~640 pages/s with 24h peaks ~828 pages/s justified turning this on.
+  # Needs reboot to take effect.
+  boot.kernelParams = [
+    "zswap.enabled=1"
+    "zswap.compressor=zstd"
+    "zswap.zpool=z3fold"
+  ];
+
+  # Proactive OOM killing driven by PSI signals — preempts the kernel's
+  # last-resort OOM killer when memory pressure builds.
+  systemd.oomd = {
+    enable = true;
+    enableRootSlice = true;
+    enableUserSlices = true;
   };
 
   networking.hostName = "sauron"; # Define your hostname.
