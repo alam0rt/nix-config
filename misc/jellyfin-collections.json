@@ -1,0 +1,189 @@
+{
+  "TitleMatchPairs": [],
+  "ExpressionCollections": [
+    {
+      "CollectionName": "Watched & Acclaimed (Audience + Critics)",
+      "Expression": "MOVIE AND WATCHED AND COMMUNITYRATING \">7.5\" AND CRITICSRATING \">75\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Hidden Gems: Unwatched Greats",
+      "Expression": "MOVIE AND UNWATCHED AND COMMUNITYRATING \">8.0\" AND CRITICSRATING \">80\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Critics' Darlings the Crowd Hated",
+      "Expression": "MOVIE AND CRITICSRATING \">85\" AND COMMUNITYRATING \"<6.5\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Crowd Pleasers the Critics Panned",
+      "Expression": "MOVIE AND COMMUNITYRATING \">7.5\" AND CRITICSRATING \"<50\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "So Bad They're Famous",
+      "Expression": "MOVIE AND COMMUNITYRATING \"<4.5\" AND NOT GENRE \"Documentary\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Recently Added Worth Watching",
+      "Expression": "MOVIE AND ADDEDDATE \"<60\" AND UNWATCHED AND COMMUNITYRATING \">7.0\"",
+      "CaseSensitive": false
+    },
+
+    {
+      "CollectionName": "French New Wave",
+      "Expression": "MOVIE AND YEAR \">=1958\" AND YEAR \"<=1968\" AND (DIRECTOR \"Jean-Luc Godard\" OR DIRECTOR \"François Truffaut\" OR DIRECTOR \"Francois Truffaut\" OR DIRECTOR \"Claude Chabrol\" OR DIRECTOR \"Éric Rohmer\" OR DIRECTOR \"Eric Rohmer\" OR DIRECTOR \"Jacques Rivette\" OR DIRECTOR \"Alain Resnais\" OR DIRECTOR \"Agnès Varda\" OR DIRECTOR \"Agnes Varda\" OR DIRECTOR \"Louis Malle\" OR DIRECTOR \"Chris Marker\" OR DIRECTOR \"Jacques Demy\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Italian Neorealism",
+      "Expression": "MOVIE AND YEAR \">=1943\" AND YEAR \"<=1955\" AND (DIRECTOR \"Vittorio De Sica\" OR DIRECTOR \"Roberto Rossellini\" OR DIRECTOR \"Luchino Visconti\" OR DIRECTOR \"Giuseppe De Santis\" OR DIRECTOR \"Pietro Germi\" OR DIRECTOR \"Cesare Zavattini\" OR DIRECTOR \"Alberto Lattuada\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "German Expressionism",
+      "Expression": "MOVIE AND YEAR \">=1919\" AND YEAR \"<=1933\" AND (DIRECTOR \"Robert Wiene\" OR DIRECTOR \"F.W. Murnau\" OR DIRECTOR \"Fritz Lang\" OR DIRECTOR \"G.W. Pabst\" OR DIRECTOR \"Paul Wegener\" OR DIRECTOR \"Karl Heinz Martin\" OR DIRECTOR \"Paul Leni\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Japanese Golden Age",
+      "Expression": "MOVIE AND YEAR \">=1950\" AND YEAR \"<=1965\" AND (DIRECTOR \"Akira Kurosawa\" OR DIRECTOR \"Yasujirō Ozu\" OR DIRECTOR \"Yasujiro Ozu\" OR DIRECTOR \"Kenji Mizoguchi\" OR DIRECTOR \"Mikio Naruse\" OR DIRECTOR \"Masaki Kobayashi\" OR DIRECTOR \"Kon Ichikawa\" OR DIRECTOR \"Nagisa Oshima\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "New Hollywood (1967-1980)",
+      "Expression": "MOVIE AND YEAR \">=1967\" AND YEAR \"<=1980\" AND (DIRECTOR \"Francis Ford Coppola\" OR DIRECTOR \"Martin Scorsese\" OR DIRECTOR \"William Friedkin\" OR DIRECTOR \"Peter Bogdanovich\" OR DIRECTOR \"Robert Altman\" OR DIRECTOR \"Hal Ashby\" OR DIRECTOR \"John Cassavetes\" OR DIRECTOR \"Brian De Palma\" OR DIRECTOR \"Terrence Malick\" OR DIRECTOR \"Sidney Lumet\" OR DIRECTOR \"Mike Nichols\" OR DIRECTOR \"Bob Rafelson\" OR DIRECTOR \"Arthur Penn\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Hong Kong New Wave",
+      "Expression": "MOVIE AND (DIRECTOR \"Wong Kar-wai\" OR DIRECTOR \"Wong Kar-Wai\" OR DIRECTOR \"Tsui Hark\" OR DIRECTOR \"John Woo\" OR DIRECTOR \"Ann Hui\" OR DIRECTOR \"Stanley Kwan\" OR DIRECTOR \"Patrick Tam\" OR DIRECTOR \"Allen Fong\" OR DIRECTOR \"Ringo Lam\") AND YEAR \">=1979\" AND YEAR \"<=2005\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Dogme 95",
+      "Expression": "MOVIE AND YEAR \">=1995\" AND YEAR \"<=2008\" AND (DIRECTOR \"Lars von Trier\" OR DIRECTOR \"Thomas Vinterberg\" OR DIRECTOR \"Søren Kragh-Jacobsen\" OR DIRECTOR \"Soren Kragh-Jacobsen\" OR DIRECTOR \"Kristian Levring\" OR DIRECTOR \"Harmony Korine\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "New German Cinema",
+      "Expression": "MOVIE AND YEAR \">=1962\" AND YEAR \"<=1982\" AND (DIRECTOR \"Rainer Werner Fassbinder\" OR DIRECTOR \"Werner Herzog\" OR DIRECTOR \"Wim Wenders\" OR DIRECTOR \"Volker Schlöndorff\" OR DIRECTOR \"Volker Schlondorff\" OR DIRECTOR \"Margarethe von Trotta\" OR DIRECTOR \"Alexander Kluge\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Iranian New Wave",
+      "Expression": "MOVIE AND (DIRECTOR \"Abbas Kiarostami\" OR DIRECTOR \"Jafar Panahi\" OR DIRECTOR \"Asghar Farhadi\" OR DIRECTOR \"Mohsen Makhmalbaf\" OR DIRECTOR \"Majid Majidi\" OR DIRECTOR \"Bahram Beizai\" OR DIRECTOR \"Dariush Mehrjui\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Czech New Wave",
+      "Expression": "MOVIE AND YEAR \">=1962\" AND YEAR \"<=1970\" AND (DIRECTOR \"Miloš Forman\" OR DIRECTOR \"Milos Forman\" OR DIRECTOR \"Jiří Menzel\" OR DIRECTOR \"Jiri Menzel\" OR DIRECTOR \"Věra Chytilová\" OR DIRECTOR \"Vera Chytilova\" OR DIRECTOR \"Jan Němec\" OR DIRECTOR \"Jan Nemec\" OR DIRECTOR \"Ivan Passer\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Film Noir Classics",
+      "Expression": "MOVIE AND YEAR \">=1940\" AND YEAR \"<=1959\" AND (GENRE \"Film-Noir\" OR GENRE \"Noir\" OR (GENRE \"Crime\" AND GENRE \"Mystery\"))",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Neo-Noir",
+      "Expression": "MOVIE AND YEAR \">=1970\" AND (DIRECTOR \"Roman Polanski\" OR DIRECTOR \"Michael Mann\" OR DIRECTOR \"David Fincher\" OR DIRECTOR \"Nicolas Winding Refn\" OR DIRECTOR \"Denis Villeneuve\" OR TITLE \"Chinatown\" OR TITLE \"Blade Runner\" OR TITLE \"L.A. Confidential\" OR TITLE \"Sin City\" OR TITLE \"Drive\" OR TITLE \"Memento\" OR TITLE \"Body Heat\" OR TITLE \"The Last Seduction\")",
+      "CaseSensitive": false
+    },
+
+    {
+      "CollectionName": "Palme d'Or Winners",
+      "Expression": "MOVIE AND (TITLE \"Anatomy of a Fall\" OR TITLE \"Triangle of Sadness\" OR TITLE \"Titane\" OR TITLE \"Parasite\" OR TITLE \"Shoplifters\" OR TITLE \"The Square\" OR TITLE \"I, Daniel Blake\" OR TITLE \"Dheepan\" OR TITLE \"Winter Sleep\" OR TITLE \"Blue Is the Warmest Color\" OR TITLE \"Amour\" OR TITLE \"The Tree of Life\" OR TITLE \"Uncle Boonmee Who Can Recall His Past Lives\" OR TITLE \"The White Ribbon\" OR TITLE \"The Class\" OR TITLE \"4 Months, 3 Weeks and 2 Days\" OR TITLE \"The Wind That Shakes the Barley\" OR TITLE \"L'Enfant\" OR TITLE \"Fahrenheit 9/11\" OR TITLE \"The Pianist\" OR TITLE \"The Son's Room\" OR TITLE \"Dancer in the Dark\" OR TITLE \"Rosetta\" OR TITLE \"Eternity and a Day\" OR TITLE \"Taste of Cherry\" OR TITLE \"Secrets & Lies\" OR TITLE \"Underground\" OR TITLE \"Pulp Fiction\" OR TITLE \"Farewell My Concubine\" OR TITLE \"The Piano\" OR TITLE \"Barton Fink\" OR TITLE \"Wild at Heart\" OR TITLE \"sex, lies, and videotape\" OR TITLE \"Pelle the Conqueror\" OR TITLE \"Under the Sun of Satan\" OR TITLE \"The Mission\" OR TITLE \"Paris, Texas\" OR TITLE \"Yol\" OR TITLE \"Apocalypse Now\" OR TITLE \"The Tin Drum\" OR TITLE \"Taxi Driver\" OR TITLE \"Padre Padrone\" OR TITLE \"The Conversation\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Best Picture Winners",
+      "Expression": "MOVIE AND (TITLE \"Oppenheimer\" OR TITLE \"Everything Everywhere All at Once\" OR TITLE \"CODA\" OR TITLE \"Nomadland\" OR TITLE \"Parasite\" OR TITLE \"Green Book\" OR TITLE \"The Shape of Water\" OR TITLE \"Moonlight\" OR TITLE \"Spotlight\" OR TITLE \"Birdman\" OR TITLE \"12 Years a Slave\" OR TITLE \"Argo\" OR TITLE \"The Artist\" OR TITLE \"The King's Speech\" OR TITLE \"The Hurt Locker\" OR TITLE \"Slumdog Millionaire\" OR TITLE \"No Country for Old Men\" OR TITLE \"The Departed\" OR TITLE \"Crash\" OR TITLE \"Million Dollar Baby\" OR TITLE \"The Lord of the Rings: The Return of the King\" OR TITLE \"Chicago\" OR TITLE \"A Beautiful Mind\" OR TITLE \"Gladiator\" OR TITLE \"American Beauty\" OR TITLE \"Shakespeare in Love\" OR TITLE \"Titanic\" OR TITLE \"The English Patient\" OR TITLE \"Braveheart\" OR TITLE \"Forrest Gump\" OR TITLE \"Schindler's List\" OR TITLE \"Unforgiven\" OR TITLE \"The Silence of the Lambs\" OR TITLE \"Dances with Wolves\" OR TITLE \"Driving Miss Daisy\" OR TITLE \"Rain Man\" OR TITLE \"The Last Emperor\" OR TITLE \"Platoon\" OR TITLE \"Out of Africa\" OR TITLE \"Amadeus\" OR TITLE \"Terms of Endearment\" OR TITLE \"Gandhi\" OR TITLE \"Chariots of Fire\" OR TITLE \"Ordinary People\" OR TITLE \"Kramer vs. Kramer\" OR TITLE \"The Deer Hunter\" OR TITLE \"Annie Hall\" OR TITLE \"Rocky\" OR TITLE \"One Flew Over the Cuckoo's Nest\" OR TITLE \"The Godfather Part II\" OR TITLE \"The Sting\" OR TITLE \"The Godfather\" OR TITLE \"The French Connection\" OR TITLE \"Patton\" OR TITLE \"Midnight Cowboy\" OR TITLE \"Oliver!\" OR TITLE \"In the Heat of the Night\" OR TITLE \"A Man for All Seasons\" OR TITLE \"The Sound of Music\" OR TITLE \"My Fair Lady\" OR TITLE \"Tom Jones\" OR TITLE \"Lawrence of Arabia\" OR TITLE \"West Side Story\" OR TITLE \"The Apartment\" OR TITLE \"Ben-Hur\" OR TITLE \"Gigi\" OR TITLE \"The Bridge on the River Kwai\" OR TITLE \"Around the World in 80 Days\" OR TITLE \"Marty\" OR TITLE \"On the Waterfront\" OR TITLE \"Casablanca\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Criterion Collection Favourites",
+      "Expression": "MOVIE AND (DIRECTOR \"Akira Kurosawa\" OR DIRECTOR \"Ingmar Bergman\" OR DIRECTOR \"Federico Fellini\" OR DIRECTOR \"Andrei Tarkovsky\" OR DIRECTOR \"Yasujirō Ozu\" OR DIRECTOR \"Yasujiro Ozu\" OR DIRECTOR \"Robert Bresson\" OR DIRECTOR \"Krzysztof Kieślowski\" OR DIRECTOR \"Krzysztof Kieslowski\" OR DIRECTOR \"Béla Tarr\" OR DIRECTOR \"Bela Tarr\" OR DIRECTOR \"Michelangelo Antonioni\" OR DIRECTOR \"Jean Renoir\" OR DIRECTOR \"Carl Theodor Dreyer\" OR DIRECTOR \"Wong Kar-wai\")",
+      "CaseSensitive": false
+    },
+
+    {
+      "CollectionName": "Vietnam War on Film",
+      "Expression": "MOVIE AND (TITLE \"Apocalypse Now\" OR TITLE \"Platoon\" OR TITLE \"Full Metal Jacket\" OR TITLE \"The Deer Hunter\" OR TITLE \"Born on the Fourth of July\" OR TITLE \"Good Morning, Vietnam\" OR TITLE \"We Were Soldiers\" OR TITLE \"Casualties of War\" OR TITLE \"Hamburger Hill\" OR TITLE \"Coming Home\" OR TITLE \"The Quiet American\" OR TITLE \"Heaven & Earth\" OR TITLE \"Tigerland\" OR TITLE \"The Boys in Company C\" OR TITLE \"Go Tell the Spartans\" OR TITLE \"Dear America: Letters Home from Vietnam\" OR TITLE \"Hearts and Minds\" OR TITLE \"The Fog of War\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Tarantino's Cinematic DNA",
+      "Expression": "MOVIE AND (DIRECTOR \"Sergio Leone\" OR DIRECTOR \"Sergio Corbucci\" OR DIRECTOR \"Brian De Palma\" OR DIRECTOR \"John Woo\" OR DIRECTOR \"Kinji Fukasaku\" OR DIRECTOR \"Sam Fuller\" OR DIRECTOR \"Samuel Fuller\" OR DIRECTOR \"Howard Hawks\" OR DIRECTOR \"Sam Peckinpah\" OR DIRECTOR \"Don Siegel\" OR DIRECTOR \"Jean-Luc Godard\" OR DIRECTOR \"Tony Scott\" OR DIRECTOR \"Roger Corman\" OR DIRECTOR \"Russ Meyer\" OR DIRECTOR \"Jack Hill\" OR DIRECTOR \"Joe Dante\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Cold War Paranoia",
+      "Expression": "MOVIE AND YEAR \">=1955\" AND YEAR \"<=1991\" AND (TITLE \"Dr. Strangelove\" OR TITLE \"The Manchurian Candidate\" OR TITLE \"Fail-Safe\" OR TITLE \"Seven Days in May\" OR TITLE \"The Hunt for Red October\" OR TITLE \"WarGames\" OR TITLE \"The Day After\" OR TITLE \"Threads\" OR TITLE \"The Conversation\" OR TITLE \"Three Days of the Condor\" OR TITLE \"The Parallax View\" OR TITLE \"The Spy Who Came in from the Cold\" OR TITLE \"Tinker Tailor Soldier Spy\" OR TITLE \"Red Dawn\" OR TITLE \"Invasion of the Body Snatchers\" OR TITLE \"Topaz\" OR TITLE \"Torn Curtain\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Cosmic & Existential Sci-Fi",
+      "Expression": "MOVIE AND GENRE \"Science Fiction\" AND (DIRECTOR \"Stanley Kubrick\" OR DIRECTOR \"Andrei Tarkovsky\" OR DIRECTOR \"Denis Villeneuve\" OR DIRECTOR \"Alex Garland\" OR DIRECTOR \"Christopher Nolan\" OR DIRECTOR \"Andrew Niccol\" OR TITLE \"2001: A Space Odyssey\" OR TITLE \"Solaris\" OR TITLE \"Stalker\" OR TITLE \"Arrival\" OR TITLE \"Annihilation\" OR TITLE \"Ex Machina\" OR TITLE \"Interstellar\" OR TITLE \"Blade Runner\" OR TITLE \"Under the Skin\" OR TITLE \"Primer\" OR TITLE \"Moon\" OR TITLE \"Coherence\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Cinema of Loneliness",
+      "Expression": "MOVIE AND (TITLE \"Taxi Driver\" OR TITLE \"Lost in Translation\" OR TITLE \"In the Mood for Love\" OR TITLE \"Her\" OR TITLE \"Drive\" OR TITLE \"Paris, Texas\" OR TITLE \"Manchester by the Sea\" OR TITLE \"The Lighthouse\" OR TITLE \"Wings of Desire\" OR TITLE \"Stranger Than Paradise\" OR TITLE \"The Master\" OR TITLE \"There Will Be Blood\" OR TITLE \"First Reformed\" OR TITLE \"The Assassination of Jesse James\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Heist Cinema",
+      "Expression": "MOVIE AND (TITLE \"Heat\" OR TITLE \"Rififi\" OR TITLE \"The Killing\" OR TITLE \"Bob le flambeur\" OR TITLE \"Le Cercle Rouge\" OR TITLE \"Le Samouraï\" OR TITLE \"Thief\" OR TITLE \"Reservoir Dogs\" OR TITLE \"Inside Man\" OR TITLE \"Ocean's Eleven\" OR TITLE \"Ocean's 11\" OR TITLE \"The Italian Job\" OR TITLE \"The Town\" OR TITLE \"Sexy Beast\" OR TITLE \"The Asphalt Jungle\" OR TITLE \"Dog Day Afternoon\" OR TITLE \"Baby Driver\" OR TITLE \"Logan Lucky\" OR TITLE \"Triple Frontier\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Spaghetti Westerns",
+      "Expression": "MOVIE AND (DIRECTOR \"Sergio Leone\" OR DIRECTOR \"Sergio Corbucci\" OR DIRECTOR \"Sergio Sollima\" OR DIRECTOR \"Duccio Tessari\" OR DIRECTOR \"Enzo G. Castellari\" OR DIRECTOR \"Giulio Petroni\") AND GENRE \"Western\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "A24 Auteur Hits",
+      "Expression": "MOVIE AND (STUDIO \"A24\" OR TITLE \"Hereditary\" OR TITLE \"Midsommar\" OR TITLE \"The Witch\" OR TITLE \"The Lighthouse\" OR TITLE \"Moonlight\" OR TITLE \"Lady Bird\" OR TITLE \"Uncut Gems\" OR TITLE \"Ex Machina\" OR TITLE \"Everything Everywhere All at Once\" OR TITLE \"Aftersun\" OR TITLE \"Past Lives\" OR TITLE \"The Zone of Interest\" OR TITLE \"Civil War\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Studio Ghibli",
+      "Expression": "(MOVIE OR SHOW) AND (STUDIO \"Studio Ghibli\" OR DIRECTOR \"Hayao Miyazaki\" OR DIRECTOR \"Isao Takahata\" OR DIRECTOR \"Hiromasa Yonebayashi\" OR DIRECTOR \"Hayao Miyazaki\" OR DIRECTOR \"Gorō Miyazaki\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Coen Brothers",
+      "Expression": "MOVIE AND (DIRECTOR \"Joel Coen\" OR DIRECTOR \"Ethan Coen\" OR DIRECTOR \"Coen Brothers\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Kubrick Filmography",
+      "Expression": "MOVIE AND DIRECTOR \"Stanley Kubrick\"",
+      "CaseSensitive": false
+    },
+
+    {
+      "CollectionName": "Long Stare at the Void (3+ hours)",
+      "Expression": "MOVIE AND COMMUNITYRATING \">7.5\" AND (TITLE \"The Godfather\" OR TITLE \"Lawrence of Arabia\" OR TITLE \"Once Upon a Time in America\" OR TITLE \"The Irishman\" OR TITLE \"Magnolia\" OR TITLE \"The Tree of Life\" OR TITLE \"Seven Samurai\" OR TITLE \"Sátántangó\" OR TITLE \"Satantango\" OR TITLE \"Andrei Rublev\" OR TITLE \"Stalker\" OR TITLE \"Solaris\" OR TITLE \"Barry Lyndon\" OR TITLE \"Heat\" OR TITLE \"The Wolf of Wall Street\" OR TITLE \"Killers of the Flower Moon\")",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Documentary Watchlist",
+      "Expression": "MOVIE AND GENRE \"Documentary\" AND UNWATCHED AND COMMUNITYRATING \">7.5\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Foreign Language Excellence",
+      "Expression": "MOVIE AND NOT LANG \"English\" AND COMMUNITYRATING \">7.8\"",
+      "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Pre-1970 Classics",
+      "Expression": "MOVIE AND YEAR \"<=1969\" AND COMMUNITYRATING \">7.5\"",
+      "CaseSensitive": false
+    }
+  ]
+}
