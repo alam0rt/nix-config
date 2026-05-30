@@ -30,11 +30,6 @@
         enabled: true
         base-url: "http://127.0.0.1:${toString config.services.jellyseerr.port}"
 
-    file-system:
-      access: true
-      validate-seeding: true
-      free-space-check-dir: "/srv/media"
-
     application:
       dry-run: true
       run-once: true
@@ -43,20 +38,23 @@
       leaving-soon-threshold-offset-percent: 5
       exclusion-tags:
         - "kino"
-
-    media-deletion:
-      enabled: true
-      delete-requests: true
-      movie-expiration:
-        5: 30d
-        10: 60d
-        15: 90d
-        20: 120d
-      season-expiration:
-        5: 30d
-        10: 60d
-        15: 90d
-        20: 120d
+      file-system:
+        access: true
+        validate-seeding: true
+        free-space-check-dir: "/srv/media"
+      media-deletion:
+        enabled: true
+        delete-requests: true
+        movie-expiration:
+          5: 30d
+          10: 60d
+          15: 90d
+          20: 120d
+        season-expiration:
+          5: 30d
+          10: 60d
+          15: 90d
+          20: 120d
   '';
 in {
   environment.systemPackages = with pkgs; [
@@ -303,7 +301,7 @@ in {
     "d /srv/data/janitorr/logs 0750 janitorr janitorr -"
   ];
 
-  systemd.services.podman-janitorr = {
+  systemd.services.janitorr = {
     serviceConfig = {
       Type = lib.mkForce "oneshot";
       Restart = lib.mkForce "no";
@@ -316,7 +314,7 @@ in {
     timerConfig = {
       OnCalendar = "Sun 03:00:00";
       Persistent = true;
-      Unit = "podman-janitorr.service";
+      Unit = "janitorr.service";
     };
   };
 
