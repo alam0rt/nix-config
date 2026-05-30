@@ -55,6 +55,10 @@
           10: 60d
           15: 90d
           20: 120d
+      tag-based-deletion:
+        enabled: false
+        minimum-free-disk-percent: 100
+        schedules: []
   '';
 in {
   environment.systemPackages = with pkgs; [
