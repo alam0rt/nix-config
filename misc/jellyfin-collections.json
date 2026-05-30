@@ -184,6 +184,11 @@
       "CollectionName": "Pre-1970 Classics",
       "Expression": "MOVIE AND YEAR \"<=1969\" AND COMMUNITYRATING \">7.5\"",
       "CaseSensitive": false
+    },
+    {
+      "CollectionName": "Australiana",
+      "Expression": "MOVIE AND (COUNTRY \"Australia\" OR COUNTRY \"Australia\") AND COMMUNITYRATING \">6.0\"",
+      "CaseSensitive": false
     }
   ]
 }
