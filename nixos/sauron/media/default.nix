@@ -307,6 +307,11 @@ in {
   };
   users.groups.janitorr.gid = 968;
 
+  # Jellyfin must be able to traverse /srv/data/janitorr/leaving-soon to
+  # register the "Leaving Soon" virtual folders — without group membership the
+  # Library/VirtualFolders POST fails with 400 "Error processing request."
+  users.users.jellyfin.extraGroups = ["janitorr"];
+
   systemd.tmpfiles.rules = [
     "d /srv/data/janitorr 0750 janitorr janitorr -"
     "d /srv/data/janitorr/logs 0750 janitorr janitorr -"
