@@ -303,6 +303,10 @@ in {
     description = "Janitorr media cleanup";
     home = "/srv/data/janitorr";
     createHome = true;
+    # Default system-user homeMode is 0700, which blocks jellyfin (in the
+    # janitorr group) from traversing /srv/data/janitorr to register the
+    # Leaving Soon virtual folders.
+    homeMode = "0750";
     extraGroups = ["sonarr" "radarr"];
   };
   users.groups.janitorr.gid = 968;
