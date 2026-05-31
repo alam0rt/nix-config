@@ -15,6 +15,8 @@
     };
   };
 
+  services.gvfs.enable = true; # enables support for virtual filesystems (e.g. network shares, trash, etc.) in file managers
+
   services.udisks2.enable = true; # enables support for external drives and media
 
   # bluetooth
