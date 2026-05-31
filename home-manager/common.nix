@@ -1,7 +1,6 @@
 # This is your home-manager configuration file
 # Use this to configure your home environment (it replaces ~/.config/nixpkgs/home.nix)
 {
-  inputs,
   outputs,
   lib,
   config,
@@ -230,8 +229,7 @@
       # chat
       mumble
 
-      # misc
-      kdePackages.kdeconnect-kde
+      # media
       calibre
 
       # health + fitness
@@ -291,7 +289,6 @@
       "ctrl+grave_accent>i" = "show_scrollback";
     };
   };
-
   programs.jujutsu.enable = true;
   programs.jujutsu.settings.user.name = config.programs.git.settings.user.name;
   programs.jujutsu.settings.user.email = config.programs.git.settings.user.email;

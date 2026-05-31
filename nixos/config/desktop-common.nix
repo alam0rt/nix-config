@@ -16,7 +16,6 @@
   };
 
   services.gvfs.enable = true; # enables support for virtual filesystems (e.g. network shares, trash, etc.) in file managers
-
   services.udisks2.enable = true; # enables support for external drives and media
 
   # bluetooth
@@ -98,7 +97,14 @@
     kdePackages.dolphin-plugins
     pavucontrol # PulseAudio-compatible volume control (works with PipeWire)
     pwvucontrol # native PipeWire volume control
+    jmtpfs # MTP file manager for Android devices
   ];
+
+  # KDE Connect ports (set up in home-manager/linux.nix for user services.kdeconnect.enable)
+  networking.firewall = rec {
+    allowedTCPPortRanges = [ { from = 1714; to = 1764; } ];
+    allowedUDPPortRanges = allowedTCPPortRanges;
+  };
 
   fonts.packages = with pkgs; [
     font-awesome

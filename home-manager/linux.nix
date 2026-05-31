@@ -48,6 +48,8 @@
     };
   };
 
+  services.kdeconnect.enable = true;
+
   services.ssh-agent.enable = true;
 
   home.username = "sam";
