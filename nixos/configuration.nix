@@ -13,6 +13,12 @@
     ./config/secrets
   ];
 
+  documentation = {
+    enable = true;
+    man.enable = true;
+    man.generateCaches = true;
+  };
+
   # https://github.com/nix-community/nix-ld
   programs.nix-ld.enable = true;
 
