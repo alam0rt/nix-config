@@ -86,6 +86,13 @@
     # ARC hit rate is ~99.88% — keep page cache + ARC resident and reduce
     # eagerness to evict anon pages. Pairs with zswap below.
     "vm.swappiness" = 10;
+
+    # Required for podman bridge-networked containers (e.g. flaresolverr) to
+    # reach the internet — netavark sets up MASQUERADE but relies on the host
+    # for forwarding. virtualisation.podman does not enable this itself, and
+    # systemd-sysctl resets unmanaged keys to kernel defaults on every reload,
+    # so it must be declared here to survive nixos-rebuild.
+    "net.ipv4.ip_forward" = 1;
   };
 
   # zswap compresses swap pages in RAM before hitting the swap file. Live swap-in
