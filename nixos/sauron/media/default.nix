@@ -370,7 +370,7 @@ in {
     };
 
     flaresolverr = {
-      image = "ghcr.io/flaresolverr/flaresolverr:v3.4.6";
+      image = "ghcr.io/flaresolverr/flaresolverr:v3.5.0";
       ports = ["127.0.0.1:8191:8191"];
       serviceName = "flaresolverr";
     };
