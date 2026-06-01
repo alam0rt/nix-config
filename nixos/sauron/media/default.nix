@@ -373,6 +373,10 @@ in {
       image = "ghcr.io/flaresolverr/flaresolverr:v3.5.0";
       ports = ["127.0.0.1:8191:8191"];
       serviceName = "flaresolverr";
+      environment = {
+        LOG_LEVEL = "debug";
+        LOG_HTML = "true";
+      };
     };
   };
 }
