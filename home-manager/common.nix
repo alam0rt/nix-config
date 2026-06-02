@@ -295,6 +295,76 @@
       "ctrl+grave_accent>i" = "show_scrollback";
     };
   };
+
+  # Tmux — user-scoped so it follows over SSH and works on Darwin + NixOS.
+  # Pairs with kitty: tmux owns pane management and session persistence,
+  # kitty owns graphics protocol (inline images, kitten icat) and OSC 99.
+  programs.tmux = {
+    enable = true;
+    shortcut = "a";              # prefix = C-a (don't fight readline's C-b)
+    keyMode = "vi";
+    mouse = true;
+    escapeTime = 10;             # snappy mode-key response
+    historyLimit = 50000;
+    baseIndex = 1;               # windows/panes start at 1, not 0
+    terminal = "tmux-256color";
+    aggressiveResize = true;
+    sensibleOnTop = true;        # load tmux-sensible defaults under our overrides
+
+    extraConfig = ''
+      # TrueColor passthrough for kitty (and any RGB-capable outer terminal)
+      set -ag terminal-overrides ",xterm-kitty:RGB,xterm-256color:RGB,*:RGB"
+
+      # Allow kitty graphics / OSC 99 escapes to pass through tmux to the
+      # outer terminal. Without this, inline images and notifications break.
+      set -g allow-passthrough on
+
+      # Renumber windows when one is closed so 1,2,3,5 -> 1,2,3,4.
+      set -g renumber-windows on
+
+      # Vi-style copy-mode bindings
+      bind -T copy-mode-vi v send -X begin-selection
+      bind -T copy-mode-vi y send -X copy-pipe-and-cancel "pbcopy"
+      bind -T copy-mode-vi C-v send -X rectangle-toggle
+
+      # Pane splits that preserve cwd (matches kitty's ctrl+\` minus / backslash)
+      bind "-" split-window -v -c "#{pane_current_path}"
+      bind "\\" split-window -h -c "#{pane_current_path}"
+      unbind '"'
+      unbind %
+
+      # Quick reload of this config
+      bind r source-file ~/.config/tmux/tmux.conf \; display "tmux reloaded"
+
+      # Status line: short, hostname-aware (visible when SSH'd to another box)
+      set -g status-interval 5
+      set -g status-left-length 30
+      set -g status-right-length 60
+      set -g status-left  "#[bold]#S#[default] | "
+      set -g status-right "#h | %H:%M"
+      set -g status-style "bg=default fg=default"
+    '';
+
+    plugins = with pkgs.tmuxPlugins; [
+      sensible           # safer defaults; sensibleOnTop above keeps our overrides
+      yank               # prefix-y to copy selection to system clipboard
+      {
+        plugin = resurrect;
+        extraConfig = ''
+          set -g @resurrect-strategy-vim 'session'
+          set -g @resurrect-strategy-nvim 'session'
+          set -g @resurrect-capture-pane-contents 'on'
+        '';
+      }
+      {
+        plugin = continuum;
+        extraConfig = ''
+          set -g @continuum-restore 'on'
+          set -g @continuum-save-interval '15'
+        '';
+      }
+    ];
+  };
   programs.jujutsu.enable = true;
   programs.jujutsu.settings.user.name = config.programs.git.settings.user.name;
   programs.jujutsu.settings.user.email = config.programs.git.settings.user.email;
