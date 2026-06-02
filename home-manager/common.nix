@@ -264,6 +264,12 @@
       enabled_layouts = "splits,stack";
       macos_option_as_alt = "yes";
       scrollback_pager = ''nvim -u NONE -c "set clipboard=unnamedplus" -c "nnoremap q :qa!<cr>" -c "nnoremap Y y$" +'';
+      # Enable remote control via a per-instance socket.
+      # Same idea as $TMUX: subprocesses inherit $KITTY_LISTEN_ON and can
+      # drive the terminal (window/tab launch, get-text, set-colors, etc.)
+      # without a controlling tty. Required for the pi kitty extension.
+      allow_remote_control = "yes";
+      listen_on = "unix:/tmp/kitty-$\{KITTY_PID}";
     };
     keybindings = {
       # Splits
