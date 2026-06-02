@@ -9,4 +9,5 @@ pkgs: {
   protobuf3 = pkgs.callPackage ./protobuf3 {};
   ghidra-psx-ldr = pkgs.callPackage ./ghidra-psx-ldr {};
   freecad-mcp = pkgs.callPackage ./freecad-mcp {};
+  pi = pkgs.callPackage ./pi {};
 }
