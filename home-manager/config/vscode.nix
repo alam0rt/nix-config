@@ -46,6 +46,7 @@
           # extras
           signageos.signageos-vscode-sops
           ms-vscode-remote.remote-ssh
+          bierner.markdown-mermaid
           github.copilot
           github.copilot-chat
           ms-vscode.makefile-tools
