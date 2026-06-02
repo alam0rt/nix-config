@@ -267,9 +267,9 @@
       # Enable remote control via a per-instance socket.
       # Same idea as $TMUX: subprocesses inherit $KITTY_LISTEN_ON and can
       # drive the terminal (window/tab launch, get-text, set-colors, etc.)
-      # without a controlling tty. Required for the pi kitty extension.
+      # without a controlling tty.
       allow_remote_control = "yes";
-      listen_on = "unix:/tmp/kitty-$\{KITTY_PID}";
+      listen_on = "unix:/tmp/kitty-{kitty_pid}";
     };
     keybindings = {
       # Splits
