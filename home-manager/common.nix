@@ -301,15 +301,15 @@
   # kitty owns graphics protocol (inline images, kitten icat) and OSC 99.
   programs.tmux = {
     enable = true;
-    shortcut = "a";              # prefix = C-a (don't fight readline's C-b)
+    shortcut = "a"; # prefix = C-a (don't fight readline's C-b)
     keyMode = "vi";
     mouse = true;
-    escapeTime = 10;             # snappy mode-key response
+    escapeTime = 10; # snappy mode-key response
     historyLimit = 50000;
-    baseIndex = 1;               # windows/panes start at 1, not 0
+    baseIndex = 1; # windows/panes start at 1, not 0
     terminal = "tmux-256color";
     aggressiveResize = true;
-    sensibleOnTop = true;        # load tmux-sensible defaults under our overrides
+    sensibleOnTop = true; # load tmux-sensible defaults under our overrides
 
     extraConfig = ''
       # TrueColor passthrough for kitty (and any RGB-capable outer terminal)
@@ -346,8 +346,8 @@
     '';
 
     plugins = with pkgs.tmuxPlugins; [
-      sensible           # safer defaults; sensibleOnTop above keeps our overrides
-      yank               # prefix-y to copy selection to system clipboard
+      sensible # safer defaults; sensibleOnTop above keeps our overrides
+      yank # prefix-y to copy selection to system clipboard
       {
         plugin = resurrect;
         extraConfig = ''

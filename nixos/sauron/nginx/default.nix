@@ -110,6 +110,20 @@ in {
       directio 4m;
       aio threads;
       output_buffers 2 1m;
+
+      # HTTP/2 HPACK bomb mitigation (CVE-pending, blog.calif.io/p/codex-discovered-a-hidden-http2-bomb)
+      # Caps header count per request — the definitive fix for indexed reference amplification.
+      # Requires nginx >=1.29.8; remove if the build fails on an older version.
+      max_headers 100;
+
+      # Limit concurrent streams to reduce the amplification window per connection.
+      http2_max_concurrent_streams 100;
+
+      # Bound per-request header memory: 4 buffers × 8KB = 32KB ceiling.
+      large_client_header_buffers 4 8k;
+
+      # Drop clients that stall during header transmission (window-stall leg of the attack).
+      client_header_timeout 10s;
     '';
 
     # Only allow PFS-enabled ciphers with AES256
