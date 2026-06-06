@@ -16,7 +16,7 @@
   documentation = {
     enable = true;
     man.enable = true;
-    man.generateCaches = true;
+    man.cache.enable = true;
   };
 
   # https://github.com/nix-community/nix-ld

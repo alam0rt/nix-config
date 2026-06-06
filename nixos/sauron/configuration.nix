@@ -23,6 +23,7 @@
     ./nginx
     ./syncthing
     ./monitoring
+    ./ups
     #./openwebui
     # ./home-assistant
     # ./models

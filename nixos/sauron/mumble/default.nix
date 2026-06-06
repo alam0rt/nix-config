@@ -16,8 +16,8 @@ in {
     autobanTime = 10;
     openFirewall = true;
     autobanAttempts = 60;
-    sslKey = "${config.security.acme.certs."murmur.samlockart.com".directory}/key.pem";
-    sslCert = "${config.security.acme.certs."murmur.samlockart.com".directory}/fullchain.pem";
+    tls.keyPath = "${config.security.acme.certs."murmur.samlockart.com".directory}/key.pem";
+    tls.certPath = "${config.security.acme.certs."murmur.samlockart.com".directory}/fullchain.pem";
   };
 
   security.acme.certs."murmur.samlockart.com" = {

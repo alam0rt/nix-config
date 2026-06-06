@@ -38,7 +38,7 @@
         password: ""
       jellyseerr:
         enabled: true
-        url: "http://127.0.0.1:${toString config.services.jellyseerr.port}"
+        url: "http://127.0.0.1:${toString config.services.seerr.port}"
 
     application:
       dry-run: true
@@ -74,7 +74,7 @@ in {
     unstable.jellyfin-ffmpeg
   ];
 
-  services.jellyseerr = {
+  services.seerr = {
     enable = true;
     openFirewall = true;
   };
@@ -162,11 +162,11 @@ in {
       forceSSL = true;
       useACMEHost = "iced.cool";
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}";
+        proxyPass = "http://127.0.0.1:${toString config.services.seerr.port}";
         recommendedProxySettings = true;
       };
       locations."/api/v1/auth/local" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}";
+        proxyPass = "http://127.0.0.1:${toString config.services.seerr.port}";
         recommendedProxySettings = true;
         extraConfig = ''
           limit_req zone=login burst=3 nodelay;
@@ -177,7 +177,7 @@ in {
       forceSSL = true;
       useACMEHost = cfg.domain;
       locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.jellyseerr.port}";
+        proxyPass = "http://127.0.0.1:${toString config.services.seerr.port}";
         recommendedProxySettings = true;
       };
     };

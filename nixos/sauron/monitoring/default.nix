@@ -233,7 +233,7 @@ in {
               "http://localhost:${toString config.services.bazarr.listenPort}" # bazarr
               "http://localhost:9117" # jackett
               "http://localhost:${toString config.services.prowlarr.settings.server.port}" # prowlarr
-              "http://localhost:${toString config.services.jellyseerr.port}" # jellyseerr
+              "http://localhost:${toString config.services.seerr.port}" # jellyseerr
               # "http://localhost:${toString config.services.qbittorrent.webuiPort}" # qbittorrent - causes localhost ban due to failed auth
             ];
           }
