@@ -6,7 +6,7 @@
     yaml-language-server
     bash-language-server
     dockerfile-language-server
-    nodePackages.vscode-json-languageserver # json
+    vscode-json-languageserver # json
     jsonnet-language-server
     ruby-lsp
   ];

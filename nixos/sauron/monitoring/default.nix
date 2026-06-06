@@ -26,6 +26,10 @@ in {
       };
       security = {
         cookie_secure = true; # serving via https proxy
+        # Was the upstream default prior to NixOS 26.05; pinned to preserve
+        # decryption of existing DB-stored secrets. Rotate via an agenix
+        # secret + file-provider when secrets that need real protection land.
+        secret_key = "SW2YcwTIb9zpOOhoPsMm";
       };
       smtp = {
         enabled = true;

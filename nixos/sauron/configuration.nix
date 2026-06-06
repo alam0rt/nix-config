@@ -225,10 +225,10 @@
     # https://developers.yubico.com/SSH/Securing_SSH_with_FIDO2.html
     settings = {
       PrintMotd = true;
+      Banner = toString (pkgs.writeText "ssh-banner" ''
+        speak friend and enter...
+      '');
     };
-    banner = ''
-      speak friend and enter...
-    '';
     openFirewall = true;
     extraConfig = ''
       PubkeyAuthOptions verify-required

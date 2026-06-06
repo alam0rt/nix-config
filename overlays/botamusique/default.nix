@@ -33,8 +33,10 @@ in {
     npmDeps = null;
     npmRoot = null;
 
-    # Remove NODE_OPTIONS since we're not using Node
-    NODE_OPTIONS = null;
+    # Remove NODE_OPTIONS since we're not using Node.
+    # As of nixpkgs 26.05, upstream sets it via the `env` attrset, so we
+    # have to strip it there rather than overriding the top-level arg.
+    env = builtins.removeAttrs (old.env or {}) ["NODE_OPTIONS"];
 
     # Update Python dependencies to match pyproject.toml
     pythonPath = with prev.python3Packages;
