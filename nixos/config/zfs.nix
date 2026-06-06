@@ -7,10 +7,9 @@
     initrd.supportedFilesystems = ["zfs"];
     supportedFilesystems = ["zfs"];
     zfs.package = pkgs.zfs_unstable;
-    # Pin current default to silence the 26.05 warning. The 26.11 default
-    # flips to false (safer — reduces data-loss risk on unclean imports);
-    # revisit before that upgrade.
-    zfs.forceImportRoot = true;
+    # Refuse to import the root pool if hostid doesn't match — recover via
+    # IPMI SoL with `zpool import -f` rather than risk a concurrent import.
+    zfs.forceImportRoot = false;
   };
 
   environment.systemPackages = with pkgs; [
