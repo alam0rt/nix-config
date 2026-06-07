@@ -10,15 +10,20 @@
   #   sudo curl -L -C - -o /var/cache/llama-cpp/gemma-4-12b-it-UD-Q4_K_XL.gguf \
   #     https://huggingface.co/unsloth/gemma-4-12b-it-GGUF/resolve/main/gemma-4-12b-it-UD-Q4_K_XL.gguf
   #
-  # Hardware: NVIDIA A1000 8GB (Ampere cc 8.6)
+  # Hardware: NVIDIA A1000 8GB (Ampere cc 8.6) + T1000 8GB (Turing cc 7.5)
   #   - llama.cpp enumerates CUDA0=A1000, CUDA1=T1000 (CUDA's default
   #     FASTEST_FIRST order — opposite of nvidia-smi's PCIe-bus order).
-  #     --main-gpu 0 therefore pins to A1000; leaves T1000 free.
-  #   - Q4_K_XL (~7.0 GiB resident) + q8_0 KV @ 8K (~415 MiB) +
-  #     compute pp buffer (~260 MiB at -ub 256) ≈ 7.7 GiB → fits 7.57 GiB free.
-  #   - -ub 256 halves the default 512 microbatch so the compute buffer fits
-  #     in the remaining VRAM. Bumping it back to 512 OOMs on cudaMalloc.
-  #   - -fa 1 enables FlashAttention (Ampere supports FA2 natively)
+  #   - --split-mode layer distributes the 48 transformer layers across both
+  #     GPUs (default ~50/50 by free VRAM). Required to fit 160K context: at
+  #     150K with q8_0 KV the 8 global-attention layers need ~4.7 GiB of KV
+  #     alone — doesn't fit a single 8 GiB card alongside the ~7 GiB model.
+  #   - --main-gpu 0 makes A1000 host embeddings/output/compute scratch.
+  #   - -ub 256 halves the default 512 microbatch so compute pp buffer fits.
+  #   - -fa 1 enables FlashAttention; mixed-arch is OK (per-device selection).
+  #
+  # Throughput cost of dual-GPU: ~30-50% slower decode vs single-GPU due to
+  # PCIe sync per token + slower T1000. Cold prompt-processing at 150K ≈ 10
+  # min; --cache-reuse 256 makes follow-up turns near-instant on shared prefix.
   #
   # Sampler + template per Unsloth recommendations
   # (https://unsloth.ai/docs/models/gemma-4):
@@ -47,7 +52,7 @@
       "-ngl"
       "999"
       "--split-mode"
-      "none"
+      "layer"
       "--main-gpu"
       "0"
       "-fa"
@@ -59,7 +64,7 @@
       "--cache-reuse"
       "256"
       "-c"
-      "8192"
+      "163840"
       "-ub"
       "256"
       "-np"
