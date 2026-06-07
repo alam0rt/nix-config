@@ -28,7 +28,7 @@
     # ./home-assistant
     # ./models
     # ./pvpgn
-    # ./llama-cpp
+    ./llama-cpp
     # ./matrix
   ];
 
