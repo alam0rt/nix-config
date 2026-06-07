@@ -72,6 +72,11 @@
       "--jinja"
       "--reasoning"
       "on"
+      # Server-side agentic tools (read_file, file_glob_search, grep_search).
+      # Safe here: DynamicUser + ProtectHome/ProtectSystem confine reads to
+      # /nix/store + the service's own cache; LAN-only exposure.
+      "--tools"
+      "all"
       "--alias"
       "unsloth/gemma-4-12b-it-GGUF"
       "--temp"
