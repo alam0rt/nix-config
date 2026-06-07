@@ -5,13 +5,13 @@
 }:
 ghidra.buildGhidraExtension (finalAttrs: {
   pname = "ghidra-psx-ldr";
-  version = "2025.09.06";
+  version = "2026.06.04";
 
   src = fetchFromGitHub {
     owner = "lab313ru";
     repo = "ghidra_psx_ldr";
     rev = finalAttrs.version;
-    hash = "sha256-xUb3Zo4LcbkOgkH1OaConUC4vqfo5KgpdC2VtDrMe5E=";
+    hash = "sha256-F0317Z5Ihbm23Qe6QCDAbvEZkou5bZY7FTykYEPxef0=";
     fetchSubmodules = true;
   };
 
