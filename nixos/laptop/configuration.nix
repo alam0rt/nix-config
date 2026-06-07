@@ -65,7 +65,10 @@
             findcrypt
             ghidra-delinker-extension
           ]
-          ++ [pkgs.ghidra-psx-ldr]);
+          ++ [
+            pkgs.ghidra-psx-ldr
+            pkgs.ghidra-mcp
+          ]);
     in
       pkgs.symlinkJoin {
         name = "ghidra-wrapped";
@@ -76,6 +79,10 @@
         '';
       };
   };
+
+  # MCP↔HTTP bridge that fronts the GhidraMCP plugin (server runs inside
+  # Ghidra; the bridge translates MCP calls into HTTP requests against it).
+  environment.systemPackages = [pkgs.ghidra-mcp.bridge];
 
   nixpkgs.overlays = [inputs.nvidia-patch.overlays.default];
 
