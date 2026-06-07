@@ -40,8 +40,8 @@
     enable = true;
     package = pkgs.unstable.llama-cpp; # cudaSupport=true via overlay
     port = 8000; # matches OPENAI_API_BASE_URL in openwebui/default.nix
-    host = "127.0.0.1";
-    openFirewall = false;
+    host = "0.0.0.0"; # LAN-accessible; sauron is NAT'd, no public exposure
+    openFirewall = true;
     model = "/var/cache/llama-cpp/gemma-4-12b-it-UD-Q4_K_XL.gguf";
     extraFlags = [
       "-ngl"
