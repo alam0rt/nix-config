@@ -10,17 +10,22 @@
   #   sudo curl -L -C - -o /var/cache/llama-cpp/gemma-4-12b-it-UD-Q4_K_XL.gguf \
   #     https://huggingface.co/unsloth/gemma-4-12b-it-GGUF/resolve/main/gemma-4-12b-it-UD-Q4_K_XL.gguf
   #
-  # Hardware: NVIDIA A1000 8GB (Ampere cc 8.6) — GPU index 1
-  #   - Q4_K_XL (~7.37 GB) + ~512 MB KV cache @ 8K ctx fits cleanly
-  #   - --split-mode none + --main-gpu 1 pins to A1000, leaves T1000 (idx 0) free
+  # Hardware: NVIDIA A1000 8GB (Ampere cc 8.6)
+  #   - llama.cpp enumerates CUDA0=A1000, CUDA1=T1000 (CUDA's default
+  #     FASTEST_FIRST order — opposite of nvidia-smi's PCIe-bus order).
+  #     --main-gpu 0 therefore pins to A1000; leaves T1000 free.
+  #   - Q4_K_XL (~7.0 GiB resident) + q8_0 KV @ 8K (~415 MiB) +
+  #     compute pp buffer (~260 MiB at -ub 256) ≈ 7.7 GiB → fits 7.57 GiB free.
+  #   - -ub 256 halves the default 512 microbatch so the compute buffer fits
+  #     in the remaining VRAM. Bumping it back to 512 OOMs on cudaMalloc.
   #   - -fa 1 enables FlashAttention (Ampere supports FA2 natively)
   #
   # Sampler + template per Unsloth recommendations
   # (https://unsloth.ai/docs/models/gemma-4):
   #   - Google defaults: temp 1.0, top-p 0.95, top-k 64
-  #   - Thinking mode ON (enable_thinking=true); client must NOT feed prior
+  #   - Thinking mode ON (--reasoning on); client must NOT feed prior
   #     thought blocks back into the next turn — strip them before resending
-  #   - To disable thinking instead: --chat-template-kwargs '{"enable_thinking":false}'
+  #   - To disable thinking instead: --reasoning off
   #   - Model's declared max ctx is 262144; we cap with -c due to 8GB VRAM
   #
   # KV cache strategy:
@@ -44,7 +49,7 @@
       "--split-mode"
       "none"
       "--main-gpu"
-      "1"
+      "0"
       "-fa"
       "1"
       "-ctk"
@@ -55,9 +60,13 @@
       "256"
       "-c"
       "8192"
+      "-ub"
+      "256"
       "-np"
       "1"
       "--jinja"
+      "--reasoning"
+      "on"
       "--alias"
       "unsloth/gemma-4-12b-it-GGUF"
       "--temp"
@@ -66,8 +75,6 @@
       "0.95"
       "--top-k"
       "64"
-      "--chat-template-kwargs"
-      "{\"enable_thinking\":true}"
     ];
   };
 
