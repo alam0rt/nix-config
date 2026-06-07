@@ -22,6 +22,15 @@
   #     thought blocks back into the next turn — strip them before resending
   #   - To disable thinking instead: --chat-template-kwargs '{"enable_thinking":false}'
   #   - Model's declared max ctx is 262144; we cap with -c due to 8GB VRAM
+  #
+  # KV cache strategy:
+  #   - Gemma 4 uses ISWA (5:1 local:global, sliding window 1024) — most layers'
+  #     KV is bounded by the window, not -c. At 8K ctx, fp16 KV is ~830 MiB.
+  #   - q8_0 KV halves that with negligible quality loss on Gemma; q4_0 V cache
+  #     has a known Gemma quality cliff (llama.cpp #21385) — avoid.
+  #   - --cache-reuse 256 reuses prefix KV across multi-turn requests sharing
+  #     the same system prompt, cutting TTFT significantly.
+  #   - Do NOT add --swa-full: it disables the ISWA savings and breaks reuse.
   services.llama-cpp = {
     enable = true;
     package = pkgs.unstable.llama-cpp; # cudaSupport=true via overlay
@@ -38,6 +47,12 @@
       "1"
       "-fa"
       "1"
+      "-ctk"
+      "q8_0"
+      "-ctv"
+      "q8_0"
+      "--cache-reuse"
+      "256"
       "-c"
       "8192"
       "-np"
