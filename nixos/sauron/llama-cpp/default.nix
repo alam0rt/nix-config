@@ -14,14 +14,16 @@
   #   - llama.cpp enumerates CUDA0=A1000, CUDA1=T1000 (CUDA's default
   #     FASTEST_FIRST order — opposite of nvidia-smi's PCIe-bus order).
   #   - --split-mode layer distributes the 48 transformer layers across both
-  #     GPUs (default ~50/50 by free VRAM). At 32K ctx each slot uses ~3-4 GiB
-  #     KV, fitting comfortably alongside the ~7 GiB model across both cards.
+  #     GPUs (default ~50/50 by free VRAM). At 49K ctx each slot uses ~3-4 GiB
+  #     KV, fitting alongside the ~7 GiB model thanks to mixed-precision KV
+  #     (q4_1 K / q8_0 V) and ISWA bounding 38/48 layers to a 1024-token window.
   #   - --main-gpu 0 makes A1000 host embeddings/output/compute scratch.
   #   - -ub 256 halves the default 512 microbatch so compute pp buffer fits.
+  #   - -b 1024 increases prefill batch to amortize PCIe sync overhead.
   #   - -fa 1 enables FlashAttention; mixed-arch is OK (per-device selection).
   #
   # Throughput cost of dual-GPU: ~30-50% slower decode vs single-GPU due to
-  # PCIe sync per token + slower T1000. Cold prompt-processing at 32K ≈ 4-5
+  # PCIe sync per token + slower T1000. Cold prompt-processing at 49K ≈ 6-7
   # min worst-case; --cache-reuse 256 makes follow-up turns near-instant on shared prefix.
   #
   # Sampler + template per Unsloth recommendations
@@ -30,13 +32,14 @@
   #   - Thinking mode ON (--reasoning on); client must NOT feed prior
   #     thought blocks back into the next turn — strip them before resending
   #   - To disable thinking instead: --reasoning off
-  #   - Model's declared max ctx is 262144; we cap at 32K to bound KV cache (~3-4 GiB/slot) and prefill time
+  #   - Model's declared max ctx is 262144; we cap at 49K to bound KV cache (~3-4 GiB/slot) and prefill time
   #
   # KV cache strategy:
   #   - Gemma 4 uses ISWA (5:1 local:global, sliding window 1024) — most layers'
   #     KV is bounded by the window, not -c. At 8K ctx, fp16 KV is ~830 MiB.
-  #   - q8_0 KV halves that with negligible quality loss on Gemma; q4_0 V cache
-  #     has a known Gemma quality cliff (llama.cpp #21385) — avoid.
+  #   - Mixed-precision KV: q4_1 K-cache (keys tolerate quantization well on
+  #     hybrid SWA models per #21385) + q8_0 V-cache (values are sensitive;
+  #     q4_0 V has a known Gemma quality cliff). Saves ~400-500 MiB vs q8_0/q8_0.
   #   - --cache-reuse 256 reuses prefix KV across multi-turn requests sharing
   #     the same system prompt, cutting TTFT significantly.
   #   - Do NOT add --swa-full: it disables the ISWA savings and breaks reuse.
@@ -57,13 +60,15 @@
       "-fa"
       "1"
       "-ctk"
-      "q8_0"
+      "q4_1"
       "-ctv"
       "q8_0"
       "--cache-reuse"
       "256"
       "-c"
-      "32768"
+      "49152"
+      "-b"
+      "1024"
       "-ub"
       "256"
       "-np"
