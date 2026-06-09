@@ -29,9 +29,11 @@
   # Sampler + template per Unsloth recommendations
   # (https://unsloth.ai/docs/models/gemma-4):
   #   - Google defaults: temp 1.0, top-p 0.95, top-k 64
-  #   - Thinking mode ON (--reasoning on); client must NOT feed prior
-  #     thought blocks back into the next turn — strip them before resending
-  #   - To disable thinking instead: --reasoning off
+  #   - Thinking mode OFF (--reasoning off); reasoning is externalized into
+  #     the agentic tool-call loop (each Ghidra MCP round-trip = one step).
+  #     With thinking on, 12B spirals indefinitely on RE tasks (13 min for a
+  #     trivial struct). To re-enable: --reasoning on (strip thought blocks
+  #     from multi-turn history per Unsloth docs).
   #   - Model's declared max ctx is 262144; we cap at 49K to bound KV cache (~3-4 GiB/slot) and prefill time
   #
   # KV cache strategy:
@@ -75,7 +77,7 @@
       "1"
       "--jinja"
       "--reasoning"
-      "on"
+      "off"
       # Server-side agentic tools (read_file, file_glob_search, grep_search).
       # Safe here: DynamicUser + ProtectHome/ProtectSystem confine reads to
       # /nix/store + the service's own cache; LAN-only exposure.
