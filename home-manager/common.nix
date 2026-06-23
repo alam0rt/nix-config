@@ -62,6 +62,7 @@
 
   programs.zsh = {
     enable = true; # must also be enabled in nixos
+    dotDir = config.home.homeDirectory;
     initContent = ''
       autoload -z edit-command-line
       zle -N edit-command-line
@@ -413,13 +414,14 @@
 
   programs.ssh = {
     enable = true;
-    matchBlocks = {
+    enableDefaultConfig = false;
+    settings = {
       "*" = {
-        addKeysToAgent = "yes";
+        AddKeysToAgent = "yes";
       };
       # TODO: enumate all of my hosts
       "sauron" = {
-        setEnv = {
+        SetEnv = {
           TERM = "xterm-256color";
         };
       };

@@ -15,6 +15,8 @@
     package = pkgs.unstable.neovim-unwrapped; # want 0.11+
     viAlias = true;
     vimAlias = true;
+    withRuby = true;
+    withPython3 = true;
     extraConfig = ''
       " Basic settings
       set number

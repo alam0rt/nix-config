@@ -19,7 +19,7 @@
 
   # Pick only one of the below networking options.
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
-  networking.wireless.userControlled.enable = true;
+  networking.wireless.userControlled = true;
 
   networking.firewall.enable = true;
 
