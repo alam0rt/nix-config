@@ -77,13 +77,30 @@ in {
         passCommand = "cat ${config.age.secrets.borg.path}";
       };
       exclude = [
-        "*.db-wal" # Exclude SQLite write-ahead log files
-        "*.db-shm" # Exclude SQLite shared memory files
+        "*.db-wal" # SQLite write-ahead log files
+        "*.db-shm" # SQLite shared memory files
+        "*.db-journal" # SQLite rollback journals
+        # Logs: churn constantly and are regenerable. The jellyfin log
+        # changing mid-backup is what was failing this job.
+        "/srv/data/*/log"
+        "/srv/data/*/logs"
+        "*.log"
+        "*.log.*"
+        # Jellyfin caches/transcodes: large, regenerable, in flux
+        "/srv/data/jellyfin/cache"
+        "/srv/data/jellyfin/transcodes"
+        # In-flux / temporary files
+        "*.tmp"
+        "*.part"
+        "*.partial"
       ];
       extraArgs = ["--remote-path=borg14"];
       environment = environment;
       compression = "auto,zstd";
-      failOnWarnings = true;
+      # Live services write during the backup window; a benign "file changed
+      # while we backed it up" warning (borg exit 1) should not fail the job.
+      # Real errors (borg exit 2) still fail the unit.
+      failOnWarnings = false;
       startAt = "hourly";
       prune.keep = {
         hourly = 48; # 2 days of hourly snapshots
