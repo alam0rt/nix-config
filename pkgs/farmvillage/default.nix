@@ -80,6 +80,16 @@ _logging.getLogger("werkzeug").setLevel(_logging.INFO)' \
 def ruffle(path):
     return send_from_directory(os.path.join(TEMPLATES_DIR, "ruffle"), path)
 
+@app.route("/masterysigns/<path:path>", methods=['"'"'GET'"'"'])
+def masterysigns(path):
+    # Upstream serves no mastery-sign data; return a valid empty gzipped AMF3
+    # array so the client gets 200 instead of a 404 URLLoader error.
+    import io, gzip
+    from pyamf import amf3
+    buf = io.BytesIO()
+    amf3.Encoder(buf).writeElement([])
+    return Response(gzip.compress(buf.getvalue()), mimetype="application/x-amf")
+
 @app.route("/crossdomain.xml", methods=['"'"'GET'"'"'])'
 
       substituteInPlace templates/play.html \
@@ -95,7 +105,11 @@ def ruffle(path):
                 networkingAccessMode: "all",
                 allowScriptAccess: true,
                 warnOnUnsupportedContent: false,
-                logLevel: "warn",
+                logLevel: "info",
+                // FarmVille does heavy synchronous work during load (parsing
+                // items_opt.amf, building the world); raise Ruffle'"'"'s runaway-script
+                // limit well above the 15s default so it isn'"'"'t killed mid-load.
+                maxExecutionDuration: 300,
             };
         </script>
         <script src="{{ base_url }}/ruffle/ruffle.js"></script>
