@@ -69,6 +69,10 @@ _logging.basicConfig(level=_logging.DEBUG if _FV_DEBUG else _logging.INFO,
 _logging.getLogger("werkzeug").setLevel(_logging.INFO)' \
         --replace-fail '    # print("[+] Gateway AMF3 Request:", resp_msg)' \
           '    if _FV_DEBUG: print("[+] Gateway AMF3 Request:", resp_msg)' \
+        --replace-fail '    reqs = resp_msg.bodies[0][1].body[1]' \
+          '    reqs = resp_msg.bodies[0][1].body[1]
+    if isinstance(reqs, dict):  # py3amf >=0.8.11 decodes the batch as {0: ...} instead of a list
+        reqs = list(reqs.values())' \
         --replace-fail 'base_url=f"http://{BIND_IP}:{BIND_PORT}",' \
           'base_url=os.environ.get("FARMVILLAGE_BASE_URL", f"http://{BIND_IP}:{BIND_PORT}"),' \
         --replace-fail '@app.route("/crossdomain.xml", methods=['"'"'GET'"'"'])' \
