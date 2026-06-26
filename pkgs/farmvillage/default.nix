@@ -115,7 +115,9 @@ def masterysigns(path):
             };
         </script>
         <script src="{{ base_url }}/ruffle/ruffle.js"></script>
-    </head>'
+    </head>' \
+        --replace-fail 'src="embeds/Flash/v855097-855094/FV_Preloader.swf?swfLocation=embeds/Flash/v855097-855094/FarmGame.swf"' \
+          'src="embeds/Flash/v855097-855094/FarmGame.swf"'
     '';
 
     installPhase = ''
