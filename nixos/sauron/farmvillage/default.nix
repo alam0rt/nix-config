@@ -29,6 +29,10 @@ in {
     environment = {
       FARMVILLAGE_DATA_DIR = dataDir;
       FARMVILLAGE_BASE_URL = "https://farm.iced.cool";
+      # Flush stdout immediately so journal logs aren't block-buffered, and
+      # enable verbose AMF gateway request dumps (unset to quieten).
+      PYTHONUNBUFFERED = "1";
+      FARMVILLAGE_DEBUG = "1";
     };
 
     serviceConfig = {

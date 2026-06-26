@@ -53,7 +53,22 @@ SAVES_DIR = os.path.join(DATA_DIR, "saves")' \
         --replace-fail 'TMP_DIR = os.path.join(BASE_DIR, "tmp")' \
           'TMP_DIR = os.path.join(DATA_DIR, "tmp")'
 
+      # Upstream hardcodes Windows path separators here, which breaks on Linux
+      # (backslashes are literal filename chars). Use proper os.path.join segments.
+      substituteInPlace game_settings.py \
+        --replace-fail 'os.path.join(XML_DIR, "gz\\v855098\\gameSettings.xml.gz")' \
+          'os.path.join(XML_DIR, "gz", "v855098", "gameSettings.xml.gz")'
+
       substituteInPlace server.py \
+        --replace-fail 'app: Flask = Flask(__name__)' \
+          'app: Flask = Flask(__name__)
+import logging as _logging
+_FV_DEBUG = bool(os.environ.get("FARMVILLAGE_DEBUG"))
+_logging.basicConfig(level=_logging.DEBUG if _FV_DEBUG else _logging.INFO,
+                     format="%(asctime)s %(levelname)s %(name)s: %(message)s")
+_logging.getLogger("werkzeug").setLevel(_logging.INFO)' \
+        --replace-fail '    # print("[+] Gateway AMF3 Request:", resp_msg)' \
+          '    if _FV_DEBUG: print("[+] Gateway AMF3 Request:", resp_msg)' \
         --replace-fail 'base_url=f"http://{BIND_IP}:{BIND_PORT}",' \
           'base_url=os.environ.get("FARMVILLAGE_BASE_URL", f"http://{BIND_IP}:{BIND_PORT}"),' \
         --replace-fail '@app.route("/crossdomain.xml", methods=['"'"'GET'"'"'])' \
