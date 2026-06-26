@@ -83,11 +83,13 @@ def ruffle(path):
 @app.route("/masterysigns/<path:path>", methods=['"'"'GET'"'"'])
 def masterysigns(path):
     # Upstream serves no mastery-sign data; return a valid empty gzipped AMF3
-    # array so the client gets 200 instead of a 404 URLLoader error.
+    # object so the client gets 200 instead of a 404 URLLoader error. The game
+    # rejects a bare array ("Invalid object") in its load-complete handler, so
+    # encode an (empty) object/dict.
     import io, gzip
     from pyamf import amf3
     buf = io.BytesIO()
-    amf3.Encoder(buf).writeElement([])
+    amf3.Encoder(buf).writeElement({})
     return Response(gzip.compress(buf.getvalue()), mimetype="application/x-amf")
 
 @app.route("/crossdomain.xml", methods=['"'"'GET'"'"'])'
