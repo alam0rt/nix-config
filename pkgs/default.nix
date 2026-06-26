@@ -11,4 +11,5 @@ pkgs: {
   ghidra-mcp = pkgs.callPackage ./ghidra-mcp {};
   freecad-mcp = pkgs.callPackage ./freecad-mcp {};
   pi = pkgs.callPackage ./pi {};
+  farmvillage = pkgs.callPackage ./farmvillage {};
 }
