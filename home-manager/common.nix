@@ -20,6 +20,7 @@
     ./config/vscode.nix
     ./config/vim.nix
     ./config/kubernetes.nix
+    ./config/obsidian.nix
   ];
 
   nixpkgs = {
