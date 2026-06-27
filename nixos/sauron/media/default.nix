@@ -110,10 +110,12 @@ in {
           base_url = "http://localhost:${toString config.services.radarr.settings.server.port}/";
           delete_old_custom_formats = true;
           include = [
-            # Trash-Guides consolidated the old split quality-definition /
-            # quality-profile / custom-formats templates into a single
-            # combined template (recyclarr v8 config-templates schema).
-            {template = "hd-bluray-web";}
+            # recyclarr v8 resolves `include:` against includes.json, where
+            # the old combined `hd-bluray-web` template is split into separate
+            # quality-definition / quality-profile / custom-formats includes.
+            {template = "radarr-quality-definition-movie";}
+            {template = "radarr-quality-profile-hd-bluray-web";}
+            {template = "radarr-custom-formats-hd-bluray-web";}
           ];
         };
       };
@@ -125,8 +127,10 @@ in {
           base_url = "http://localhost:${toString config.services.sonarr.settings.server.port}/";
           delete_old_custom_formats = true;
           include = [
-            # Consolidated combined template (see radarr note above).
-            {template = "web-1080p";}
+            # Split includes (see radarr note above); web-1080p is now v4.
+            {template = "sonarr-quality-definition-series";}
+            {template = "sonarr-v4-quality-profile-web-1080p";}
+            {template = "sonarr-v4-custom-formats-web-1080p";}
           ];
         };
       };
