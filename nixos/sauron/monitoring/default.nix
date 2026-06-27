@@ -474,6 +474,64 @@ in {
             ];
           }
           {
+            # Memory is tight on this host (62G, ZFS ARC + a 12G transcode
+            # tmpfs + active swap). PSI memory pressure is the right early
+            # signal — it measures time tasks actually stalled waiting on
+            # memory, unlike raw "free" which is misleading with reclaimable
+            # ARC/page cache. systemd-oomd (PSI-driven) is the backstop that
+            # kills cgroups before the kernel OOM killer; these alerts tell us
+            # when that's getting close or has fired.
+            name = "memory";
+            rules = [
+              {
+                # "some" PSI: fraction of wall-time at least one task was
+                # stalled waiting on memory. >10% sustained = real pressure.
+                alert = "MemoryPressureHigh";
+                expr = ''rate(node_pressure_memory_waiting_seconds_total[5m]) > 0.10'';
+                for = "10m";
+                labels.severity = "warning";
+                annotations = {
+                  summary = "Sustained memory pressure on {{ $labels.instance }}";
+                  description = "Tasks have been stalled waiting on memory >10% of the time for 10m. ARC/tmpfs/swap are competing — check `cat /proc/pressure/memory`, `free -h`, ARC size.";
+                };
+              }
+              {
+                # "full" PSI: fraction of time *every* task was stalled on
+                # memory — severe, throughput is collapsing.
+                alert = "MemoryPressureCritical";
+                expr = ''rate(node_pressure_memory_stalled_seconds_total[5m]) > 0.20'';
+                for = "5m";
+                labels.severity = "critical";
+                annotations = {
+                  summary = "Severe memory pressure on {{ $labels.instance }}";
+                  description = "All tasks stalled on memory >20% of the time for 5m — OOM kills are likely imminent.";
+                };
+              }
+              {
+                # Definitive: the kernel (or systemd-oomd) actually killed
+                # something for memory. Counter increasing = it happened.
+                alert = "OOMKillsDetected";
+                expr = ''increase(node_vmstat_oom_kill[10m]) > 0'';
+                for = "0m";
+                labels.severity = "critical";
+                annotations = {
+                  summary = "OOM kill(s) on {{ $labels.instance }}";
+                  description = "{{ $value }} process(es) were OOM-killed in the last 10m. Check `journalctl -k -g oom` and `journalctl -u systemd-oomd`.";
+                };
+              }
+              {
+                alert = "SwapNearlyFull";
+                expr = ''(node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) < 0.10'';
+                for = "15m";
+                labels.severity = "warning";
+                annotations = {
+                  summary = "Swap nearly exhausted on {{ $labels.instance }}";
+                  description = "Less than 10% swap free for 15m. Once swap fills, the next pressure spike goes straight to OOM kills.";
+                };
+              }
+            ];
+          }
+          {
             name = "blackbox";
             rules = [
               {
