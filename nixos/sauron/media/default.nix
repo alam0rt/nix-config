@@ -307,6 +307,29 @@ in {
     cacheDir = "/var/cache/jellyfin"; # leave on ssd
   };
 
+  # Jellyfin's TranscodingTempPath (set in encoding.xml) is
+  # /var/lib/jellyfin/transcodes. Back it with a RAM tmpfs so the churny
+  # HLS segment writes/reads during NVENC transcoding never touch disk.
+  # Sized/capped at 12G: a tmpfs is swap-backed and bounded, so it can never
+  # OOM the host — worst case a stream hits ENOSPC. It shares RAM with the
+  # ZFS ARC (which shrinks under pressure). Box only has 62G, so keep modest.
+  fileSystems."/var/lib/jellyfin/transcodes" = {
+    device = "tmpfs";
+    fsType = "tmpfs";
+    options = [
+      "size=12G"
+      "mode=0700"
+      "uid=jellyfin"
+      "gid=jellyfin"
+      "noexec"
+      "nosuid"
+      "nodev"
+    ];
+  };
+  # Don't start Jellyfin until the transcode tmpfs is mounted, otherwise it
+  # would write into the underlying dir and get shadowed by the later mount.
+  systemd.services.jellyfin.unitConfig.RequiresMountsFor = "/var/lib/jellyfin/transcodes";
+
   services.lidarr = {
     enable = true;
     dataDir = "/srv/data/lidarr";
