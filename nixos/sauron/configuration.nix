@@ -120,6 +120,16 @@
     enableUserSlices = true;
   };
 
+  # oomd kill-priority policy. RAM is tight (62G), so when pressure builds we
+  # want systemd-oomd to sacrifice the expendable, memory-hungry workloads
+  # before it touches anything user-facing.
+  #   - jellyfin: protect (killed last) — user-facing media streaming.
+  #   - llama-cpp / qbittorrent: regenerable/restartable and the biggest RAM
+  #     consumers, so let oomd reap them under their own memory pressure.
+  systemd.services.jellyfin.serviceConfig.ManagedOOMPreference = "avoid";
+  systemd.services.llama-cpp.serviceConfig.ManagedOOMMemoryPressure = "kill";
+  systemd.services.qbittorrent.serviceConfig.ManagedOOMMemoryPressure = "kill";
+
   networking.hostName = "sauron"; # Define your hostname.
   networking.hostId = "acfb04f9"; # head -c 8 /etc/machine-id
   networking.enableIPv6 = true;
