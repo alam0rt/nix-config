@@ -24,12 +24,12 @@
     ./syncthing
     ./monitoring
     ./ups
-    #./openwebui
+    # ./openwebui
     # ./home-assistant
     # ./models
     # ./pvpgn
-    ./llama-cpp
-    ./farmvillage
+    # ./llama-cpp
+    # ./farmvillage
     # ./matrix
   ];
 
@@ -127,7 +127,6 @@
   #   - llama-cpp / qbittorrent: regenerable/restartable and the biggest RAM
   #     consumers, so let oomd reap them under their own memory pressure.
   systemd.services.jellyfin.serviceConfig.ManagedOOMPreference = "avoid";
-  systemd.services.llama-cpp.serviceConfig.ManagedOOMMemoryPressure = "kill";
   systemd.services.qbittorrent.serviceConfig.ManagedOOMMemoryPressure = "kill";
 
   networking.hostName = "sauron"; # Define your hostname.
