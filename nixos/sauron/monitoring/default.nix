@@ -96,6 +96,17 @@ in {
     ];
   };
 
+  # Run SMART self-tests on a schedule so the smartctl exporter has fresh
+  # health data to scrape. Short test nightly at 02:00, long test Saturday
+  # 03:00. Warnings are logged to syslog; real-time alerting is via the
+  # Prometheus rules below (SmartDiskUnhealthy / DiskUncorrectedErrors /
+  # DiskTransportErrors).
+  services.smartd = {
+    enable = true;
+    autodetect = true;
+    defaults.monitored = "-a -o on -S on -s (S/../.././02|L/../../6/03)";
+  };
+
   services.prometheus.exporters = {
     zfs.enable = true;
     nginx.enable = true;
@@ -393,6 +404,31 @@ in {
                   description = "Disk {{ $labels.device }} temperature is {{ $value }}C.";
                 };
               }
+              {
+                # Uncorrected read/write errors mean the drive could not
+                # recover the data itself — real media trouble.
+                alert = "DiskUncorrectedErrors";
+                expr = ''increase(smartctl_read_total_uncorrected_errors[1h]) > 0 or increase(smartctl_write_total_uncorrected_errors[1h]) > 0'';
+                for = "0m";
+                labels.severity = "critical";
+                annotations = {
+                  summary = "Uncorrected errors on disk {{ $labels.device }}";
+                  description = "Disk {{ $labels.device }} ({{ $labels.model_name }}) logged uncorrected read/write errors in the last hour.";
+                };
+              }
+              {
+                # ReRead/ReWrite-corrected errors climbing is the classic
+                # signature of a marginal cable/connector/backplane lane
+                # (the data was recovered, but the transport is flaky).
+                alert = "DiskTransportErrors";
+                expr = ''increase(smartctl_read_errors_corrected_by_rereads_rewrites[1h]) > 0 or increase(smartctl_write_errors_corrected_by_rereads_rewrites[1h]) > 0'';
+                for = "0m";
+                labels.severity = "warning";
+                annotations = {
+                  summary = "Transport-corrected errors on disk {{ $labels.device }}";
+                  description = "Disk {{ $labels.device }} needed reread/rewrite retries in the last hour — suspect a cable/backplane/HBA link, not the platters.";
+                };
+              }
             ];
           }
           {
@@ -413,6 +449,18 @@ in {
           {
             name = "zfs";
             rules = [
+              {
+                # zfs_pool_health: 0 = ONLINE; anything else is
+                # DEGRADED/FAULTED/UNAVAIL/etc.
+                alert = "ZfsPoolNotOnline";
+                expr = "zfs_pool_health != 0";
+                for = "1m";
+                labels.severity = "critical";
+                annotations = {
+                  summary = "ZFS pool {{ $labels.pool }} is not ONLINE";
+                  description = "Pool {{ $labels.pool }} reports health state {{ $value }} (0 = ONLINE). Check `zpool status -v`.";
+                };
+              }
               {
                 alert = "ZfsArcHitRateLow";
                 expr = ''node_zfs_arc_hits / (node_zfs_arc_hits + node_zfs_arc_misses) < 0.5'';
