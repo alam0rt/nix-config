@@ -74,7 +74,6 @@
       "targets": [
         { "expr": "node_systemd_unit_state{name=\"sonarr.service\",state=\"active\"}", "legendFormat": "sonarr" },
         { "expr": "node_systemd_unit_state{name=\"radarr.service\",state=\"active\"}", "legendFormat": "radarr" },
-        { "expr": "node_systemd_unit_state{name=\"lidarr.service\",state=\"active\"}", "legendFormat": "lidarr" },
         { "expr": "node_systemd_unit_state{name=\"bazarr.service\",state=\"active\"}", "legendFormat": "bazarr" },
         { "expr": "node_systemd_unit_state{name=\"jackett.service\",state=\"active\"}", "legendFormat": "jackett" },
         { "expr": "node_systemd_unit_state{name=\"jellyseerr.service\",state=\"active\"}", "legendFormat": "jellyseerr" }

@@ -82,7 +82,6 @@ in {
         "sonarr.${cfg.domain}"
         "radarr.${cfg.domain}"
         "bazarr.${cfg.domain}"
-        "lidarr.${cfg.domain}"
         "open-webui.${cfg.domain}"
         "maubot.${cfg.domain}"
         "sync.${cfg.domain}"

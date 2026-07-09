@@ -240,7 +240,6 @@ in {
               "http://localhost:8096" # jellyfin
               "http://localhost:${toString config.services.sonarr.settings.server.port}" # sonarr
               "http://localhost:${toString config.services.radarr.settings.server.port}" # radarr
-              "http://localhost:${toString config.services.lidarr.settings.server.port}" # lidarr
               "http://localhost:${toString config.services.bazarr.listenPort}" # bazarr
               "http://localhost:9117" # jackett
               "http://localhost:${toString config.services.prowlarr.settings.server.port}" # prowlarr
@@ -581,7 +580,7 @@ in {
               }
               {
                 alert = "MediaServiceDown";
-                expr = ''node_systemd_unit_state{name=~"(jellyfin|sonarr|radarr|lidarr|bazarr|jackett|prowlarr|jellyseerr|qbittorrent)\\.service",state="failed"} == 1'';
+                expr = ''node_systemd_unit_state{name=~"(jellyfin|sonarr|radarr|bazarr|jackett|prowlarr|jellyseerr|qbittorrent)\\.service",state="failed"} == 1'';
                 for = "2m";
                 labels.severity = "critical";
                 annotations = {

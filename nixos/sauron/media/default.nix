@@ -290,13 +290,6 @@ in {
         recommendedProxySettings = true;
       };
     };
-    virtualHosts."lidarr.${cfg.domain}" = {
-      forceSSL = true;
-      useACMEHost = cfg.domain;
-      locations."/" = {
-        proxyPass = "http://127.0.0.1:${toString config.services.lidarr.settings.server.port}";
-      };
-    };
   };
 
   services.jellyfin = {
@@ -329,13 +322,6 @@ in {
   # Don't start Jellyfin until the transcode tmpfs is mounted, otherwise it
   # would write into the underlying dir and get shadowed by the later mount.
   systemd.services.jellyfin.unitConfig.RequiresMountsFor = "/var/lib/jellyfin/transcodes";
-
-  services.lidarr = {
-    enable = false;
-    dataDir = "/srv/data/lidarr";
-    openFirewall = true;
-  };
-  users.users.lidarr.extraGroups = ["qbittorrent"];
 
   services.radarr = {
     enable = true;

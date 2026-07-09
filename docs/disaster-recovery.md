@@ -235,7 +235,6 @@ Replace `ARCHIVE_NAME` with the latest archive from `borg list`.
 chown -R jellyfin:jellyfin /srv/data/jellyfin
 chown -R sonarr:sonarr /srv/data/sonarr
 chown -R radarr:radarr /srv/data/radarr
-chown -R lidarr:lidarr /srv/data/lidarr
 chown -R jackett:jackett /srv/data/jackett
 chown -R transmission:transmission /srv/data/transmission
 chown -R syncthing:syncthing /srv/data/syncthing
@@ -341,7 +340,6 @@ systemctl start <service>
 | Jellyfin | `/srv/data/jellyfin` | `jellyfin:jellyfin` | Library metadata, watch progress |
 | Sonarr | `/srv/data/sonarr` | `sonarr:sonarr` | TV database, custom formats |
 | Radarr | `/srv/data/radarr` | `radarr:radarr` | Movie database, custom formats |
-| Lidarr | `/srv/data/lidarr` | `lidarr:lidarr` | Music database |
 | Jackett | `/srv/data/jackett` | `jackett:jackett` | Indexer configs |
 | qBittorrent | `/srv/media/downloads` | `qbittorrent:qbittorrent` | Torrent state, downloads |
 | Syncthing | `/srv/data/syncthing` | `syncthing:syncthing` | Device keys, folder config |
