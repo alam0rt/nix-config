@@ -331,7 +331,7 @@ in {
   systemd.services.jellyfin.unitConfig.RequiresMountsFor = "/var/lib/jellyfin/transcodes";
 
   services.lidarr = {
-    enable = true;
+    enable = false;
     dataDir = "/srv/data/lidarr";
     openFirewall = true;
   };
