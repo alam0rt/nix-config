@@ -77,23 +77,4 @@ in {
       };
     };
   };
-
-  # Prometheus exporter for qBittorrent metrics
-  systemd.services.prometheus-qbittorrent-exporter = {
-    description = "Prometheus exporter for qBittorrent";
-    after = ["network.target" "qbittorrent.service"];
-    wantedBy = ["multi-user.target"];
-    environment = {
-      QBITTORRENT_BASE_URL = "http://127.0.0.1:${toString webuiPort}";
-      EXPORTER_PORT = "9716";
-      EXPORTER_HOST = "127.0.0.1";
-    };
-    serviceConfig = {
-      Type = "simple";
-      ExecStart = "${pkgs.prometheus-qbittorrent-exporter}/bin/qbit-exp";
-      Restart = "on-failure";
-      RestartSec = "10s";
-      DynamicUser = true;
-    };
-  };
 }
