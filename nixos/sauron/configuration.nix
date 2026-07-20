@@ -89,7 +89,7 @@
     # eagerness to evict anon pages. Pairs with zswap below.
     "vm.swappiness" = 10;
 
-    # Required for podman bridge-networked containers (e.g. flaresolverr) to
+    # Required for podman bridge-networked containers (e.g. byparr) to
     # reach the internet — netavark sets up MASQUERADE but relies on the host
     # for forwarding. virtualisation.podman does not enable this itself, and
     # systemd-sysctl resets unmanaged keys to kernel defaults on every reload,
@@ -134,7 +134,7 @@
   networking.enableIPv6 = true;
 
   # Prefer IPv4 over IPv6 for outbound (RFC 3484 precedence override).
-  # FlareSolverr runs in a podman container with IPv4-only egress; Jackett runs on
+  # The Cloudflare solver (byparr) runs in a podman container with IPv4-only egress; Jackett runs on
   # the host and was egressing IPv6, so Cloudflare's cf_clearance issued to the
   # container's IPv4 source was rejected on Jackett's follow-up request.
   environment.etc."gai.conf".text = ''

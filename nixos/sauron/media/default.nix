@@ -364,7 +364,7 @@ in {
     1900
     7359
   ]; # dlna
-  networking.firewall.allowedTCPPorts = [8191]; # flaresolverr
+  networking.firewall.allowedTCPPorts = [8191]; # byparr (FlareSolverr-compatible)
 
   users.users.janitorr = {
     uid = 977;
@@ -439,14 +439,17 @@ in {
       ];
     };
 
-    flaresolverr = {
-      image = "ghcr.io/flaresolverr/flaresolverr:v3.5.0";
+    # Byparr: Camoufox-based drop-in FlareSolverr replacement (same :8191/v1 API,
+    # so Prowlarr's "FlareSolverr" proxy config needs no change). Swapped in
+    # because upstream FlareSolverr timed out on ~73% of Cloudflare challenges
+    # despite running a current Chromium (148).
+    byparr = {
+      image = "ghcr.io/thephaseless/byparr:latest";
       ports = ["127.0.0.1:8191:8191"];
-      serviceName = "flaresolverr";
-      environment = {
-        LOG_LEVEL = "debug";
-        LOG_HTML = "true";
-      };
+      serviceName = "byparr";
+      pull = "always";
+      # Camoufox/Firefox needs more than podman's default 64M /dev/shm or it crashes.
+      extraOptions = ["--shm-size=1g"];
     };
   };
 }
