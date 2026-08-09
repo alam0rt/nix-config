@@ -11,6 +11,13 @@
     radarr = 9708;
   };
 in {
+  imports = [
+    ./alerts.nix
+    ./zpool-textfile.nix
+    ./borg-metrics.nix
+    ./alertmanager-matrix.nix
+  ];
+
   users.users.grafana.extraGroups = ["mail"]; # allow mail cred reading
 
   services.grafana = {
@@ -93,6 +100,9 @@ in {
       "--collector.ethtool"
       "--collector.softirqs"
       "--collector.tcpstat"
+      # Metrics that need root or a shell pipeline are written here by
+      # ./zpool-textfile.nix and ./borg-metrics.nix.
+      "--collector.textfile.directory=/var/lib/prometheus-node-exporter-text-files"
     ];
   };
 
@@ -111,6 +121,23 @@ in {
     zfs.enable = true;
     nginx.enable = true;
     smartctl.enable = true;
+
+    # ACME renews at 30 days; without this a renewal that has been quietly
+    # failing only surfaces when a browser refuses the site.
+    node-cert = {
+      enable = true;
+      paths = ["/var/lib/acme"];
+      # One series per domain — chain.pem/fullchain.pem would also report the
+      # (much longer lived) intermediate and drown the leaf certs.
+      includeGlobs = ["*/cert.pem"];
+    };
+
+    # upsd is already running for clean shutdown on power loss, but nothing
+    # was reporting whether it can still talk to the UPS.
+    nut = {
+      enable = true;
+      nutServer = "127.0.0.1";
+    };
 
     # HTTP endpoint probing for all services
     blackbox = {
@@ -230,6 +257,51 @@ in {
         ];
       }
       {
+        job_name = "cert";
+        scrape_interval = "5m";
+        static_configs = [
+          {
+            targets = [
+              "localhost:${toString config.services.prometheus.exporters.node-cert.port}"
+            ];
+            labels.instance = "sauron";
+          }
+        ];
+      }
+      {
+        job_name = "nut";
+        scrape_interval = "30s";
+        static_configs = [
+          {
+            targets = [
+              "localhost:${toString config.services.prometheus.exporters.nut.port}"
+            ];
+            labels.instance = "sauron";
+          }
+        ];
+      }
+      # Self-monitoring: without these, a Prometheus that cannot evaluate
+      # rules or an Alertmanager that cannot deliver looks exactly like a
+      # healthy system.
+      {
+        job_name = "prometheus";
+        static_configs = [
+          {
+            targets = ["localhost:${toString config.services.prometheus.port}"];
+            labels.instance = "sauron";
+          }
+        ];
+      }
+      {
+        job_name = "alertmanager";
+        static_configs = [
+          {
+            targets = ["localhost:${toString config.services.prometheus.alertmanager.port}"];
+            labels.instance = "sauron";
+          }
+        ];
+      }
+      {
         job_name = "blackbox";
         scrape_interval = "30s";
         metrics_path = "/probe";
@@ -306,294 +378,6 @@ in {
       # }
     ];
 
-    # --- Alerting rules ---
-    rules = [
-      (builtins.toJSON {
-        groups = [
-          {
-            name = "system";
-            rules = [
-              {
-                alert = "HighCpuUsage";
-                expr = ''100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90'';
-                for = "10m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "High CPU usage on {{ $labels.instance }}";
-                  description = "CPU usage has been above 90% for 10 minutes. Current value: {{ $value }}%";
-                };
-              }
-              {
-                alert = "HighMemoryUsage";
-                expr = ''100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 90'';
-                for = "5m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "High memory usage on {{ $labels.instance }}";
-                  description = "Memory usage has been above 90% for 5 minutes. Current value: {{ $value }}%";
-                };
-              }
-              {
-                alert = "HighLoadAverage";
-                expr = ''node_load5 > 50'';
-                for = "10m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "High load average on {{ $labels.instance }}";
-                  description = "5-minute load average has been above 50 for 10 minutes. Current value: {{ $value }}";
-                };
-              }
-              {
-                alert = "HostDown";
-                expr = "up == 0";
-                for = "2m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "Target {{ $labels.job }} down";
-                  description = "{{ $labels.instance }} has been unreachable for 2 minutes.";
-                };
-              }
-            ];
-          }
-          {
-            name = "filesystem";
-            rules = [
-              {
-                alert = "DiskSpaceLow";
-                expr = ''(node_filesystem_avail_bytes{fstype=~"ext4|xfs|zfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext4|xfs|zfs|btrfs"}) * 100 < 10'';
-                for = "5m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Low disk space on {{ $labels.mountpoint }}";
-                  description = "Filesystem {{ $labels.mountpoint }} has less than 10% free space. Current free: {{ $value }}%";
-                };
-              }
-              {
-                alert = "DiskSpaceCritical";
-                expr = ''(node_filesystem_avail_bytes{fstype=~"ext4|xfs|zfs|btrfs"} / node_filesystem_size_bytes{fstype=~"ext4|xfs|zfs|btrfs"}) * 100 < 5'';
-                for = "2m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "Critical disk space on {{ $labels.mountpoint }}";
-                  description = "Filesystem {{ $labels.mountpoint }} has less than 5% free space. Current free: {{ $value }}%";
-                };
-              }
-            ];
-          }
-          {
-            name = "disk-health";
-            rules = [
-              {
-                alert = "SmartDiskUnhealthy";
-                expr = "smartctl_device_smart_healthy == 0";
-                for = "0m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "Disk {{ $labels.device }} SMART health check failed";
-                  description = "SMART reports {{ $labels.device }} ({{ $labels.model_name }}) as unhealthy.";
-                };
-              }
-              {
-                alert = "DiskTemperatureHigh";
-                expr = ''smartctl_device_temperature{temperature_type="current"} > 50'';
-                for = "5m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "High temperature on disk {{ $labels.device }}";
-                  description = "Disk {{ $labels.device }} temperature is {{ $value }}C.";
-                };
-              }
-              {
-                # Uncorrected read/write errors mean the drive could not
-                # recover the data itself — real media trouble.
-                alert = "DiskUncorrectedErrors";
-                expr = ''increase(smartctl_read_total_uncorrected_errors[1h]) > 0 or increase(smartctl_write_total_uncorrected_errors[1h]) > 0'';
-                for = "0m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "Uncorrected errors on disk {{ $labels.device }}";
-                  description = "Disk {{ $labels.device }} ({{ $labels.model_name }}) logged uncorrected read/write errors in the last hour.";
-                };
-              }
-              {
-                # ReRead/ReWrite-corrected errors climbing is the classic
-                # signature of a marginal cable/connector/backplane lane
-                # (the data was recovered, but the transport is flaky).
-                alert = "DiskTransportErrors";
-                expr = ''increase(smartctl_read_errors_corrected_by_rereads_rewrites[1h]) > 0 or increase(smartctl_write_errors_corrected_by_rereads_rewrites[1h]) > 0'';
-                for = "0m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Transport-corrected errors on disk {{ $labels.device }}";
-                  description = "Disk {{ $labels.device }} needed reread/rewrite retries in the last hour — suspect a cable/backplane/HBA link, not the platters.";
-                };
-              }
-            ];
-          }
-          {
-            name = "services";
-            rules = [
-              {
-                alert = "SystemdUnitFailed";
-                expr = ''node_systemd_unit_state{state="failed"} == 1'';
-                for = "2m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Systemd unit {{ $labels.name }} failed";
-                  description = "Systemd unit {{ $labels.name }} has been in failed state for 2 minutes.";
-                };
-              }
-            ];
-          }
-          {
-            name = "zfs";
-            rules = [
-              {
-                # zfs_pool_health: 0 = ONLINE; anything else is
-                # DEGRADED/FAULTED/UNAVAIL/etc.
-                alert = "ZfsPoolNotOnline";
-                expr = "zfs_pool_health != 0";
-                for = "1m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "ZFS pool {{ $labels.pool }} is not ONLINE";
-                  description = "Pool {{ $labels.pool }} reports health state {{ $value }} (0 = ONLINE). Check `zpool status -v`.";
-                };
-              }
-              {
-                alert = "ZfsArcHitRateLow";
-                expr = ''node_zfs_arc_hits / (node_zfs_arc_hits + node_zfs_arc_misses) < 0.5'';
-                for = "30m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "ZFS ARC hit rate is low";
-                  description = "ZFS ARC hit ratio has been below 50% for 30 minutes. Current: {{ $value }}";
-                };
-              }
-            ];
-          }
-          {
-            # Memory is tight on this host (62G, ZFS ARC + a 12G transcode
-            # tmpfs + active swap). PSI memory pressure is the right early
-            # signal — it measures time tasks actually stalled waiting on
-            # memory, unlike raw "free" which is misleading with reclaimable
-            # ARC/page cache. systemd-oomd (PSI-driven) is the backstop that
-            # kills cgroups before the kernel OOM killer; these alerts tell us
-            # when that's getting close or has fired.
-            name = "memory";
-            rules = [
-              {
-                # "some" PSI: fraction of wall-time at least one task was
-                # stalled waiting on memory. >10% sustained = real pressure.
-                alert = "MemoryPressureHigh";
-                expr = ''rate(node_pressure_memory_waiting_seconds_total[5m]) > 0.10'';
-                for = "10m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Sustained memory pressure on {{ $labels.instance }}";
-                  description = "Tasks have been stalled waiting on memory >10% of the time for 10m. ARC/tmpfs/swap are competing — check `cat /proc/pressure/memory`, `free -h`, ARC size.";
-                };
-              }
-              {
-                # "full" PSI: fraction of time *every* task was stalled on
-                # memory — severe, throughput is collapsing.
-                alert = "MemoryPressureCritical";
-                expr = ''rate(node_pressure_memory_stalled_seconds_total[5m]) > 0.20'';
-                for = "5m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "Severe memory pressure on {{ $labels.instance }}";
-                  description = "All tasks stalled on memory >20% of the time for 5m — OOM kills are likely imminent.";
-                };
-              }
-              {
-                # Definitive: the kernel (or systemd-oomd) actually killed
-                # something for memory. Counter increasing = it happened.
-                alert = "OOMKillsDetected";
-                expr = ''increase(node_vmstat_oom_kill[10m]) > 0'';
-                for = "0m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "OOM kill(s) on {{ $labels.instance }}";
-                  description = "{{ $value }} process(es) were OOM-killed in the last 10m. Check `journalctl -k -g oom` and `journalctl -u systemd-oomd`.";
-                };
-              }
-              {
-                alert = "SwapNearlyFull";
-                expr = ''(node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) < 0.10'';
-                for = "15m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Swap nearly exhausted on {{ $labels.instance }}";
-                  description = "Less than 10% swap free for 15m. Once swap fills, the next pressure spike goes straight to OOM kills.";
-                };
-              }
-            ];
-          }
-          {
-            name = "blackbox";
-            rules = [
-              {
-                alert = "ServiceDown";
-                expr = ''probe_success{job="blackbox"} == 0'';
-                for = "3m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "Service {{ $labels.instance }} is down";
-                  description = "HTTP probe to {{ $labels.instance }} has been failing for 3 minutes.";
-                };
-              }
-              {
-                alert = "ServiceSlowResponse";
-                expr = ''probe_http_duration_seconds{job="blackbox"} > 5'';
-                for = "5m";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Slow response from {{ $labels.instance }}";
-                  description = "{{ $labels.instance }} response time is {{ $value }}s (>5s for 5 minutes).";
-                };
-              }
-            ];
-          }
-          {
-            name = "media";
-            rules = [
-              {
-                alert = "SonarrQueueStuck";
-                expr = "sonarr_queue_total > 0";
-                for = "6h";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Sonarr queue has been non-empty for 6 hours";
-                  description = "Sonarr has {{ $value }} items stuck in queue.";
-                };
-              }
-              {
-                alert = "RadarrQueueStuck";
-                expr = "radarr_queue_total > 0";
-                for = "6h";
-                labels.severity = "warning";
-                annotations = {
-                  summary = "Radarr queue has been non-empty for 6 hours";
-                  description = "Radarr has {{ $value }} items stuck in queue.";
-                };
-              }
-              {
-                alert = "MediaServiceDown";
-                expr = ''node_systemd_unit_state{name=~"(jellyfin|sonarr|radarr|bazarr|jackett|prowlarr|jellyseerr|qbittorrent)\\.service",state="failed"} == 1'';
-                for = "2m";
-                labels.severity = "critical";
-                annotations = {
-                  summary = "Media service {{ $labels.name }} is down";
-                  description = "{{ $labels.name }} has been in failed state for 2 minutes.";
-                };
-              }
-            ];
-          }
-        ];
-      })
-    ];
-
     # Alertmanager integration
     alertmanagers = [
       {
@@ -607,34 +391,9 @@ in {
   };
 
   # --- Alertmanager ---
+  # Routing, inhibition and delivery live in ./alertmanager-matrix.nix.
   services.prometheus.alertmanager = {
     enable = true;
-    configuration = {
-      global = {};
-      route = {
-        receiver = "default";
-        group_by = ["alertname" "severity"];
-        group_wait = "30s";
-        group_interval = "5m";
-        repeat_interval = "4h";
-        routes = [
-          {
-            receiver = "critical";
-            match.severity = "critical";
-            repeat_interval = "1h";
-          }
-        ];
-      };
-      receivers = [
-        {
-          name = "default";
-          # Grafana will query alertmanager API for alerts display
-        }
-        {
-          name = "critical";
-          # Configure email/webhook here when ready
-        }
-      ];
-    };
+    configuration.global = {};
   };
 }
