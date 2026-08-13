@@ -425,6 +425,15 @@ in {
     "d /srv/data/janitorr 0750 janitorr janitorr -"
     "d /srv/data/janitorr/logs 0750 janitorr janitorr -"
     "d /srv/data/janitorr/leaving-soon 0750 janitorr janitorr -"
+
+    # Jellyfin discovers plugins by scanning <dataDir>/plugins/*/ for a meta.json, so a symlink
+    # to the store path is enough — no copying, and the plugin version follows the package.
+    #
+    # L+ replaces whatever is at the path, which is deliberate: it stops a copy installed by hand
+    # through the Jellyfin dashboard from silently shadowing the declarative one. Plugin *config*
+    # lives in plugins/configurations/, not here, so nothing user-owned is inside this symlink.
+    "d /srv/data/jellyfin/plugins 0700 jellyfin jellyfin -"
+    "L+ /srv/data/jellyfin/plugins/OIDC-RBAC - - - - ${pkgs.jellyfin-plugin-oidc}/lib/jellyfin-plugin-oidc"
   ];
 
   systemd.services.janitorr = {
