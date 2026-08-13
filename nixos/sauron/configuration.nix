@@ -29,7 +29,6 @@
     # ./models
     # ./pvpgn
     # ./llama-cpp
-    # ./farmvillage
     # ./matrix
   ];
 
