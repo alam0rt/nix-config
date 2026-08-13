@@ -12,4 +12,5 @@ pkgs: {
   freecad-mcp = pkgs.callPackage ./freecad-mcp {};
   pi = pkgs.callPackage ./pi {};
   farmvillage = pkgs.callPackage ./farmvillage {};
+  jellyfin-plugin-oidc = pkgs.callPackage ./jellyfin-plugin-oidc {};
 }
