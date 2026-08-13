@@ -21,10 +21,6 @@
     # resulting in the rekeyed secrets not being found!
     agenix-rekey.inputs.nixpkgs.follows = "nixpkgs";
 
-    # pvpgn
-    pvpgnix.url = "github:alam0rt/pvpgnix";
-    pvpgnix.inputs.nixpkgs.follows = "nixpkgs";
-
     # pcsx-redux
     pcsx-redux.url = "github:grumpycoders/pcsx-redux";
     pcsx-redux.inputs.nixpkgs.follows = "nixpkgs-unstable";
@@ -86,7 +82,6 @@
           inherit inputs outputs;
         };
         modules = [
-          # removed pvpgn
           ./nixos/configuration.nix
           ./nixos/sauron/configuration.nix
           inputs.agenix.nixosModules.default

@@ -24,12 +24,9 @@
     ./syncthing
     ./monitoring
     ./ups
-    # ./openwebui
     # ./home-assistant
     # ./models
-    # ./pvpgn
     # ./llama-cpp
-    # ./matrix
   ];
 
   boot = {
