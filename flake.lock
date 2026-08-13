@@ -397,27 +397,6 @@
         "type": "github"
       }
     },
-    "pvpgnix": {
-      "inputs": {
-        "nixpkgs": [
-          "nixpkgs"
-        ],
-        "utils": "utils_2"
-      },
-      "locked": {
-        "lastModified": 1729029537,
-        "narHash": "sha256-EBOyo2LkCKbpMVfMkqTPgD/MTTDuCXkFTwt6ZCDRzvY=",
-        "owner": "alam0rt",
-        "repo": "pvpgnix",
-        "rev": "0155560c63d7fc728d3a6a1d7471af9fda51e763",
-        "type": "github"
-      },
-      "original": {
-        "owner": "alam0rt",
-        "repo": "pvpgnix",
-        "type": "github"
-      }
-    },
     "root": {
       "inputs": {
         "agenix": "agenix",
@@ -428,8 +407,7 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nur": "nur",
         "nvidia-patch": "nvidia-patch",
-        "pcsx-redux": "pcsx-redux",
-        "pvpgnix": "pvpgnix"
+        "pcsx-redux": "pcsx-redux"
       }
     },
     "systems": {
@@ -493,21 +471,6 @@
         "owner": "numtide",
         "repo": "flake-utils",
         "rev": "b1d9ab70662946ef0850d488da1c9019f3a9752a",
-        "type": "github"
-      },
-      "original": {
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "type": "github"
-      }
-    },
-    "utils_2": {
-      "locked": {
-        "lastModified": 1648297722,
-        "narHash": "sha256-W+qlPsiZd8F3XkzXOzAoR+mpFqzm3ekQkJNa+PIh1BQ=",
-        "owner": "numtide",
-        "repo": "flake-utils",
-        "rev": "0f8662f1319ad6abf89b3380dd2722369fc51ade",
         "type": "github"
       },
       "original": {

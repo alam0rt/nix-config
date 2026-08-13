@@ -64,7 +64,8 @@ This is a NixOS + home-manager flake managing multiple hosts and a shared home e
 - **`nixos/config/common/`** — nix GC/optimise, users, server defaults
 - **`nixos/config/secrets/`** — agenix-rekey configuration; rekeyed secrets stored in `secrets/rekeyed/<hostname>/`
 - **`nixos/<hostname>/configuration.nix`** — host-specific config that imports the shared base plus host services
-- `sauron` is the primary server and runs many services (Matrix, Nginx, NAS, media, monitoring, mail, Home Assistant, vaultwarden, mumble, qbittorrent, etc.)
+- `sauron` is the primary server. Enabled services are exactly the uncommented imports in `nixos/sauron/configuration.nix` — currently fail2ban, maubot, mumble (murmur), borg, tailscale, vaultwarden, qbittorrent, NAS, unifi, mail, media (Jellyfin + *arrs), nginx, syncthing, monitoring, UPS. Some module directories are parked with their import commented out (`home-assistant`, `models`, `llama-cpp`); check the import list before assuming a service is live.
+- Not everything lives here. Matrix/Synapse, Keycloak and other services run on the `omar` Kubernetes cluster in the sibling `ops-kube` repo. `nixos/sauron/monitoring/alertmanager-matrix.nix` posts alerts *to* that Matrix — it is unrelated to hosting it.
 - `desktop` and `laptop` are workstation configs
 
 ### Home-manager layer (`home-manager/`)
