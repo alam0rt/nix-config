@@ -67,10 +67,45 @@
       episode-deletion:
         enabled: false
   '';
+
+  # Custom menu links for the Jellyfin web client sidebar.
+  # https://jellyfin.org/docs/general/clients/web-config/#custom-menu-links
+  # `icon` is a Material Icons name; omitting it falls back to a generic link icon.
+  jellyfinMenuLinks = [
+    {
+      name = "Requests";
+      icon = "playlist_add";
+      url = "https://requests.iced.cool";
+    }
+    {
+      name = "2026 Wrapped";
+      icon = "auto_awesome";
+      url = "https://wrapped.iced.cool";
+    }
+  ];
+
+  # config.json ships inside the read-only jellyfin-web store path, so copy the
+  # web root out and splice menuLinks into the stock config (preserving upstream
+  # themes/plugins) rather than hand-maintaining a whole config.json.
+  jellyfinWeb =
+    pkgs.runCommand "jellyfin-web-${pkgs.unstable.jellyfin-web.version}-menulinks" {
+      nativeBuildInputs = [pkgs.jq];
+      menuLinks = builtins.toJSON jellyfinMenuLinks;
+      passAsFile = ["menuLinks"];
+    } ''
+      mkdir -p $out/share
+      cp -r --no-preserve=mode ${pkgs.unstable.jellyfin-web}/share/jellyfin-web $out/share/jellyfin-web
+      jq --slurpfile links "$menuLinksPath" '.menuLinks = $links[0]' \
+        ${pkgs.unstable.jellyfin-web}/share/jellyfin-web/config.json \
+        > $out/share/jellyfin-web/config.json
+    '';
+
+  # The server wrapper hardcodes --webdir=${jellyfin-web}, so point it at ours.
+  jellyfinPackage = pkgs.unstable.jellyfin.override {jellyfin-web = jellyfinWeb;};
 in {
   environment.systemPackages = with pkgs; [
-    unstable.jellyfin
-    unstable.jellyfin-web
+    jellyfinPackage
+    jellyfinWeb
     unstable.jellyfin-ffmpeg
   ];
 
@@ -293,7 +328,7 @@ in {
   };
 
   services.jellyfin = {
-    package = pkgs.unstable.jellyfin;
+    package = jellyfinPackage;
     enable = true;
     openFirewall = true;
     dataDir = "/srv/data/jellyfin";
