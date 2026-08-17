@@ -37,6 +37,16 @@
   # webhook payload.
   receivers = ["critical" "warning" "watchdog"];
 
+  # Alertmanager runs with DynamicUser=yes, so its uid does not exist at
+  # activation time and the agenix secret cannot simply be chowned to it.
+  # Hand the file over as a systemd credential instead: systemd reads it as
+  # root before dropping privileges, then exposes it under $CREDENTIALS_DIRECTORY
+  # readable only by the unit. Reading /run/agenix directly fails at delivery
+  # time with "unable to read basic auth password: permission denied" — and
+  # only then, because Alertmanager opens the file when it fires, not at start.
+  credentialName = "matrix-webhook-secret";
+  credentialPath = "/run/credentials/alertmanager.service/${credentialName}";
+
   webhookFor = name: {
     inherit name;
     webhook_configs = [
@@ -48,7 +58,7 @@
           username = "alertmanager";
           # Passing the secret this way keeps it out of the Nix store; the
           # bridge accepts it as the basic-auth password or a ?secret= query.
-          password_file = config.age.secrets.matrix-alertmanager-secret.path;
+          password_file = credentialPath;
         };
       }
     ];
@@ -84,6 +94,10 @@ in {
       }
     ];
   };
+
+  systemd.services.alertmanager.serviceConfig.LoadCredential =
+    lib.mkIf matrix.enable
+    ["${credentialName}:${config.age.secrets.matrix-alertmanager-secret.path}"];
 
   services.prometheus.alertmanager.configuration = {
     route = {
