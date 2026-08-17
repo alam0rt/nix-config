@@ -127,9 +127,21 @@ in {
     node-cert = {
       enable = true;
       paths = ["/var/lib/acme"];
-      # One series per domain — chain.pem/fullchain.pem would also report the
-      # (much longer lived) intermediate and drown the leaf certs.
-      includeGlobs = ["*/cert.pem"];
+      # lego's internal store keeps a directory per ACME account, and the ones
+      # from retired accounts are never cleaned up. Their long-expired copies
+      # fired CertificateExpiringSoon for domains whose live cert is fine.
+      excludePaths = ["/var/lib/acme/.lego"];
+      # One series per domain — chain.pem reports the (much longer lived)
+      # intermediate and full/fullchain.pem duplicate the leaf.
+      #
+      # Globs are matched with Go's filepath.Match against the *full* path, and
+      # `*` does not cross `/`, so a bare "*/cert.pem" silently matches nothing
+      # and filters nothing. Anchor every pattern at /var/lib/acme.
+      excludeGlobs = [
+        "/var/lib/acme/*/chain.pem"
+        "/var/lib/acme/*/full.pem"
+        "/var/lib/acme/*/fullchain.pem"
+      ];
     };
 
     # upsd is already running for clean shutdown on power loss, but nothing

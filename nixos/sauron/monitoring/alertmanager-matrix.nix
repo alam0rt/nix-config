@@ -6,22 +6,28 @@
   # ---------------------------------------------------------------------
   # Fill these in and flip `enable` to turn on Matrix alert delivery.
   #
-  # 1. Create (or reuse) a bot account on the homeserver and get an access
-  #    token for it, then store it:
-  #      nix run '.#agenix-rekey.x86_64-linux.edit-view' -- \
-  #        nixos/sauron/monitoring/matrix-alertmanager-token.age
-  # 2. Invite the bot to the room and put the room's *internal ID* (the
-  #    "!abc:server" form from Element's room settings, not the alias) below.
-  # 3. The webhook shared secret is generated automatically by agenix-rekey.
+  # The bot account lives in MAS on the omar cluster, not in Synapse itself,
+  # so it is created and re-tokened with mas-cli:
+  #   kubectl exec -n matrix deploy/mas -- mas-cli manage \
+  #     issue-compatibility-token -c /config.yaml gandalfbot alertmanager
+  # The compat token is what the client-server API accepts; store it with
+  #   nix run '.#agenix-rekey.x86_64-linux.edit-view' -- \
+  #     nixos/sauron/monitoring/matrix-alertmanager-token.age
+  # The webhook shared secret is generated automatically by agenix-rekey.
   #
-  # Until `enable` is true, alerts are still evaluated and grouped but are
+  # The bot cannot join an invite-only room on its own — it has to be invited
+  # by a member first, or delivery fails with M_FORBIDDEN.
+  #
+  # With `enable = false`, alerts are still evaluated and grouped but are
   # only visible in the Alertmanager and Grafana UIs.
   # ---------------------------------------------------------------------
   matrix = {
-    enable = false;
+    enable = true;
     homeserverUrl = "https://chat.samlockart.com";
+    # Shared with maubot. The `alertmanager` device below is a separate
+    # session, so revoking it does not log maubot out.
     user = "@gandalfbot:chat.samlockart.com";
-    roomId = "!CHANGEME:chat.samlockart.com";
+    roomId = "!VnfJuvbBRnyruscIFx:chat.samlockart.com";
     # Grafana already owns 3000, which is this module's default.
     port = 9535;
   };
