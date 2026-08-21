@@ -5,15 +5,15 @@
   ...
 }:
 with lib; let
-  cfg = config.programs.pi;
+  cfg = config.programs.pi-coding-agent;
   jsonFormat = pkgs.formats.json {};
 in {
-  options.programs.pi = {
-    enable = mkEnableOption "pi AI coding agent";
+  options.programs.pi-coding-agent = {
+    enable = mkEnableOption "pi coding agent";
 
     package = mkOption {
       type = types.package;
-      default = pkgs.pi;
+      default = pkgs.pi-coding-agent;
       description = "The pi package to use.";
     };
 
@@ -34,7 +34,7 @@ in {
       '';
       description = ''
         Global settings written to {file}`~/.pi/agent/settings.json`.
-        See <https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/settings.md>.
+        See the settings docs shipped with the package (docs/settings.md).
       '';
     };
 
@@ -57,7 +57,7 @@ in {
       '';
       description = ''
         Custom model/provider configuration written to {file}`~/.pi/agent/models.json`.
-        See <https://github.com/earendil-works/pi/blob/main/packages/coding-agent/docs/models.md>.
+        See the models docs shipped with the package (docs/models.md).
       '';
     };
 
@@ -65,7 +65,7 @@ in {
       type = types.listOf types.path;
       default = [];
       description = ''
-        List of extension files or directories to symlink into
+        List of extension files or directories to link into
         {file}`~/.pi/agent/extensions/`.
       '';
     };
@@ -74,7 +74,7 @@ in {
       type = types.listOf types.path;
       default = [];
       description = ''
-        List of skill files or directories to symlink into
+        List of skill files or directories to link into
         {file}`~/.pi/agent/skills/`.
       '';
     };
@@ -83,7 +83,7 @@ in {
       type = types.listOf types.path;
       default = [];
       description = ''
-        List of theme files or directories to symlink into
+        List of theme files or directories to link into
         {file}`~/.pi/agent/themes/`.
       '';
     };
@@ -92,7 +92,7 @@ in {
       type = types.listOf types.path;
       default = [];
       description = ''
-        List of prompt template files or directories to symlink into
+        List of prompt template files or directories to link into
         {file}`~/.pi/agent/prompts/`.
       '';
     };

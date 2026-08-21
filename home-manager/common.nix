@@ -21,6 +21,7 @@
     ./config/vim.nix
     ./config/kubernetes.nix
     ./config/obsidian.nix
+    ./config/pi.nix
   ];
 
   nixpkgs = {
