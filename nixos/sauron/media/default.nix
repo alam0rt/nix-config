@@ -385,6 +385,16 @@ in {
     package = pkgs.unstable.prowlarr;
     openFirewall = true;
   };
+  # The prowlarr module bind-mounts dataDir onto /var/lib/private/prowlarr and
+  # also pins it to root:root via tmpfiles, which fights systemd's
+  # StateDirectory chown to the DynamicUser: every `systemd-tmpfiles --create`
+  # (i.e. every nixos-rebuild switch) hands the dir back to root and the running
+  # Prowlarr loses its SQLite DB — 500s on every API call while the unit still
+  # looks active, which silently kills Radarr/Sonarr's indexers.
+  # Blanking the rule leaves user/group/mode as "-", so tmpfiles still creates
+  # the dir when missing but never re-chowns an existing one.
+  # https://github.com/NixOS/nixpkgs/issues/549165
+  systemd.tmpfiles.settings."10-prowlarr"."/srv/data/prowlarr".d = lib.mkForce {};
 
   services.bazarr = {
     enable = true;
