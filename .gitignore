@@ -1,5 +1,6 @@
 .claude
 result/**
 result
+result-*
 .tmp.agenix-rekey*
 .direnv
