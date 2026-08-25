@@ -63,7 +63,11 @@
   in {
     # Your custom packages
     # Accessible through 'nix build', 'nix shell', etc
-    packages = forAllSystems (system: import ./pkgs nixpkgs.legacyPackages.${system});
+    # The unstable-packages overlay is applied so pkgs/default.nix can rely on
+    # pkgs.unstable (e.g. switchyard needs a newer rustc than stable).
+    packages = forAllSystems (
+      system: import ./pkgs (nixpkgs.legacyPackages.${system}.extend self.overlays.unstable-packages)
+    );
     # Formatter for your nix files, available through 'nix fmt'
     # Other options beside 'alejandra' include 'nixpkgs-fmt'
     formatter = forAllSystems (system: nixpkgs.legacyPackages.${system}.alejandra);
