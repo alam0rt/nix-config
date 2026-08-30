@@ -1,0 +1,74 @@
+# Shared definition for every BLE proxy node.
+# Included via `packages:` from each proxy-<room>.yaml, which supplies the
+# ${node_name} / ${friendly_name} substitutions.
+
+esphome:
+  name: ${node_name}
+  friendly_name: ${friendly_name}
+
+esp32:
+  board: esp32dev
+  framework:
+    # esp-idf gives noticeably better BLE throughput than the Arduino stack on
+    # the WROOM-32, which matters because Wi-Fi and BLE share one radio here.
+    type: esp-idf
+
+logger:
+  level: INFO
+  # Set `baud_rate: 0` to free the UART once the node is stable and OTA-only.
+
+api:
+  encryption:
+    key: !secret api_encryption_key
+
+ota:
+  - platform: esphome
+    password: !secret ota_password
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+  domain: .lan
+  # The radio is shared with BLE; light sleep costs scan coverage.
+  power_save_mode: none
+  ap:
+    ssid: "${node_name} fallback"
+    password: !secret fallback_password
+
+captive_portal:
+
+# --- BLE proxy -------------------------------------------------------------
+# interval == window means continuous scanning: no gaps where a beacon can be
+# missed. Active scanning requests scan-response data, which Bermuda uses for
+# better identification.
+esp32_ble_tracker:
+  scan_parameters:
+    interval: 1100ms
+    window: 1100ms
+    active: true
+
+bluetooth_proxy:
+  active: true
+
+# --- Diagnostics -----------------------------------------------------------
+sensor:
+  - platform: wifi_signal
+    name: WiFi signal
+    update_interval: 60s
+  - platform: uptime
+    name: Uptime
+
+text_sensor:
+  - platform: version
+    name: ESPHome version
+  - platform: wifi_info
+    ip_address:
+      name: IP address
+    ssid:
+      name: Connected SSID
+    mac_address:
+      name: MAC address
+
+button:
+  - platform: restart
+    name: Restart

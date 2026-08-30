@@ -38,7 +38,17 @@ in {
       "mqtt"
       "jellyfin"
       "unifi"
+      # Room-level BLE presence. bermuda's manifest declares these three as
+      # hard dependencies; private_ble_device is what resolves the rotating
+      # BLE addresses that iOS/Android use, via each device's IRK.
+      "bluetooth"
+      "bluetooth_adapters"
+      "private_ble_device"
     ];
+
+    # Bermuda is not in pkgs.home-assistant-custom-components, so it is
+    # packaged locally in pkgs/bermuda and exposed by the `additions` overlay.
+    customComponents = [pkgs.bermuda];
     config = {
       mqtt = {};
       # Includes dependencies for a basic setup

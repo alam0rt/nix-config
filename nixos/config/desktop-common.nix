@@ -57,6 +57,25 @@
     openocd
   ];
 
+  # SmartLink SL6801 USB service modes, for the yp3box Rockbox port.
+  #
+  #   301a:2800  the boot ROM's download service - flash, dump, exec
+  #   301a:2801  the vendor firmware's card-reader mode
+  #
+  # smtlink_dump talks to these over libusb, which needs write access to
+  # /dev/bus/usb/*, and it also detaches the kernel usb-storage driver from
+  # 2801 (USBDEVFS_DISCONNECT), which needs the same. Without a rule that is
+  # root-only, so every flash, dump and log read went through sudo.
+  #
+  # Both handles are given because they cover different sessions: uaccess is a
+  # logind ACL for whoever is on the local seat, which is the normal case and
+  # needs no group; the dialout group covers a session with no seat, such as
+  # ssh, and sam is already in it.
+  services.udev.extraRules = ''
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="301a", ATTR{idProduct}=="2800", MODE="0660", GROUP="dialout", TAG+="uaccess"
+    SUBSYSTEM=="usb", ENV{DEVTYPE}=="usb_device", ATTR{idVendor}=="301a", ATTR{idProduct}=="2801", MODE="0660", GROUP="dialout", TAG+="uaccess"
+  '';
+
   # Avahi for mDNS / Zeroconf service discovery (e.g. for Chromecast support in media players)
   services.avahi.enable = true;
 

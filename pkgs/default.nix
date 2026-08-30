@@ -15,4 +15,5 @@ pkgs: {
   # Uses nixpkgs-unstable's rustPlatform: Switchyard's Cargo.toml requires
   # rustc/cargo >= 1.96.1 while the pinned stable nixpkgs ships 1.95.0.
   switchyard = pkgs.unstable.callPackage ./switchyard {};
+  bermuda = pkgs.callPackage ./bermuda {};
 }

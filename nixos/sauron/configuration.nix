@@ -24,7 +24,7 @@
     ./syncthing
     ./monitoring
     ./ups
-    # ./home-assistant
+    ./home-assistant
     # ./models
     # ./llama-cpp
   ];

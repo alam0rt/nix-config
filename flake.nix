@@ -136,7 +136,11 @@
       };
     in {
       default = pkgs.mkShell {
-        packages = [pkgs.agenix-rekey];
+        packages = [
+          pkgs.agenix-rekey
+          # Flash / OTA the BLE proxies: esphome run esphome/proxy-<room>.yaml
+          pkgs.esphome
+        ];
       };
     });
   };

@@ -1,0 +1,9 @@
+# Bench node. Rename node_name before deploying to a real room -- it becomes
+# the mDNS hostname and the ESPHome device ID, so changing it after adoption
+# makes Home Assistant see a brand-new device.
+substitutions:
+  node_name: proxy-test
+  friendly_name: Test BLE Proxy
+
+packages:
+  common: !include common.yaml
