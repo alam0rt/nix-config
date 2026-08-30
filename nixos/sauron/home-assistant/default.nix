@@ -14,6 +14,9 @@ in {
       proxyWebsockets = true;
       recommendedProxySettings = true;
     };
+    extraConfig = ''
+      proxy_buffering off;
+    '';
   };
 
   services.mosquitto = {
@@ -51,6 +54,11 @@ in {
     customComponents = [pkgs.bermuda];
     config = {
       mqtt = {};
+      http = {
+        server_host = "::1";
+        trusted_proxies = [ "::1" ];
+        use_x_forwarded_for = true;
+      };
       # Includes dependencies for a basic setup
       # https://www.home-assistant.io/integrations/default_config/
       default_config = {};
