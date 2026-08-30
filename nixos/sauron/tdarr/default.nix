@@ -6,13 +6,28 @@
   cfg = config.server;
 
   # Tdarr writes each transcode to a scratch copy before swapping it in, so the
-  # cache needs headroom for the largest source file (currently 36.7 GB) times
-  # the worker count. It deliberately lives *outside* /srv/media: anything under
-  # the media root gets picked up by Jellyfin and the *arrs mid-write.
-  # The NVMe root is not an option either — only ~46 GB free.
+  # cache needs headroom for the largest source (currently 36.7 GB) times the
+  # worker count. It has to be its own dataset, not just a directory: /srv
+  # itself is on the ext4 NVMe root with ~46 GB free, and only the child paths
+  # (/srv/media, /srv/data, ...) are pool mounts. Tdarr's default cache under
+  # the node dataDir is on that same root, which is what this exists to avoid.
   #
-  # Requires a one-off, out-of-band:
-  #   zfs create -o mountpoint=/srv/tdarr-cache mordor/tdarr-cache
+  # The quota is the point of keeping it separate — on a pool at 91% a runaway
+  # cache would otherwise eat the very space this is meant to reclaim.
+  #
+  # Declared in hardware-configuration.nix; the dataset itself is a one-off,
+  # and must exist BEFORE the first switch that adds the mount:
+  #
+  #   zfs create -o mountpoint=legacy \
+  #              -o quota=300G \
+  #              -o compression=off \
+  #              -o sync=disabled \
+  #              -o recordsize=1M \
+  #              -o atime=off \
+  #              mordor/tdarr-cache
+  #
+  # compression=off because the payload is already-compressed video;
+  # sync=disabled because a lost cache just means the job re-runs.
   cachePath = "/srv/tdarr-cache";
 
   nodeService = "tdarr-node-nvenc";

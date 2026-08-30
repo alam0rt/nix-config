@@ -20,6 +20,7 @@
     ./unifi
     ./mail
     ./media
+    ./tdarr
     ./nginx
     ./syncthing
     ./monitoring

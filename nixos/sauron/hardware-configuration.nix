@@ -73,6 +73,17 @@
     fsType = "zfs";
   };
 
+  # Tdarr transcode scratch. Pure throwaway working space, so unlike the other
+  # datasets here it is mounted "nofail": if it is ever missing, the tdarr units
+  # fail loudly (ProtectSystem=strict refuses a nonexistent ReadWritePaths)
+  # rather than wedging the whole boot on a mount for a cache.
+  # See nixos/sauron/tdarr for the dataset's creation and properties.
+  fileSystems."/srv/tdarr-cache" = {
+    device = "mordor/tdarr-cache";
+    fsType = "zfs";
+    options = ["nofail"];
+  };
+
   swapDevices = [
     {
       device = "/var/lib/swapfile";
