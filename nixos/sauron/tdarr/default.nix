@@ -82,6 +82,15 @@ in {
       # ffmpeg dlopens libnvidia-encode/libnvcuvid at runtime; they only live in
       # the driver's opengl-driver path, which is not on the default search path.
       LD_LIBRARY_PATH = "/run/opengl-driver/lib";
+
+      # Before running a job the node shells out to its bundled pnpm to install
+      # plugin dependencies, and pnpm writes its store and config under $HOME.
+      # $HOME is /var/lib/tdarr from passwd, but ProtectSystem=strict leaves
+      # that read-only — only StateDirectory and ReadWritePaths are writable —
+      # so pnpm exits 254 with no output and every job fails as "Transcode
+      # error" before ffmpeg is ever invoked. Point HOME at the node's own data
+      # path, which systemd already grants it via StateDirectory.
+      HOME = "/var/lib/tdarr/nodes/nvenc";
     };
   };
 
