@@ -89,6 +89,12 @@ size for nothing. Try `-cq 26` for 2160p.
 Turing and the RTX A1000 is Ampere; NVENC AV1 encode starts at Ada. HEVC is the
 ceiling — do not build a flow around AV1.
 
+## Choosing the format
+
+[`format-choice.md`](format-choice.md) covers why the target is HEVC, what it
+costs at playback time, and when AV1 would be worth revisiting. Nothing is
+enabled yet.
+
 ## Running it
 
 1. Queue **one** file by hand. Watch the transcode tab for the assembled ffmpeg
