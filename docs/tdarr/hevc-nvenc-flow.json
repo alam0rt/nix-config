@@ -1,0 +1,196 @@
+{
+  "_id": "sauronHevcNvenc",
+  "name": "HEVC NVENC (validated)",
+  "description": "AVC/other -> HEVC via hevc_nvenc. Bitrate-gated so already-efficient files are skipped, and size/duration validated before the destructive replace. Built for sauron: two NVENC cards, no AV1 support, no CPU workers.",
+  "tags": "hevc,nvenc,sauron",
+  "flowPlugins": [
+    {
+      "name": "Input File",
+      "sourceRepo": "Community",
+      "pluginName": "inputFile",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "id": "inputFile",
+      "position": { "x": 700, "y": 40 }
+    },
+    {
+      "name": "Already HEVC?",
+      "sourceRepo": "Community",
+      "pluginName": "checkVideoCodec",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": { "codec": "hevc" },
+      "id": "checkCodec",
+      "position": { "x": 700, "y": 140 }
+    },
+    {
+      "name": "Bitrate worth encoding?",
+      "sourceRepo": "Community",
+      "pluginName": "checkVideoBitrate",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": {
+        "unit": "kbps",
+        "greaterThan": "6000",
+        "lessThan": "500000"
+      },
+      "id": "checkBitrate",
+      "position": { "x": 560, "y": 250 }
+    },
+    {
+      "name": "NVENC present?",
+      "sourceRepo": "Community",
+      "pluginName": "checkNodeHardwareEncoder",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": { "hardwareEncoder": "hevc_nvenc" },
+      "id": "checkHw",
+      "position": { "x": 420, "y": 360 }
+    },
+    {
+      "name": "Start",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandStart",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "id": "cmdStart",
+      "position": { "x": 300, "y": 470 }
+    },
+    {
+      "name": "Set Video Encoder",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandSetVideoEncoder",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": {
+        "outputCodec": "hevc",
+        "ffmpegPresetEnabled": "true",
+        "ffmpegPreset": "slow",
+        "ffmpegQualityEnabled": "false",
+        "ffmpegQuality": "25",
+        "hardwareEncoding": "true",
+        "hardwareType": "nvenc",
+        "hardwareDecoding": "true",
+        "forceEncoding": "false"
+      },
+      "id": "setEncoder",
+      "position": { "x": 300, "y": 560 }
+    },
+    {
+      "name": "10 Bit Video",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommand10BitVideo",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "id": "tenBit",
+      "position": { "x": 300, "y": 650 }
+    },
+    {
+      "name": "CQ / B-frames / AQ",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandCustomArguments",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": {
+        "inputArguments": "",
+        "outputArguments": "-rc vbr -cq 24 -bf 4 -spatial-aq 1 -temporal-aq 1 -rc-lookahead 32"
+      },
+      "id": "customArgs",
+      "position": { "x": 300, "y": 740 }
+    },
+    {
+      "name": "Remove Data Streams",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandRemoveDataStreams",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "id": "rmData",
+      "position": { "x": 300, "y": 830 }
+    },
+    {
+      "name": "Set Container",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandSetContainer",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": { "container": "mkv", "forceConform": "false" },
+      "id": "setContainer",
+      "position": { "x": 300, "y": 920 }
+    },
+    {
+      "name": "Execute",
+      "sourceRepo": "Community",
+      "pluginName": "ffmpegCommandExecute",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "id": "cmdExecute",
+      "position": { "x": 300, "y": 1010 }
+    },
+    {
+      "name": "Size sane?",
+      "sourceRepo": "Community",
+      "pluginName": "compareFileSizeRatio",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": { "greaterThan": "15", "lessThan": "125" },
+      "id": "checkSize",
+      "position": { "x": 300, "y": 1100 }
+    },
+    {
+      "name": "Duration intact?",
+      "sourceRepo": "Community",
+      "pluginName": "compareFileDurationRatio",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "inputsDB": { "greaterThan": "95", "lessThan": "102" },
+      "id": "checkDuration",
+      "position": { "x": 300, "y": 1190 }
+    },
+    {
+      "name": "Replace Original File",
+      "sourceRepo": "Community",
+      "pluginName": "replaceOriginalFile",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "id": "replaceOriginal",
+      "position": { "x": 700, "y": 1290 }
+    },
+    {
+      "name": "Fail Flow",
+      "sourceRepo": "Community",
+      "pluginName": "failFlow",
+      "version": "1.0.0",
+      "fpEnabled": true,
+      "id": "failFlow",
+      "position": { "x": 20, "y": 1290 }
+    }
+  ],
+  "flowEdges": [
+    { "id": "e01", "source": "inputFile", "sourceHandle": "1", "target": "checkCodec", "targetHandle": null },
+
+    { "id": "e02", "source": "checkCodec", "sourceHandle": "1", "target": "replaceOriginal", "targetHandle": null },
+    { "id": "e03", "source": "checkCodec", "sourceHandle": "2", "target": "checkBitrate", "targetHandle": null },
+
+    { "id": "e04", "source": "checkBitrate", "sourceHandle": "1", "target": "checkHw", "targetHandle": null },
+    { "id": "e05", "source": "checkBitrate", "sourceHandle": "2", "target": "replaceOriginal", "targetHandle": null },
+
+    { "id": "e06", "source": "checkHw", "sourceHandle": "1", "target": "cmdStart", "targetHandle": null },
+    { "id": "e07", "source": "checkHw", "sourceHandle": "2", "target": "failFlow", "targetHandle": null },
+
+    { "id": "e08", "source": "cmdStart", "sourceHandle": "1", "target": "setEncoder", "targetHandle": null },
+    { "id": "e09", "source": "setEncoder", "sourceHandle": "1", "target": "tenBit", "targetHandle": null },
+    { "id": "e10", "source": "tenBit", "sourceHandle": "1", "target": "customArgs", "targetHandle": null },
+    { "id": "e11", "source": "customArgs", "sourceHandle": "1", "target": "rmData", "targetHandle": null },
+    { "id": "e12", "source": "rmData", "sourceHandle": "1", "target": "setContainer", "targetHandle": null },
+    { "id": "e13", "source": "setContainer", "sourceHandle": "1", "target": "cmdExecute", "targetHandle": null },
+
+    { "id": "e14", "source": "cmdExecute", "sourceHandle": "1", "target": "checkSize", "targetHandle": null },
+
+    { "id": "e15", "source": "checkSize", "sourceHandle": "1", "target": "checkDuration", "targetHandle": null },
+    { "id": "e16", "source": "checkSize", "sourceHandle": "2", "target": "failFlow", "targetHandle": null },
+
+    { "id": "e17", "source": "checkDuration", "sourceHandle": "1", "target": "replaceOriginal", "targetHandle": null },
+    { "id": "e18", "source": "checkDuration", "sourceHandle": "2", "target": "failFlow", "targetHandle": null },
+    { "id": "e19", "source": "checkDuration", "sourceHandle": "3", "target": "failFlow", "targetHandle": null }
+  ]
+}
