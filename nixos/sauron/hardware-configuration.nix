@@ -81,7 +81,15 @@
   fileSystems."/srv/tdarr-cache" = {
     device = "mordor/tdarr-cache";
     fsType = "zfs";
-    options = ["nofail"];
+    # nofail alone also drops the mount's Before=local-fs.target ordering, which
+    # let systemd-tmpfiles-setup (After=local-fs.target) chown the bare
+    # mountpoint on / before ZFS mounted over it — leaving the dataset root:root
+    # and unwritable by tdarr. x-systemd.before restores the ordering without
+    # restoring the boot-blocking dependency.
+    options = [
+      "nofail"
+      "x-systemd.before=local-fs.target"
+    ];
   };
 
   swapDevices = [

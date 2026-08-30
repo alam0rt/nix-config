@@ -70,6 +70,7 @@ in {
 
   # The upstream module sets ProtectSystem=strict, which leaves /srv read-only.
   systemd.services.${nodeService} = {
+    unitConfig.RequiresMountsFor = cachePath;
     serviceConfig = {
       ReadWritePaths = [
         "/srv/media"
@@ -83,6 +84,10 @@ in {
       LD_LIBRARY_PATH = "/run/opengl-driver/lib";
     };
   };
+
+  # Neither unit may start before the cache is actually mounted; otherwise they
+  # would write into the mountpoint on the NVMe root instead of the dataset.
+  systemd.services.tdarr-server.unitConfig.RequiresMountsFor = cachePath;
 
   systemd.services.tdarr-server.serviceConfig.ReadWritePaths = [
     "/srv/media"
