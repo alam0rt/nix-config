@@ -212,6 +212,7 @@
   environment.systemPackages = with pkgs; [
     ipmiutil
     ipmitool
+    sg3_utils # sg_format/sg_readcap: low-level SAS sector-size reformat
   ];
 
   # Use podman with docker CLI compatibility
