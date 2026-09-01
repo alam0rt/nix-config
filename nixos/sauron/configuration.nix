@@ -47,8 +47,8 @@
 
     # 128MB socket buffer ceilings — 10GbE with jumbo frames (MTU 9000) and thousands
     # of concurrent torrent connections needs headroom well beyond the 16MB default.
-    # eno2 was dropping 2162 RX packets; larger buffers absorb bursts before qBittorrent
-    # can drain them.
+    # The LAN NIC was dropping 2162 RX packets; larger buffers absorb bursts before
+    # qBittorrent can drain them. (Measured on eno2 when it held the carrier.)
     "net.core.rmem_max" = 134217728; # 128 MiB
     "net.core.wmem_max" = 134217728; # 128 MiB
 
@@ -61,8 +61,8 @@
     "net.core.rmem_default" = 1048576; # 1 MiB default for new sockets
     "net.core.wmem_default" = 1048576;
 
-    # NIC RX backlog — eno2 logged 2162 dropped packets due to backlog overflow;
-    # raise from 1000 → 10000 so bursts don't hit the driver drop counter.
+    # NIC RX backlog — the LAN NIC logged 2162 dropped packets due to backlog
+    # overflow; raise from 1000 → 10000 so bursts don't hit the driver drop counter.
     "net.core.netdev_max_backlog" = 10000;
 
     # Socket option memory — needed when many sockets have large option payloads.
@@ -139,10 +139,29 @@
   '';
 
   networking.networkmanager.enable = false; # Easiest to use and most distros use this by default.
+
+  # Both onboard NICs sit on the same 192.168.1.0/24 LAN, so they are configured
+  # identically at the link layer and only differ in whether they take an address.
+  # Moving the cable between ports then changes nothing but which one is live —
+  # the carrier was on eno2 historically and is on eno1 as of 2026-09-01, which is
+  # how the tuned MTU below ended up stranded on a dark port for a while.
+  #
+  # Jumbo frames are for the NAS role: sauron is used primarily from inside the LAN,
+  # and 9000-byte frames cut per-packet overhead substantially on large SMB/NFS
+  # transfers. Internet-bound traffic is unaffected even though the default route
+  # leaves via this interface — TCP MSS negotiation clamps every WAN connection to
+  # the remote's ~1460, so those paths still behave exactly like a 1500 link.
+  # This does require the LAN switch to forward 9000-byte frames; if jumbo is ever
+  # disabled there, LAN peers that also run 9000 will black-hole and both values
+  # here must drop back to 1500 together.
   networking.interfaces = {
-    eno2 = {
+    eno1 = {
       mtu = 9000;
       useDHCP = true;
+    };
+    eno2 = {
+      mtu = 9000;
+      useDHCP = false; # dark port — same link config, no address
     };
   };
 
