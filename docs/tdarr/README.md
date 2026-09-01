@@ -95,6 +95,11 @@ ceiling — do not build a flow around AV1.
 costs at playback time, and when AV1 would be worth revisiting. Nothing is
 enabled yet.
 
+[`h264-alternative.md`](h264-alternative.md) revisits that choice against a
+year of measured playback data, and argues for plain H.264 at a tighter gate:
+most of the reclaim comes from encoding remuxes at all, not from the codec.
+It also documents two traps a naive H.264 variant of this flow walks into.
+
 ## Running it
 
 1. Queue **one** file by hand. Watch the transcode tab for the assembled ffmpeg

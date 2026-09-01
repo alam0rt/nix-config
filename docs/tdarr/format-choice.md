@@ -47,6 +47,12 @@ HEVC can *push* web-client playback into server-side transcoding — spending GP
 on every stream to save disk once. Worth knowing how people actually watch
 before doing anything at scale. AV1 would be worse here, not better.
 
+> **Since measured.** A year of playback data confirms the concern and puts
+> numbers on it: the LG TV, Chromecast, and Firefox never accept HEVC as a
+> transcode target, and the LG alone accounts for 242 video encodes. See
+> [`h264-alternative.md`](h264-alternative.md), which also finds that a
+> remux-focused gate makes H.264 capture ~79% of HEVC's reclaim.
+
 **NVENC is not x265.** NVENC HEVC is fast but less efficient per bit than a good
 software x265 encode; it needs a somewhat higher bitrate for the same
 perceptual result. Since the flow replaces originals in place, that difference
