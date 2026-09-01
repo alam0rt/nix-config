@@ -32,6 +32,24 @@
 
   nodeService = "tdarr-node-nvenc";
 in {
+  # Tdarr ships a self-updater that downloads a new build and swaps the binary
+  # in place. That can never work here — the binary is in /nix/store — so it
+  # burns a ~100 MB download and three retries per attempt before failing at
+  # the "promoteNewBuild" step. Seen on 2026-08-30 trying 2.74.01 -> 2.86.01.
+  #
+  # There is no module option for it: `autoUpdateServer` and `autoUpdateNodes`
+  # live in the server's own database (SettingsGlobalJSONDB/globalsettings),
+  # not in this file. Both are now false; if a wipe of /var/lib/tdarr/server
+  # ever resets them, turn them off again under Settings -> Options, or:
+  #
+  #   curl -X POST http://127.0.0.1:8265/api/v2/cruddb \
+  #     -H 'Content-Type: application/json' \
+  #     -d '{"data":{"collection":"SettingsGlobalJSONDB","mode":"update",
+  #          "docID":"globalsettings",
+  #          "obj":{"autoUpdateServer":false,"autoUpdateNodes":false}}}'
+  #
+  # `pluginAutoUpdate` is unrelated and stays on: plugins are pulled into the
+  # writable state dir, and that succeeds.
   services.tdarr = {
     server.enable = true;
 
