@@ -51,10 +51,13 @@
     localNetworkGameTransfers.openFirewall = true; # Open ports in the firewall for Steam Local Network Game Transfers
   };
 
-  # platformio / embedded dev
   services.udev.packages = with pkgs; [
+    # platformio / embedded dev
     platformio-core.udev
     openocd
+    # Lets brightnessctl (idle dimming, XF86MonBrightness keys) write the
+    # backlight as a user instead of going through the logind D-Bus path.
+    brightnessctl
   ];
 
   # SmartLink SL6801 USB service modes, for the yp3box Rockbox port.
