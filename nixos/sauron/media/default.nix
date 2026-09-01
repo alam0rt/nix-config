@@ -102,6 +102,29 @@
 
   # The server wrapper hardcodes --webdir=${jellyfin-web}, so point it at ours.
   jellyfinPackage = pkgs.unstable.jellyfin.override {jellyfin-web = jellyfinWeb;};
+
+  # Proxy buffer sizing for the Jellyfin vhosts.
+  #
+  # A 6s HLS segment of a direct-streamed 9.4 Mbps 1080p WEB-DL is ~7 MB, against
+  # nginx defaults totalling 32-64 KB (8 buffers of 4k/8k). Every segment
+  # therefore overflowed to a temporary file under /tmp — 2395 "buffered to a
+  # temporary file" warnings in one evening, 1333 for a single remote viewer —
+  # which is pointless disk churn on the hot path of every stream.
+  #
+  # 32 x 512k holds a whole segment with headroom, and buffers are allocated
+  # lazily per request so this is a ceiling rather than a per-connection cost.
+  # proxy_max_temp_file_size 0 then forbids the spill outright: a client slower
+  # than Jellyfin now applies backpressure upstream instead of spooling to disk.
+  #
+  # Applied to both vhosts because both proxy the same Jellyfin instance —
+  # tv.samlockart.com is the public one that remote viewers hit, and
+  # tv.${cfg.domain} is the tailscale-internal one.
+  jellyfinProxyBuffers = ''
+    proxy_buffer_size 256k;
+    proxy_buffers 32 512k;
+    proxy_busy_buffers_size 1m;
+    proxy_max_temp_file_size 0;
+  '';
 in {
   environment.systemPackages = with pkgs; [
     jellyfinPackage
@@ -234,6 +257,7 @@ in {
     virtualHosts."tv.samlockart.com" = {
       forceSSL = true;
       enableACME = true;
+      extraConfig = jellyfinProxyBuffers;
       locations."/metrics" = {
         extraConfig = ''
           allow 127.0.0.1;
@@ -281,27 +305,7 @@ in {
       forceSSL = true;
       useACMEHost = cfg.domain;
 
-      # Size the proxy buffers for HLS segments.
-      #
-      # A 6s segment of a direct-streamed 9.4 Mbps 1080p WEB-DL is ~7 MB, but
-      # nginx's defaults total only 32-64 KB (8 buffers of 4k/8k). Every segment
-      # therefore overflowed to a temporary file under /tmp: 2395 "buffered to a
-      # temporary file" warnings in a single evening, 1333 of them for one remote
-      # viewer, which is pointless disk churn on the hot path for every stream.
-      #
-      # 32 x 512k holds a whole segment with headroom. Buffers are allocated
-      # lazily per request, so this is a ceiling and not a fixed cost per
-      # connection. proxy_max_temp_file_size 0 then forbids the disk spill
-      # outright — when a client is slower than Jellyfin can produce, nginx drops
-      # into synchronous mode and applies backpressure upstream instead of
-      # spooling the difference to /tmp.
-      extraConfig = ''
-        proxy_buffer_size 256k;
-        proxy_buffers 32 512k;
-        proxy_busy_buffers_size 1m;
-        proxy_max_temp_file_size 0;
-      '';
-
+      extraConfig = jellyfinProxyBuffers;
       locations."/" = {
         proxyPass = "http://127.0.0.1:8096";
         recommendedProxySettings = true;
