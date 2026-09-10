@@ -27,17 +27,37 @@ Every `*.age` file in `nixos/portable/secrets/` is baked into the image at
 identities in `nixos/config/secrets/pubkeys/`. A lost stick is a lost pile of
 ciphertext.
 
-On the running system:
+### Decryption happens on access
+
+Nothing is decrypted at boot. `/run/portable-secrets` is a systemd
+**automount**: the first process to look inside it blocks while
+`portable-secrets.service` runs `age -d -j fido2-hmac`, which needs a key
+plugged in and touched. The mount only completes once that has finished, so
+the caller never sees a half-populated directory.
+
+That makes the trigger the *use* of a secret rather than a command you have to
+remember:
+
+- `services.tailscale.authKeyFile` points at
+  `/run/portable-secrets/state/tailscale/authkey`, so tailscale's auto-login
+  reading its key is what asks for the YubiKey.
+- `portable-restore.service` looks for the wifi and ssh parts of the bundle at
+  boot, which asks for the same touch and then installs them.
+- So does a bare `cat /run/portable-secrets/...` from a shell.
+
+The key blinks; headless triggers also `wall` a line saying what happened,
+since the plugin's own prompt only reaches the journal. One touch opens the
+whole bundle and it stays open for the session (`TimeoutIdleSec=0`).
 
 ```bash
-sudo portable-unlock          # touch the key once
+sudo portable-unlock         # decrypt and restore up front, from a terminal
+sudo portable-lock           # drop the plaintext; next access asks again
 ```
 
-That decrypts into tmpfs (`/run/portable-secrets`) and installs what it
-recognises from the `state.tar` bundle: wifi connections into NetworkManager,
-ssh keys into `~sam/.ssh`, and `tailscale up` with the bundled auth key.
-Anything else is left decrypted under `/run/portable-secrets` for you to use.
-The greetd login screen carries a reminder that the command exists.
+`portable-unlock` matters if your key requires a PIN: the plugin can only
+prompt for one where there is a tty, so the headless service path is
+touch-only. If a boot has no key in it, the decrypt fails after 60s and the
+stick simply carries on with no wifi, no ssh key and no tailscale.
 
 Build the bundle from a staging directory:
 
@@ -103,7 +123,8 @@ offender: `nix path-info -Sh .#portable-iso` and
 - `nixos/portable/configuration.nix` - the generic host (no
   `hardware-configuration.nix`, no nvidia, all firmware, latest kernel)
 - `nixos/portable/iso.nix` - the live-media layer
-- `nixos/portable/secrets.nix` + `portable-unlock.sh` - the encrypted bundle
-  and the unlock command
+- `nixos/portable/secrets.nix` + `portable-decrypt.sh` / `portable-restore.sh`
+  - the encrypted bundle, the automount that triggers decryption, and the
+  `portable-unlock` / `portable-lock` commands
 - `scripts/portable-pack-state.sh` - builds the bundle
 - `flake.nix` - `nixosConfigurations.portable`, `packages.x86_64-linux.portable-iso`

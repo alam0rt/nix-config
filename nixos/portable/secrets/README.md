@@ -1,8 +1,9 @@
 # Portable secrets
 
 Every `*.age` file in this directory is copied into the ISO at
-`/etc/portable/secrets/` and decrypted on the running stick by
-`sudo portable-unlock`.
+`/etc/portable/secrets/` and decrypted on demand into `/run/portable-secrets`,
+which is an automount: any access to it asks for a YubiKey touch. See
+`docs/portable-usb.md`.
 
 They are encrypted directly to the three YubiKey master identities in
 `nixos/config/secrets/pubkeys/`, *not* rekeyed to a host key - a host key for
@@ -10,8 +11,9 @@ this image would have to sit unencrypted on the same stick.
 
 ## The state bundle
 
-`portable-unlock` gives `state.tar.age` special treatment: it extracts it and
-installs what it recognises.
+`state.tar.age` gets special treatment: it is extracted into
+`/run/portable-secrets/state`, and `portable-restore.service` installs what it
+recognises.
 
 ```
 state.tar
@@ -34,8 +36,9 @@ files, so an uncommitted bundle is silently absent from the image. The
 `.gitignore` here lets `*.age` through and blocks everything else, so a
 staged plaintext `state.tar` cannot be committed by accident.
 
-Any other `*.age` file here is simply decrypted to `/run/portable-secrets/`
-under its own name, for you to use by hand. That costs one touch per file.
+Any other `*.age` file here is decrypted alongside it under its own name, for
+you to use by hand. Everything is decrypted in one pass, so the whole
+directory costs a single touch.
 
 ## Where to get the pieces
 
