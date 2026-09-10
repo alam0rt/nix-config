@@ -20,6 +20,7 @@
     ../config/network/nfs_mounts.nix
     ../config/home-manager.nix
     ../config/desktop-common.nix
+    ./secrets.nix
   ];
 
   networking.hostName = "portable";
@@ -48,10 +49,28 @@
   # be short on RAM.
   zramSwap.enable = true;
 
-  # Steam is the single largest thing in desktop-common (several GB of the
-  # image). Set this to false if the ISO needs to fit a smaller stick - it
-  # needs the mkForce, because desktop-common enables it outright.
-  programs.steam.enable = lib.mkForce true;
+  # Steam is the single largest thing in desktop-common - several GB of image
+  # for something you are not going to do off a live stick. Same reasoning
+  # applies to anything else large that turns up in `nix path-info -Sh
+  # .#portable-iso`: drop it here rather than in the shared modules.
+  programs.steam.enable = lib.mkForce false;
+
+  # The shares from nfs_mounts.nix are automounts on the fixed hosts. Here the
+  # stick is usually nowhere near home, and this is the only place state can
+  # go, so mounting is a deliberate act: `sudo mount /mnt/share/sam`.
+  # The list mirrors ../config/network/nfs_mounts.nix.
+  fileSystems =
+    lib.genAttrs
+    [
+      "/mnt/share/sam"
+      "/mnt/share/public"
+      "/mnt/media/downloads"
+      "/mnt/media/tv"
+      "/mnt/media/movies"
+    ]
+    (_: {
+      options = lib.mkForce ["noauto"];
+    });
 
   # On the fixed hosts sam is only ever in the local seat's polkit rules for
   # this; on a stick that boots strange machines it is worth being explicit,
