@@ -151,8 +151,11 @@ in {
     };
   };
 
-  # The read that trips the automount.
-  services.tailscale.authKeyFile = lib.mkIf hasSecrets "${mountPoint}/tailscale-authkey";
+  # The read that trips the automount. Gated on that one secret rather than on
+  # having any: with it set but absent, tailscaled-autoconnect asks for a
+  # touch at every boot and then fails for want of a key.
+  services.tailscale.authKeyFile =
+    lib.mkIf (ageFiles ? "tailscale-authkey.age") "${mountPoint}/tailscale-authkey";
 
   # Shown at the console before greetd takes tty1.
   services.getty.helpLine = lib.mkAfter ''
