@@ -3,6 +3,20 @@
   # repeated dim/undim cycles can't walk the brightness down to nothing.
   dimLevel = "10%";
   brightness = "${pkgs.brightnessctl}/bin/brightnessctl --class=backlight";
+
+  # A wl-paste watcher feeding one MIME type into the cliphist store.
+  cliphistWatch = type: {
+    Unit = {
+      Description = "Store ${type} clipboard selections in cliphist";
+      PartOf = ["graphical-session.target"];
+      After = ["graphical-session.target"];
+    };
+    Service = {
+      ExecStart = "${pkgs.wl-clipboard}/bin/wl-paste --type ${type} --watch ${pkgs.cliphist}/bin/cliphist store";
+      Restart = "on-failure";
+    };
+    Install.WantedBy = ["graphical-session.target"];
+  };
 in {
   xdg.configFile."niri/config.kdl".source = ./config.kdl;
   xdg.configFile."waybar/config.jsonc".source = ./waybar-config.jsonc;
@@ -50,10 +64,23 @@ in {
     Install.WantedBy = ["graphical-session.target"];
   };
 
+  # Clipboard history. wl-paste --watch fires on every new selection and hands
+  # it to cliphist, which keeps a small database in ~/.cache/cliphist. Mod+P
+  # (see config.kdl) pipes `cliphist list` through fuzzel to pick an entry.
+  #
+  # Two watchers are needed because `wl-paste --watch` is per-MIME-type: one
+  # for text, one for images. Without the image one, screenshots and copied
+  # images are simply not recorded.
+  systemd.user.services.cliphist-text = cliphistWatch "text";
+  systemd.user.services.cliphist-image = cliphistWatch "image";
+
   services.polkit-gnome.enable = true; # polkit
   home.packages = with pkgs; [
     brightnessctl # backlight control, also bound to the XF86MonBrightness keys
     swaybg # wallpaper
     xwayland-satellite # xwayland support
+    wl-clipboard # wl-copy / wl-paste, also the clipboard history watchers above
+    cliphist # clipboard history store, picked through fuzzel on Mod+P
+    playerctl # the XF86Audio* binds in config.kdl call this
   ];
 }
