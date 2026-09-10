@@ -16,8 +16,8 @@
 #
 # Adding a network: add it below, then re-pack the PSKs and rekey:
 #
-#   sudo scripts/portable-wifi-psks.sh | scripts/portable-secret.sh nm-env
-#   cp nixos/portable/secrets/nm-env.age nixos/config/network/nm-env.age
+#   sudo scripts/portable-wifi-psks.sh "wifi of sorrows 5ghz" \
+#     | scripts/portable-secret.sh nm-env - nixos/config/network
 #   nix run '.#agenix-rekey.x86_64-linux.rekey'
 {
   config,
@@ -26,13 +26,10 @@
 }: let
   cfg = config.networking.declarativeWifi;
 
-  # id -> ssid. They are equal for all of these, but NetworkManager treats
-  # them as different things and so should we.
+  # id -> ssid. Equal here, but NetworkManager treats them as different
+  # things and so should we.
   networks = {
     "wifi of sorrows 5ghz" = "wifi of sorrows 5ghz";
-    "HG659-66FE" = "HG659-66FE";
-    "HG659-66FE-5G" = "HG659-66FE-5G";
-    "Telstra438C79" = "Telstra438C79";
   };
 
   # Mirrors `tr -c '[:alnum:]' '_'` in scripts/portable-wifi-psks.sh.
