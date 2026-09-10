@@ -3,26 +3,29 @@
 # connect exactly as they did when the profiles were imperative. No YubiKey,
 # no automount - that is only the portable stick's problem.
 #
-# Guarded twice, because either half missing breaks a machine you rely on:
+# Guarded on the source secret existing, so the hosts keep evaluating before
+# it has been packed; until then wifi stays whatever NetworkManager already
+# has on disk, which is what these hosts have always done.
 #
-#   - the source secret, so the hosts keep evaluating before it is packed
-#   - this host's rekeyed directory, because agenix-rekey resolves the rekeyed
-#     path at eval time. Declaring the secret before `agenix-rekey rekey` has
-#     run (and the result is git-added, which is what makes it visible to the
-#     flake) fails the whole config with "Path ... is not tracked by Git" -
-#     no wifi, no rebuild, on a laptop that was working a minute ago.
+# Once it exists, `agenix-rekey rekey` has to run before these hosts will
+# evaluate again - the rekeyed path is resolved at eval time, so an undeclared
+# or un-added rekeyed copy fails the config with "Path ... is not tracked by
+# Git". That is agenix-rekey's normal bootstrap for any new secret in this
+# repo, and it cannot be guarded away: rekey only writes copies of *declared*
+# secrets, so a guard waiting for the rekeyed file is a guard that keeps the
+# secret undeclared forever.
 #
-# So this turns itself on only once both halves are in the repo. Until then
-# wifi stays whatever NetworkManager already has on disk, which is what these
-# hosts have always done.
+#   sudo scripts/portable-wifi-psks.sh "wifi of sorrows 5ghz" \
+#     | scripts/portable-secret.sh nm-env - nixos/config/network
+#   nix run '.#agenix-rekey.x86_64-linux.rekey'
+#   git add nixos/config/network/nm-env.age nixos/config/secrets/rekeyed
 {
   config,
   lib,
   ...
 }: let
   source = ./nm-env.age;
-  rekeyed = ../secrets/rekeyed + "/${config.networking.hostName}";
-  havePSKs = builtins.pathExists source && builtins.pathExists rekeyed;
+  havePSKs = builtins.pathExists source;
 in {
   imports = [./wifi.nix];
 
