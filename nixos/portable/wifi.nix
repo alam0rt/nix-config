@@ -21,6 +21,13 @@
 # alphanumeric turned into _, prefixed WIFI_PSK_. The pack script derives it
 # the same way, so the two cannot drift as long as the ids match.
 {lib, ...}: let
+  # Without the PSK file there is nothing to substitute: the profiles would be
+  # written with empty passwords and the ensure-profiles unit would fail on a
+  # missing EnvironmentFile. Better to ship no declarative wifi at all and use
+  # nmtui, until `sudo scripts/portable-wifi-psks.sh | scripts/portable-secret.sh
+  # nm-env` has been run.
+  havePSKs = builtins.pathExists ./secrets/nm-env.age;
+
   # id -> ssid. They happen to be equal for all of these, but NetworkManager
   # treats them as different things and so should we.
   networks = {
@@ -60,7 +67,7 @@
     };
   };
 in {
-  networking.networkmanager.ensureProfiles = {
+  networking.networkmanager.ensureProfiles = lib.mkIf havePSKs {
     profiles = lib.mapAttrs profile networks;
     environmentFiles = ["/run/portable-secrets/nm-env"];
   };
@@ -69,5 +76,6 @@ in {
   # EnvironmentFile read trip the automount from inside systemd's own
   # plumbing: same YubiKey prompt, but ordered, and a missing key fails this
   # one unit instead of blocking somewhere awkward.
-  systemd.services.NetworkManager-ensure-profiles.unitConfig.RequiresMountsFor = "/run/portable-secrets";
+  systemd.services.NetworkManager-ensure-profiles.unitConfig.RequiresMountsFor =
+    lib.mkIf havePSKs "/run/portable-secrets";
 }
