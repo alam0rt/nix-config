@@ -32,5 +32,7 @@
 
   # Volume ID doubles as the root=LABEL= stage-1 looks for; max 32 chars.
   isoImage.volumeID = "NIXOS-PORTABLE";
-  image.baseName = "nixos-portable";
+  # iso-image.nix names the image after the nixpkgs release at normal
+  # priority, so this has to outrank it rather than merge with it.
+  image.baseName = lib.mkForce "nixos-portable";
 }

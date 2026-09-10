@@ -5,6 +5,10 @@
 # for a PIN) or headless as portable-secrets.service, which is what the
 # automount on /run/portable-secrets triggers. Both are idempotent: whatever
 # is already decrypted is left alone.
+#
+# Every secret is one file, decrypted under its own name in one pass, so the
+# whole set costs a single touch. What each name means is a convention read
+# elsewhere - see ./secrets/README.md.
 
 secrets_dir=/etc/portable/secrets
 plain_dir=/run/portable-secrets.d
@@ -47,12 +51,5 @@ for f in "${pending[@]}"; do
     age -d -j fido2-hmac -o "$plain_dir/$name" "$f"
   )
 done
-
-# state.tar is the bundle scripts/portable-pack-state.sh builds; anything else
-# is left for you to read out of the directory by hand.
-if [ -f "$plain_dir/state.tar" ] && [ ! -d "$plain_dir/state" ]; then
-  install -d -m 0700 "$plain_dir/state"
-  tar -xf "$plain_dir/state.tar" -C "$plain_dir/state"
-fi
 
 echo "portable-secrets-decrypt: unlocked"

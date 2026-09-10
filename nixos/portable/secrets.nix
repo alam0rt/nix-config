@@ -16,9 +16,8 @@
 # Deliberately not agenix: agenix-rekey re-encrypts to a host key, and this
 # host's key would have to live unencrypted on the same stick.
 #
-# Pack the bundle with scripts/portable-pack-state.sh. Encrypting is
-# public-key only, so building an image never needs a YubiKey; only using one
-# does.
+# Add one with scripts/portable-secret.sh. Encrypting is public-key only, so
+# building an image never needs a YubiKey; only using one does.
 {
   config,
   lib,
@@ -44,7 +43,6 @@
       age
       age-plugin-fido2-hmac
       coreutils
-      gnutar
       util-linux # wall
     ];
     text = builtins.readFile ./portable-decrypt.sh;
@@ -52,10 +50,7 @@
 
   restore = pkgs.writeShellApplication {
     name = "portable-secrets-restore";
-    runtimeInputs = with pkgs; [
-      coreutils
-      networkmanager
-    ];
+    runtimeInputs = [pkgs.coreutils];
     text = builtins.readFile ./portable-restore.sh;
   };
 
@@ -142,14 +137,13 @@ in {
     }
   ];
 
-  # Restores wifi and ssh keys at boot. Reading the bundle is what triggers
-  # the decrypt, so this is also the thing that asks for a touch on a normal
-  # boot - remove it from multi-user.target if you would rather nothing asked
+  # Puts ssh keys in place at boot. Reading the directory is what triggers the
+  # decrypt, so between this and the wifi profiles a normal boot asks for one
+  # touch - drop this from multi-user.target if you would rather nothing asked
   # until you run `portable-unlock` yourself.
   systemd.services.portable-restore = lib.mkIf hasSecrets {
-    description = "Restore wifi and ssh state from the portable image's secrets";
+    description = "Install ssh keys from the portable image's secrets";
     wantedBy = ["multi-user.target"];
-    after = ["NetworkManager.service"];
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
@@ -158,7 +152,7 @@ in {
   };
 
   # The read that trips the automount.
-  services.tailscale.authKeyFile = lib.mkIf hasSecrets "${mountPoint}/state/tailscale/authkey";
+  services.tailscale.authKeyFile = lib.mkIf hasSecrets "${mountPoint}/tailscale-authkey";
 
   # Shown at the console before greetd takes tty1.
   services.getty.helpLine = lib.mkAfter ''

@@ -1,52 +1,52 @@
 # Portable secrets
 
-Every `*.age` file in this directory is copied into the ISO at
-`/etc/portable/secrets/` and decrypted on demand into `/run/portable-secrets`,
-which is an automount: any access to it asks for a YubiKey touch. See
+Every `*.age` file here is copied into the ISO at `/etc/portable/secrets/` and
+decrypted on demand into `/run/portable-secrets`, which is an automount: any
+access asks for a YubiKey touch. One touch decrypts the whole directory. See
 `docs/portable-usb.md`.
 
 They are encrypted directly to the three YubiKey master identities in
 `nixos/config/secrets/pubkeys/`, *not* rekeyed to a host key - a host key for
 this image would have to sit unencrypted on the same stick.
 
-## The state bundle
+## Names carry meaning
 
-`state.tar.age` gets special treatment: it is extracted into
-`/run/portable-secrets/state`, and `portable-restore.service` installs what it
-recognises.
+| name | what the stick does with it |
+| --- | --- |
+| `nm-env.age` | environment file for the declarative wifi profiles in `../wifi.nix`; `WIFI_PSK_*=...` lines |
+| `ssh-<file>.age` | installed as `/home/sam/.ssh/<file>` by `portable-restore.service` |
+| `tailscale-authkey.age` | `services.tailscale.authKeyFile` reads it directly |
+| anything else | decrypted under its own name, yours to use by hand |
 
-```
-state.tar
-├── NetworkManager/system-connections/*.nmconnection   -> /etc/NetworkManager/system-connections
-├── ssh/*                                              -> /home/sam/.ssh
-└── tailscale/authkey                                  -> tailscale up --auth-key
-```
-
-Build it from a staging directory of that shape:
+Add one with:
 
 ```bash
-scripts/portable-pack-state.sh ~/portable-state
+scripts/portable-secret.sh <name> [file]     # reads stdin if no file
+git add nixos/portable/secrets/<name>.age    # a flake only sees tracked files
 ```
 
-Encryption is public-key only, so packing needs no YubiKey - only unlocking
-does. One touch opens the whole bundle.
+Encryption is public-key only, so this needs no token - only the stick does.
+The `.gitignore` here lets `*.age` through and blocks everything else, so a
+staged plaintext cannot be committed by accident.
 
-`git add` the result before building: a flake in a git repo only sees tracked
-files, so an uncommitted bundle is silently absent from the image. The
-`.gitignore` here lets `*.age` through and blocks everything else, so a
-staged plaintext `state.tar` cannot be committed by accident.
+## Reusing a secret that already exists
 
-Any other `*.age` file here is decrypted alongside it under its own name, for
-you to use by hand. Everything is decrypted in one pass, so the whole
-directory costs a single touch.
+Everything under `nixos/sauron/**.age` is already encrypted to these same
+three YubiKeys, so baking one in is a copy - no decryption, no token:
+
+```bash
+cp nixos/sauron/tailscale/authkey.age nixos/portable/secrets/tailscale-authkey.age
+```
+
+Check the key is still live first; sauron's may be spent or expired.
 
 ## Where to get the pieces
 
-- wifi: `sudo cp /etc/NetworkManager/system-connections/*.nmconnection ~/portable-state/NetworkManager/system-connections/`
-  from a host that already knows the networks (they contain the PSKs, hence
-  the encryption).
-- tailscale: a fresh, ideally short-lived, pre-authorised key from
+- **wifi**: `sudo scripts/portable-wifi-psks.sh | scripts/portable-secret.sh nm-env`
+  reads the PSKs out of this laptop's own NetworkManager profiles and pipes
+  them straight into the encryptor, so the plaintext never hits disk. The SSIDs
+  themselves live in `../wifi.nix` in the clear.
+- **ssh**: the `sk-` keys are stubs - the private half lives on the YubiKey and
+  every use needs a touch - which is why those are the ones to carry.
+- **tailscale**: a fresh, short-lived pre-authorised key from
   <https://hs.samlockart.com>. Single-use keys are spent on first boot.
-- ssh: whichever key you want the stick to authenticate with. The sk-backed
-  keys in `nixos/config/common/users.nix` need the YubiKey anyway, so a
-  `*_sk` key here is a stub the token still has to sign for.

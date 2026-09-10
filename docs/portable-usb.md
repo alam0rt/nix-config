@@ -38,16 +38,21 @@ the caller never sees a half-populated directory.
 That makes the trigger the *use* of a secret rather than a command you have to
 remember:
 
-- `services.tailscale.authKeyFile` points at
-  `/run/portable-secrets/state/tailscale/authkey`, so tailscale's auto-login
-  reading its key is what asks for the YubiKey.
-- `portable-restore.service` looks for the wifi and ssh parts of the bundle at
-  boot, which asks for the same touch and then installs them.
-- So does a bare `cat /run/portable-secrets/...` from a shell.
+- **wifi** is declarative. `nixos/portable/wifi.nix` gives NetworkManager the
+  SSIDs in the clear and the PSKs as `$WIFI_PSK_*`, substituted at boot from
+  `/run/portable-secrets/nm-env`. Bringing wifi up is what asks for the key,
+  and no PSK ever reaches the store.
+- **tailscale**: `services.tailscale.authKeyFile` points at
+  `/run/portable-secrets/tailscale-authkey`, so auto-login reading its key
+  asks for the same touch.
+- **ssh**: `portable-restore.service` installs the `ssh-*` secrets into
+  `~sam/.ssh` at boot.
+- so does a bare `cat /run/portable-secrets/...` from a shell.
 
-The key blinks; headless triggers also `wall` a line saying what happened,
-since the plugin's own prompt only reaches the journal. One touch opens the
-whole bundle and it stays open for the session (`TimeoutIdleSec=0`).
+Each secret is one file, decrypted in a single pass, so the whole set costs
+one touch. The key blinks; headless triggers also `wall` a line saying what
+happened, since the plugin's own prompt only reaches the journal. It stays
+open for the session (`TimeoutIdleSec=0`).
 
 ```bash
 sudo portable-unlock         # decrypt and restore up front, from a terminal
@@ -59,17 +64,18 @@ prompt for one where there is a tty, so the headless service path is
 touch-only. If a boot has no key in it, the decrypt fails after 60s and the
 stick simply carries on with no wifi, no ssh key and no tailscale.
 
-Build the bundle from a staging directory:
+Add a secret:
 
 ```bash
-scripts/portable-pack-state.sh ~/portable-state   # -> nixos/portable/secrets/state.tar.age
-git add nixos/portable/secrets/state.tar.age      # flakes only see tracked files
+scripts/portable-secret.sh <name> [file]     # reads stdin if no file
+git add nixos/portable/secrets/<name>.age    # a flake only sees tracked files
 nix build .#portable-iso
 ```
 
-Encrypting is public-key only, so *building* an image never needs a YubiKey -
-only using one does. See `nixos/portable/secrets/README.md` for the bundle
-layout and where to get each piece.
+The name is the contract - `nm-env`, `ssh-<file>`, `tailscale-authkey`, or
+anything else for hand use. `nixos/portable/secrets/README.md` has the table
+and where to get each piece. Encrypting is public-key only, so *building* an
+image never needs a YubiKey; only using one does.
 
 This intentionally sidesteps agenix. agenix-rekey re-encrypts secrets to a
 host key, and this host's key would have to live unencrypted on the same
@@ -124,7 +130,10 @@ offender: `nix path-info -Sh .#portable-iso` and
   `hardware-configuration.nix`, no nvidia, all firmware, latest kernel)
 - `nixos/portable/iso.nix` - the live-media layer
 - `nixos/portable/secrets.nix` + `portable-decrypt.sh` / `portable-restore.sh`
-  - the encrypted bundle, the automount that triggers decryption, and the
+  - the encrypted secrets, the automount that triggers decryption, and the
   `portable-unlock` / `portable-lock` commands
-- `scripts/portable-pack-state.sh` - builds the bundle
+- `nixos/portable/wifi.nix` - declarative NetworkManager profiles whose PSKs
+  come from the encrypted `nm-env`
+- `scripts/portable-secret.sh`, `scripts/portable-wifi-psks.sh` - adding
+  secrets
 - `flake.nix` - `nixosConfigurations.portable`, `packages.x86_64-linux.portable-iso`

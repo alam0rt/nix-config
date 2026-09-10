@@ -21,6 +21,7 @@
     ../config/home-manager.nix
     ../config/desktop-common.nix
     ./secrets.nix
+    ./wifi.nix
   ];
 
   networking.hostName = "portable";
