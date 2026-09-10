@@ -63,8 +63,12 @@ sudo portable-lock           # drop the plaintext; next access asks again
 
 `portable-unlock` matters if your key requires a PIN: the plugin can only
 prompt for one where there is a tty, so the headless service path is
-touch-only. If a boot has no key in it, the decrypt fails after 60s and the
-stick simply carries on with no wifi, no ssh key and no tailscale.
+touch-only.
+
+A boot with no key in it costs 30 seconds and then carries on with no wifi,
+no ssh key and no tailscale. It is not free: NetworkManager's profile unit is
+ordered before `network-online.target`, so that half-minute is paid by
+everything waiting on the network, not just by wifi.
 
 Add a secret:
 

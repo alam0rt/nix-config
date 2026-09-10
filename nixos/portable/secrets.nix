@@ -43,9 +43,15 @@
 
   hasSecrets = ageFiles != {};
 
-  # Where the automount points, and the directory it binds.
+  # Where the automount points, and the directory it binds. These are the
+  # only definitions: the shell bodies take them from here, because a
+  # decrypt target that drifts from the bind source brings the mount up
+  # *empty* rather than failing, which is the worst way this can break.
   mountPoint = "/run/portable-secrets";
   plainDir = "${mountPoint}.d";
+  etcPrefix = "portable/secrets";
+  user = config.users.users.sam.name;
+  home = config.users.users.sam.home;
 
   decrypt = pkgs.writeShellApplication {
     name = "portable-secrets-decrypt";
@@ -55,13 +61,24 @@
       coreutils
       util-linux # wall
     ];
-    text = builtins.readFile ./portable-decrypt.sh;
+    text =
+      ''
+        secrets_dir=/etc/${etcPrefix}
+        plain_dir=${plainDir}
+      ''
+      + builtins.readFile ./portable-decrypt.sh;
   };
 
   restore = pkgs.writeShellApplication {
     name = "portable-secrets-restore";
     runtimeInputs = [pkgs.coreutils];
-    text = builtins.readFile ./portable-restore.sh;
+    text =
+      ''
+        secrets=${mountPoint}
+        user=${user}
+        home=${home}
+      ''
+      + builtins.readFile ./portable-restore.sh;
   };
 
   # The two commands worth knowing about by hand. Unlocking from a terminal
@@ -80,9 +97,10 @@
     name = "portable-lock";
     runtimeInputs = [pkgs.systemd];
     text = ''
-      # Stopping the mount re-arms the automount, and stopping the service
-      # wipes the plaintext, so the next access asks for the key again.
-      systemctl stop 'run-portable\x2dsecrets.mount' portable-secrets.service
+      # The mount is BindsTo= this service, so it comes down with it, and the
+      # service's ExecStop wipes the plaintext. The automount stays armed, so
+      # the next access asks for the key again.
+      systemctl stop portable-secrets.service
       echo "portable-lock: plaintext dropped; next access will ask for the YubiKey"
     '';
   };
@@ -90,7 +108,7 @@ in {
   environment.etc =
     lib.mapAttrs'
     (name: path:
-      lib.nameValuePair "portable/secrets/${name}" {
+      lib.nameValuePair "${etcPrefix}/${name}" {
         source = path;
       })
     ageFiles;
@@ -110,15 +128,15 @@ in {
 
   systemd.services.portable-secrets = lib.mkIf hasSecrets {
     description = "Decrypt the portable image's secrets with a YubiKey";
-    # Skipped, successfully, on an image built without any - the mount still
-    # comes up, just empty.
-    unitConfig.ConditionPathExistsGlob = "/etc/portable/secrets/*.age";
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      # Long enough to find the key and touch it, short enough that a boot
-      # without one is not a hang.
-      TimeoutStartSec = "60s";
+      # Upstream orders NetworkManager-ensure-profiles before
+      # network-online.target, and that unit waits on this mount, so this
+      # timeout is what a keyless boot costs everything ordered after the
+      # network. Long enough to notice a blinking key, short enough to sit
+      # through.
+      TimeoutStartSec = "30s";
       ExecStart = "${decrypt}/bin/portable-secrets-decrypt";
       ExecStop = "${pkgs.coreutils}/bin/rm -rf ${plainDir}";
     };
@@ -132,7 +150,12 @@ in {
       where = mountPoint;
       type = "none";
       options = "bind";
-      requires = ["portable-secrets.service"];
+      # BindsTo, not Requires: the service's ExecStop deletes this mount's
+      # source, so anything that stops the service - a restart included - has
+      # to take the mount with it. Otherwise the bind survives over a deleted
+      # directory, the automount is never re-armed, and every later reader
+      # sees an empty directory with no way back short of umount.
+      bindsTo = ["portable-secrets.service"];
       after = ["portable-secrets.service"];
     }
   ];
@@ -154,6 +177,10 @@ in {
   systemd.services.portable-restore = lib.mkIf hasSecrets {
     description = "Install ssh keys from the portable image's secrets";
     wantedBy = ["multi-user.target"];
+    # Without this the glob just comes back empty when the decrypt failed,
+    # and the unit reports "no ssh keys in this image" about an image that
+    # has them.
+    unitConfig.RequiresMountsFor = mountPoint;
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;

@@ -32,6 +32,7 @@ fi
 
 # The .pub files carry the age recipient in a comment above the plugin
 # identity; only the recipient is needed to encrypt.
+shopt -s nullglob
 recipients=()
 for pub in "$PUBKEY_DIR"/*.pub; do
   key="$(sed -n 's/^# public key: //p' "$pub" | head -n1)"

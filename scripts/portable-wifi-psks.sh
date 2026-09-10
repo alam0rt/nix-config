@@ -27,13 +27,22 @@ fi
 shopt -s nullglob
 found=0
 wanted=("$@")
+declare -A seen=()
 
 for f in "$CONN_DIR"/*.nmconnection; do
-  psk="$(sed -n 's/^psk=//p' "$f" | head -n1)"
-  [ -n "$psk" ] || continue
-
   id="$(sed -n 's/^id=//p' "$f" | head -n1)"
   [ -n "$id" ] || id="$(basename "$f" .nmconnection)"
+
+  psk="$(sed -n 's/^psk=//p' "$f" | head -n1)"
+  if [ -z "$psk" ]; then
+    # psk-flags=1 keeps the key in the user's keyring instead of the file.
+    # Skipping quietly would pack a profile with an empty password, which
+    # only shows up as a stick that will not join the network.
+    if grep -q '^\[wifi-security\]' "$f"; then
+      echo "$0: $id has no psk in the file (agent-owned?); not packed" >&2
+    fi
+    continue
+  fi
 
   if [ ${#wanted[@]} -gt 0 ]; then
     match=0
@@ -44,6 +53,16 @@ for f in "$CONN_DIR"/*.nmconnection; do
   fi
 
   var="WIFI_PSK_$(echo "$id" | tr '[:lower:]' '[:upper:]' | tr -c '[:alnum:]\n' '_')"
+
+  # Punctuation all collapses to _, so two ids can land on one variable and
+  # the last assignment silently wins in systemd's parser - pairing an SSID
+  # with someone else's key.
+  if [ -n "${seen[$var]:-}" ]; then
+    echo "$0: $id and ${seen[$var]} both map to $var - name one id explicitly" >&2
+    exit 1
+  fi
+  seen[$var]="$id"
+
   echo "$var=$psk"
   found=$((found + 1))
 done

@@ -1,5 +1,7 @@
 # Body of portable-secrets-decrypt; ./secrets.nix supplies the shebang,
-# `set -euo pipefail` and PATH.
+# `set -euo pipefail`, PATH, and $secrets_dir / $plain_dir - the paths are
+# defined there once, because a decrypt target that drifts from the bind
+# source would bring the mount up empty instead of failing.
 #
 # Run either from a terminal (via `portable-unlock`, where the plugin can ask
 # for a PIN) or headless as portable-secrets.service, which is what the
@@ -10,9 +12,6 @@
 # whole set costs a single touch. What each name means is a convention read
 # elsewhere - see ./secrets/README.md.
 
-secrets_dir=/etc/portable/secrets
-plain_dir=/run/portable-secrets.d
-
 if [ "$(id -u)" -ne 0 ]; then
   echo "portable-secrets-decrypt: must run as root" >&2
   exit 1
@@ -20,10 +19,6 @@ fi
 
 shopt -s nullglob
 encrypted=("$secrets_dir"/*.age)
-if [ ${#encrypted[@]} -eq 0 ]; then
-  echo "portable-secrets-decrypt: this image was built without secrets"
-  exit 0
-fi
 
 install -d -m 0700 "$plain_dir"
 
