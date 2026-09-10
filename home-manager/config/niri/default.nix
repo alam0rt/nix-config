@@ -6,6 +6,26 @@
   niri = "${pkgs.niri}/bin/niri";
   swaylock = "${pkgs.swaylock-effects}/bin/swaylock";
 
+  # The glyph drawn in the middle of the unlock indicator. Rendered at build
+  # time instead of being committed as a binary, so the shape stays a couple of
+  # readable parameters rather than an opaque blob in git history.
+  #
+  # {6/2}: six vertices, each joined to the one two steps around. gcd(6, 2) is
+  # 2, so the figure resolves into that many component polygons instead of one
+  # closed path. The colour matches the active window border in config.kdl.
+  indicatorGlyph =
+    pkgs.runCommand "swaylock-indicator-glyph.png" {
+      nativeBuildInputs = [pkgs.python3];
+    } ''
+      python3 ${./star-polygon.py} \
+        --size 512 \
+        --points 6 \
+        --skip 2 \
+        --color ffc87f \
+        --stroke 0.055 \
+        --out "$out"
+    '';
+
   # Idle timings, in seconds from the start of the idle period (swayidle counts
   # every timeout from idle start, not from the previous step). Shaped like
   # macOS: dim as a warning, lock a little later, then blank the panel. macOS
@@ -139,6 +159,7 @@ in {
       indicator = true;
       indicator-radius = 100;
       indicator-thickness = 7;
+      indicator-image = "${indicatorGlyph}";
       effect-blur = "7x5";
       effect-vignette = "0.5:0.5";
       fade-in = 0.2;
