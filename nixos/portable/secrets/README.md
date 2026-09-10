@@ -47,7 +47,13 @@ Check the key is still live first; sauron's may be spent or expired.
   ```bash
   sudo scripts/portable-wifi-psks.sh | scripts/portable-secret.sh nm-env - nixos/config/network
   nix run '.#agenix-rekey.x86_64-linux.rekey'   # so laptop/desktop get it too
+  git add nixos/config/network/nm-env.age nixos/config/secrets/rekeyed
   ```
+
+  In that order. laptop and desktop only switch to declarative wifi once
+  *both* the source secret and their rekeyed copies are committed - until
+  then they keep the profiles NetworkManager already has, which is what makes
+  the middle step safe to forget.
 
   reads the PSKs out of this laptop's own NetworkManager profiles and pipes
   them straight into the encryptor, so the plaintext never hits disk. The
