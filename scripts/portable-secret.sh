@@ -5,7 +5,7 @@ set -euo pipefail
 # Encrypt something into the portable stick's secrets, to all three YubiKey
 # master identities.
 #
-#   scripts/portable-secret.sh <name> [file]      # file, or stdin
+#   scripts/portable-secret.sh <name> [file] [outdir]   # file, or - for stdin
 #
 # Names carry meaning to the stick (see nixos/portable/secrets/README.md):
 #   nm-env              wifi PSKs, as WIFI_PSK_*=... lines
@@ -13,17 +13,20 @@ set -euo pipefail
 #   tailscale-authkey   used by services.tailscale.authKeyFile
 # anything else is just decrypted under its own name for you to use by hand.
 #
+# outdir defaults to nixos/portable/secrets. The wifi PSKs are the exception:
+# they belong in nixos/config/network, where laptop and desktop rekey them
+# from and the stick reads them directly.
+#
 # Encryption is public-key only, so this needs no token; the stick needs one.
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PUBKEY_DIR="$REPO_ROOT/nixos/config/secrets/pubkeys"
-OUT_DIR="$REPO_ROOT/nixos/portable/secrets"
-
 NAME="${1:-}"
 SRC="${2:--}"
+OUT_DIR="${3:-$REPO_ROOT/nixos/portable/secrets}"
 
 if [ -z "$NAME" ]; then
-  echo "Usage: $0 <name> [file]   (reads stdin if no file)" >&2
+  echo "Usage: $0 <name> [file|-] [outdir]   (reads stdin if no file)" >&2
   exit 1
 fi
 

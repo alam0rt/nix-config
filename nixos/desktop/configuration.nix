@@ -6,6 +6,7 @@
   imports = [
     ../config/common
     ../config/network
+    ../config/network/wifi-agenix.nix
     ../config/network/nfs_mounts.nix
     ../config/home-manager.nix
     ../config/overclocking.nix

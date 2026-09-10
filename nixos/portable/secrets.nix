@@ -26,10 +26,20 @@
 }: let
   secretsDir = ./secrets;
 
+  # The wifi PSKs are not kept here: the same file feeds laptop and desktop
+  # through agenix, and it is already encrypted to the three master
+  # identities, so it ships verbatim rather than as a second copy.
+  sharedWifiSecret = ../config/network/nm-env.age;
+
+  # name -> path.
   ageFiles =
-    lib.filterAttrs
-    (name: type: type == "regular" && lib.hasSuffix ".age" name)
-    (builtins.readDir secretsDir);
+    lib.mapAttrs (name: _: secretsDir + "/${name}")
+    (lib.filterAttrs
+      (name: type: type == "regular" && lib.hasSuffix ".age" name)
+      (builtins.readDir secretsDir))
+    // lib.optionalAttrs (builtins.pathExists sharedWifiSecret) {
+      "nm-env.age" = sharedWifiSecret;
+    };
 
   hasSecrets = ageFiles != {};
 
@@ -79,9 +89,9 @@
 in {
   environment.etc =
     lib.mapAttrs'
-    (name: _:
+    (name: path:
       lib.nameValuePair "portable/secrets/${name}" {
-        source = secretsDir + "/${name}";
+        source = path;
       })
     ageFiles;
 

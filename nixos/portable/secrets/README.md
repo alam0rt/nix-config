@@ -13,7 +13,7 @@ this image would have to sit unencrypted on the same stick.
 
 | name | what the stick does with it |
 | --- | --- |
-| `nm-env.age` | environment file for the declarative wifi profiles in `../wifi.nix`; `WIFI_PSK_*=...` lines |
+| `nm-env.age` | environment file for the declarative wifi profiles; `WIFI_PSK_*=...` lines. Lives in `nixos/config/network/`, not here - laptop and desktop rekey from the same file - and is shipped into the image from there |
 | `ssh-<file>.age` | installed as `/home/sam/.ssh/<file>` by `portable-restore.service` |
 | `tailscale-authkey.age` | `services.tailscale.authKeyFile` reads it directly |
 | anything else | decrypted under its own name, yours to use by hand |
@@ -42,10 +42,16 @@ Check the key is still live first; sauron's may be spent or expired.
 
 ## Where to get the pieces
 
-- **wifi**: `sudo scripts/portable-wifi-psks.sh | scripts/portable-secret.sh nm-env`
+- **wifi**:
+
+  ```bash
+  sudo scripts/portable-wifi-psks.sh | scripts/portable-secret.sh nm-env - nixos/config/network
+  nix run '.#agenix-rekey.x86_64-linux.rekey'   # so laptop/desktop get it too
+  ```
+
   reads the PSKs out of this laptop's own NetworkManager profiles and pipes
-  them straight into the encryptor, so the plaintext never hits disk. The SSIDs
-  themselves live in `../wifi.nix` in the clear.
+  them straight into the encryptor, so the plaintext never hits disk. The
+  SSIDs themselves live in `nixos/config/network/wifi.nix` in the clear.
 - **ssh**: the `sk-` keys are stubs - the private half lives on the YubiKey and
   every use needs a touch - which is why those are the ones to carry.
 - **tailscale**: a fresh, short-lived pre-authorised key from

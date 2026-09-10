@@ -38,10 +38,12 @@ the caller never sees a half-populated directory.
 That makes the trigger the *use* of a secret rather than a command you have to
 remember:
 
-- **wifi** is declarative. `nixos/portable/wifi.nix` gives NetworkManager the
-  SSIDs in the clear and the PSKs as `$WIFI_PSK_*`, substituted at boot from
-  `/run/portable-secrets/nm-env`. Bringing wifi up is what asks for the key,
-  and no PSK ever reaches the store.
+- **wifi** is declarative, and shared with laptop and desktop:
+  `nixos/config/network/wifi.nix` gives NetworkManager the SSIDs in the clear
+  and the PSKs as `$WIFI_PSK_*`. Here they are substituted at boot from
+  `/run/portable-secrets/nm-env`, so bringing wifi up is what asks for the
+  key; the fixed hosts take the same secret from agenix instead and boot
+  silently. No PSK reaches the store on any of them.
 - **tailscale**: `services.tailscale.authKeyFile` points at
   `/run/portable-secrets/tailscale-authkey`, so auto-login reading its key
   asks for the same touch.
@@ -132,8 +134,9 @@ offender: `nix path-info -Sh .#portable-iso` and
 - `nixos/portable/secrets.nix` + `portable-decrypt.sh` / `portable-restore.sh`
   - the encrypted secrets, the automount that triggers decryption, and the
   `portable-unlock` / `portable-lock` commands
-- `nixos/portable/wifi.nix` - declarative NetworkManager profiles whose PSKs
-  come from the encrypted `nm-env`
+- `nixos/config/network/wifi.nix` - the networks, shared with laptop and
+  desktop; `wifi-agenix.nix` feeds it from agenix there, `nixos/portable/wifi.nix`
+  from the automount here
 - `scripts/portable-secret.sh`, `scripts/portable-wifi-psks.sh` - adding
   secrets
 - `flake.nix` - `nixosConfigurations.portable`, `packages.x86_64-linux.portable-iso`
