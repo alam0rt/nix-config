@@ -66,7 +66,13 @@
     # The unstable-packages overlay is applied so pkgs/default.nix can rely on
     # pkgs.unstable (e.g. switchyard needs a newer rustc than stable).
     packages = forAllSystems (
-      system: import ./pkgs (nixpkgs.legacyPackages.${system}.extend self.overlays.unstable-packages)
+      system:
+        import ./pkgs (nixpkgs.legacyPackages.${system}.extend self.overlays.unstable-packages)
+        # The live USB image of the generic `portable` host.
+        # nix build .#portable-iso
+        // nixpkgs.lib.optionalAttrs (system == "x86_64-linux") {
+          portable-iso = self.nixosConfigurations.portable.config.system.build.isoImage;
+        }
     );
     # Formatter for your nix files, available through 'nix fmt'
     # Other options beside 'alejandra' include 'nixpkgs-fmt'
@@ -117,6 +123,22 @@
           inputs.agenix.nixosModules.default
           inputs.agenix-rekey.nixosModules.default
           nixos-hardware.nixosModules.lenovo-thinkpad-x1-extreme-gen2
+        ];
+      };
+      # Hardware-agnostic live system: same desktop, home-manager and network
+      # setup as the laptop, built as an ISO you can dd onto a USB stick and
+      # boot on any x86_64 machine. Deliberately not registered with
+      # agenix-rekey below - it has no secrets and no host key of its own.
+      portable = nixpkgs.lib.nixosSystem {
+        specialArgs = {
+          inherit inputs outputs;
+        };
+        modules = [
+          ./nixos/configuration.nix
+          ./nixos/portable/configuration.nix
+          ./nixos/portable/iso.nix
+          inputs.agenix.nixosModules.default
+          inputs.agenix-rekey.nixosModules.default
         ];
       };
     };
