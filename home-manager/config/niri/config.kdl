@@ -378,7 +378,9 @@ binds {
     // reads the id back off the chosen line. The store is filled by the
     // cliphist-text / cliphist-image user services (see default.nix).
     Mod+P hotkey-overlay-title="Clipboard History: cliphist" { spawn-sh "cliphist list | fuzzel --dmenu --prompt='clip> ' | cliphist decode | wl-copy"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn "swaylock"; }
+    // Same singleton guard the idle chain uses: without it a second swaylock
+    // stacks on top of one that may already have a password typed into it.
+    Super+Alt+L hotkey-overlay-title="Lock the Screen: swaylock" { spawn-sh "pgrep -x swaylock > /dev/null || swaylock -f"; }
 
     // Use spawn-sh to run a shell command. Do this if you need pipes, multiple commands, etc.
     // Note: the entire command goes as a single argument. It's passed verbatim to `sh -c`.
