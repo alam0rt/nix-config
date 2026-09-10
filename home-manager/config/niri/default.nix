@@ -153,10 +153,13 @@ in {
   programs.waybar.style = ./waybar-style.css;
   services.mako.enable = true; # notification daemon
 
-  # Idle handling. niri speaks ext-idle-notify and honours idle inhibitors, so
-  # anything holding one (a fullscreen video, mpv, a game) stops these timers.
-  # Audio playback alone doesn't inhibit anything, so sway-audio-idle-inhibit
-  # below covers the "music/video playing in a background window" case too.
+  # Idle handling. niri speaks ext-idle-notify and honours the Wayland
+  # idle-inhibit protocol, so anything holding one of those (a fullscreen
+  # video, mpv, a game) stops these timers. Audio playback alone holds no
+  # Wayland inhibitor, so sway-audio-idle-inhibit below covers the
+  # "music/video playing in a background window" case too — but note it works
+  # through logind rather than the Wayland protocol, which is a much blunter
+  # instrument: see the comment on its service.
   #
   # The lock step comes *before* the blank step on purpose. swaylock-effects
   # screenshots the session to build its background, so starting it after the
@@ -174,7 +177,22 @@ in {
     };
   };
 
-  # Holds a Wayland idle inhibitor while any sink is playing audio.
+  # Inhibits idle while audio is playing, so a video or an album doesn't dim
+  # and lock the screen out from under itself.
+  #
+  # Despite the name this is not a Wayland idle inhibitor: it calls
+  # org.freedesktop.login1.Manager.Inhibit(what=idle), and swayidle's response
+  # to *any* logind idle inhibitor is to switch off every timeout it has
+  # ("Not enabling timeouts: idle inhibitor found"), not merely to defer the
+  # blank step. So whatever this thing considers "playing" suppresses the lock
+  # as well.
+  #
+  # Which is why it runs in --ignore-source-outputs mode. The default is to
+  # inhibit when any sink *or any source* is running, and a source counts an
+  # open microphone or webcam — so a video call, or any app merely holding the
+  # capture device, would leave the session unlocked indefinitely. This mode
+  # inhibits on playback alone. It is the only knob the tool has; a sink that
+  # stays open with silence (a game's idle audio thread) still holds it.
   systemd.user.services.sway-audio-idle-inhibit = {
     Unit = {
       Description = "Inhibit idle while audio is playing";
@@ -182,7 +200,7 @@ in {
       After = ["graphical-session.target"];
     };
     Service = {
-      ExecStart = "${pkgs.sway-audio-idle-inhibit}/bin/sway-audio-idle-inhibit";
+      ExecStart = "${pkgs.sway-audio-idle-inhibit}/bin/sway-audio-idle-inhibit --ignore-source-outputs";
       Restart = "on-failure";
     };
     Install.WantedBy = ["graphical-session.target"];
