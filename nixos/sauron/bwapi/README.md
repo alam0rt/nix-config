@@ -24,23 +24,42 @@ lobby, someone has to drive the menus by hand.
 
 ## One-time setup
 
-The images need a StarCraft 1.16.1 install, which is not redistributable and
-which sc-docker's own mirror (`files.theabyss.ru`) no longer serves. Supply it
-yourself:
+BWAPI needs StarCraft **1.16.1** exactly — 1.18 added anti-cheat that breaks it,
+and Blizzard's free download is 1.18+ with no supported downgrade. The game is
+supplied by you, as a nix `requireFile` package, not fetched by this repo.
 
-```console
-# zip of a 1.16.1 install — StarCraft.exe, *.mpq, characters/, etc. at the root
-$ sudo cp starcraft.zip /srv/data/bwapi/starcraft.zip
-$ sudo systemctl start bwapi-images.service
+Blizzard still serves the official 1.16.1 *patches* (verified 2026-09-12):
+
+```
+http://ftp.blizzard.com/pub/broodwar/patches/PC/BW-1161.exe    26.5 MB
+http://ftp.blizzard.com/pub/starcraft/patches/PC/SC-1161.exe   10.7 MB
 ```
 
-That pulls `ggaic/starcraft:java` (Wine + BWAPI 4.4.0 + bwheadless, published by
-the SSCAIT group) and builds `starcraft:game` on top of it. `bwapi-install.service`
-then downloads the SSCAI map pack and the precomputed BWTA terrain caches.
+They are PE wrappers around an MPQ of the 1.16.1 binaries — they patch an
+existing install and contain none of the ~500 MB of game data. The community
+mirrors that used to host a complete 1.16.1 install are all gone:
+`files.theabyss.ru` (sc-docker's own) does not resolve, and
+`cs.mun.ca/~dchurchill/.../Starcraft_1161.zip` — the one SSCAIT's tutorial still
+links, "hosted with permission from Activision Blizzard" — 404s since those
+pages moved to `davechurchill.ca`.
 
-The base layers are pulled rather than rebuilt on purpose: sc-docker's
-dockerfiles are `FROM ubuntu:xenial` and `apt-get update` against an EOL release
-fails.
+So: zip a 1.16.1 install with `StarCraft.exe`, `storm.dll`, `StarDat.mpq`,
+`BrooDat.mpq` and `patch_rt.mpq` at the top level, then:
+
+```console
+$ nix-store --add-fixed sha256 Starcraft_1161.zip
+$ sha256sum Starcraft_1161.zip
+```
+
+Set that hash as `gameHash` in `default.nix` and switch. Until you do, `gameHash`
+is `null` and the entire module is `mkIf`'d out — no units, no failures, no
+ladder.
+
+`bwapi-images.service` then pulls `ggaic/starcraft:java` (Wine + BWAPI 4.4.0 +
+bwheadless, published by the SSCAIT group) and builds `starcraft:game` on top.
+The base layers are pulled rather than rebuilt because sc-docker's dockerfiles
+are `FROM ubuntu:xenial` and `apt-get update` fails on an EOL release.
+`bwapi-install.service` then fetches the SSCAI map pack and BWTA caches.
 
 ## Playing against a bot
 

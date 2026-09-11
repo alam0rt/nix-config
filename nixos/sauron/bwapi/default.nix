@@ -6,6 +6,20 @@
 }: let
   stateDir = "/srv/data/bwapi";
 
+  # sha256 of your Starcraft_1161.zip, or null. Everything in this module is
+  # inert while it is null: no units are defined, nothing fails, nothing runs.
+  # `nix-store --add-fixed sha256 Starcraft_1161.zip` puts the file in the store
+  # and tells you the hash; pkgs/starcraft-1161 explains how to assemble the zip
+  # and why the free 1.18 download will not do.
+  gameHash = null;
+
+  gameConfigured = gameHash != null;
+
+  # callPackage'd here rather than exported from pkgs/: requireFile asserts on a
+  # null hash during evaluation, so this must only ever be forced once gameHash
+  # is real — which mkIf below guarantees.
+  gameZip = pkgs.callPackage ../../../pkgs/starcraft-1161 {hash = gameHash;};
+
   # scbw hardcodes ~/.scbw for its data root, so HOME decides where bots, maps,
   # BWTA caches and per-game directories land.
   scbwHome = "${stateDir}/.scbw";
@@ -80,121 +94,110 @@
         --log_level INFO
     '';
   };
-in {
-  # scbw drives containers over the Docker-compatible API rather than shelling
-  # out to `podman`, so podman.socket has to actually be listening — this option
-  # is what enables it. dockerCompat in ../configuration.nix only provides the
-  # `docker` CLI alias, which is a different thing entirely.
-  virtualisation.podman.dockerSocket.enable = true;
+in
+  lib.mkIf gameConfigured {
+    # scbw drives containers over the Docker-compatible API rather than shelling
+    # out to `podman`, so podman.socket has to actually be listening — this option
+    # is what enables it. dockerCompat in ../configuration.nix only provides the
+    # `docker` CLI alias, which is a different thing entirely.
+    virtualisation.podman.dockerSocket.enable = true;
 
-  systemd.tmpfiles.rules = [
-    "d ${stateDir}        0750 root root - -"
-    "d ${scbwHome}        0750 root root - -"
-    "d ${scbwHome}/bots   0750 root root - -"
-    "d ${scbwHome}/maps   0750 root root - -"
-    "d ${scbwHome}/games  0750 root root - -"
-  ];
+    systemd.tmpfiles.rules = [
+      "d ${stateDir}        0750 root root - -"
+      "d ${scbwHome}        0750 root root - -"
+      "d ${scbwHome}/bots   0750 root root - -"
+      "d ${scbwHome}/maps   0750 root root - -"
+      "d ${scbwHome}/games  0750 root root - -"
+    ];
 
-  # One-time image bootstrap. This is a systemd unit rather than a README step
-  # so that a fresh sauron converges on its own — but it cannot be fully
-  # automatic, because the StarCraft payload is not ours to redistribute and
-  # the mirror sc-docker used (files.theabyss.ru) is dead. Drop a 1.16.1
-  # install zipped as ${stateDir}/starcraft.zip and this builds the rest.
-  systemd.services.bwapi-images = {
-    description = "Build the StarCraft/BWAPI container image for scbw";
-    after = ["podman.socket" "network-online.target"];
-    wants = ["podman.socket" "network-online.target"];
-    path = [pkgs.podman pkgs.coreutils];
+    # One-time image bootstrap, converged on every switch. The game comes from
+    # the store via requireFile, so by the time this module exists at all the
+    # payload is guaranteed present — unlike sc-docker's own flow, which fetches
+    # it from files.theabyss.ru and has been broken since that mirror died.
+    systemd.services.bwapi-images = {
+      description = "Build the StarCraft/BWAPI container image for scbw";
+      wantedBy = ["multi-user.target"];
+      after = ["podman.socket" "network-online.target"];
+      wants = ["podman.socket" "network-online.target"];
+      path = [pkgs.podman pkgs.coreutils];
 
-    # No wantedBy, and a condition on the game payload: without both, a host
-    # that has not been given a starcraft.zip yet would report a failed unit on
-    # every switch. A skipped condition counts as success for the Requires=
-    # chain below, so the whole ladder stays inert instead of failing hourly.
-    unitConfig.ConditionPathExists = "${stateDir}/starcraft.zip";
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+      };
 
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
+      script = ''
+        if podman image exists starcraft:game; then
+          echo "starcraft:game already built, nothing to do"
+          exit 0
+        fi
+
+        # The base layers (Wine, BWAPI, bwheadless, the tournament modules) come
+        # from the images the SSCAIT group published in 2018. Rebuilding them from
+        # sc-docker's own dockerfiles is not an option: they are FROM ubuntu:xenial
+        # and apt-get update against an EOL release fails.
+        if ! podman image exists starcraft:java; then
+          podman pull docker.io/ggaic/starcraft:java
+          podman tag docker.io/ggaic/starcraft:java starcraft:java
+        fi
+
+        # game.dockerfile is the only layer that has to be built here: it unpacks
+        # the game over the base image and writes the Blizzard registry keys.
+        ctx=$(mktemp -d)
+        trap 'rm -rf "$ctx"' EXIT
+        cp ${pkgs.scbw.gameDockerContext}/* "$ctx"/
+        cp ${gameZip} "$ctx"/starcraft.zip
+        podman build -f "$ctx"/game.dockerfile -t starcraft:game "$ctx"
+      '';
     };
 
-    script = ''
-      if podman image exists starcraft:game; then
-        echo "starcraft:game already built, nothing to do"
-        exit 0
-      fi
+    # Downloads the SSCAI map pack and the precomputed BWTA terrain-analysis
+    # caches. Without the caches every bot spends the first minute of every game
+    # re-analysing the map, which makes short test games useless.
+    systemd.services.bwapi-install = {
+      description = "Fetch scbw maps and BWTA caches";
+      wantedBy = ["multi-user.target"];
+      after = ["bwapi-images.service"];
+      requires = ["bwapi-images.service"];
+      environment = podmanEnv;
 
-      if [ ! -f ${stateDir}/starcraft.zip ]; then
-        echo "${stateDir}/starcraft.zip is missing — see nixos/sauron/bwapi/README.md" >&2
-        exit 1
-      fi
+      unitConfig.ConditionPathExists = "!${scbwHome}/maps/sscai";
 
-      # The base layers (Wine, BWAPI, bwheadless, the tournament modules) come
-      # from the images the SSCAIT group published in 2018. Rebuilding them from
-      # sc-docker's own dockerfiles is not an option: they are FROM ubuntu:xenial
-      # and apt-get update against an EOL release fails.
-      if ! podman image exists starcraft:java; then
-        podman pull docker.io/ggaic/starcraft:java
-        podman tag docker.io/ggaic/starcraft:java starcraft:java
-      fi
-
-      # game.dockerfile is the only layer that has to be built here: it unpacks
-      # the game over the base image and writes the Blizzard registry keys.
-      ctx=$(mktemp -d)
-      trap 'rm -rf "$ctx"' EXIT
-      cp ${pkgs.scbw.gameDockerContext}/* "$ctx"/
-      cp ${stateDir}/starcraft.zip "$ctx"/starcraft.zip
-      podman build -f "$ctx"/game.dockerfile -t starcraft:game "$ctx"
-    '';
-  };
-
-  # Downloads the SSCAI map pack and the precomputed BWTA terrain-analysis
-  # caches. Without the caches every bot spends the first minute of every game
-  # re-analysing the map, which makes short test games useless.
-  systemd.services.bwapi-install = {
-    description = "Fetch scbw maps and BWTA caches";
-    after = ["bwapi-images.service"];
-    requires = ["bwapi-images.service"];
-    environment = podmanEnv;
-
-    unitConfig.ConditionPathExists = ["${stateDir}/starcraft.zip" "!${scbwHome}/maps/sscai"];
-
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-      ExecStart = "${pkgs.scbw}/bin/scbw.play --install";
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = "${pkgs.scbw}/bin/scbw.play --install";
+      };
     };
-  };
 
-  # The ladder itself: one game per firing, two bots picked at random.
-  systemd.services.bwapi-ladder = {
-    description = "Play one headless BWAPI bot-vs-bot game";
-    after = ["bwapi-install.service"];
-    requires = ["bwapi-install.service"];
+    # The ladder itself: one game per firing, two bots picked at random.
+    systemd.services.bwapi-ladder = {
+      description = "Play one headless BWAPI bot-vs-bot game";
+      after = ["bwapi-install.service"];
+      requires = ["bwapi-install.service"];
 
-    unitConfig.ConditionPathExists = "${stateDir}/starcraft.zip";
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = lib.getExe ladderScript;
 
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = lib.getExe ladderScript;
-
-      # A game is two Wine containers each running a full StarCraft; on a box
-      # that is also transcoding and serving media, keep them off the cores
-      # that matter.
-      CPUWeight = 20;
-      IOWeight = 20;
+        # A game is two Wine containers each running a full StarCraft; on a box
+        # that is also transcoding and serving media, keep them off the cores
+        # that matter.
+        CPUWeight = 20;
+        IOWeight = 20;
+      };
     };
-  };
 
-  systemd.timers.bwapi-ladder = {
-    description = "Run a BWAPI bot game periodically";
-    wantedBy = ["timers.target"];
-    timerConfig = {
-      OnCalendar = "hourly";
-      RandomizedDelaySec = "10m";
-      Persistent = false;
-      AccuracySec = "1m";
+    systemd.timers.bwapi-ladder = {
+      description = "Run a BWAPI bot game periodically";
+      wantedBy = ["timers.target"];
+      timerConfig = {
+        OnCalendar = "hourly";
+        RandomizedDelaySec = "10m";
+        Persistent = false;
+        AccuracySec = "1m";
+      };
     };
-  };
 
-  environment.systemPackages = [scbwWrapped];
-}
+    environment.systemPackages = [scbwWrapped];
+  }
