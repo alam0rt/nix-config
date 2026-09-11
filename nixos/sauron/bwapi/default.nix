@@ -102,10 +102,15 @@ in {
   # install zipped as ${stateDir}/starcraft.zip and this builds the rest.
   systemd.services.bwapi-images = {
     description = "Build the StarCraft/BWAPI container image for scbw";
-    wantedBy = ["multi-user.target"];
     after = ["podman.socket" "network-online.target"];
     wants = ["podman.socket" "network-online.target"];
     path = [pkgs.podman pkgs.coreutils];
+
+    # No wantedBy, and a condition on the game payload: without both, a host
+    # that has not been given a starcraft.zip yet would report a failed unit on
+    # every switch. A skipped condition counts as success for the Requires=
+    # chain below, so the whole ladder stays inert instead of failing hourly.
+    unitConfig.ConditionPathExists = "${stateDir}/starcraft.zip";
 
     serviceConfig = {
       Type = "oneshot";
@@ -147,12 +152,11 @@ in {
   # re-analysing the map, which makes short test games useless.
   systemd.services.bwapi-install = {
     description = "Fetch scbw maps and BWTA caches";
-    wantedBy = ["multi-user.target"];
     after = ["bwapi-images.service"];
     requires = ["bwapi-images.service"];
     environment = podmanEnv;
 
-    unitConfig.ConditionPathExists = "!${scbwHome}/maps/sscai";
+    unitConfig.ConditionPathExists = ["${stateDir}/starcraft.zip" "!${scbwHome}/maps/sscai"];
 
     serviceConfig = {
       Type = "oneshot";
@@ -166,6 +170,8 @@ in {
     description = "Play one headless BWAPI bot-vs-bot game";
     after = ["bwapi-install.service"];
     requires = ["bwapi-install.service"];
+
+    unitConfig.ConditionPathExists = "${stateDir}/starcraft.zip";
 
     serviceConfig = {
       Type = "oneshot";
