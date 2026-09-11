@@ -26,6 +26,8 @@
     ./monitoring
     ./ups
     ./home-assistant
+    ./pvpgn
+    ./bwapi
     # ./models
     # ./llama-cpp
   ];
