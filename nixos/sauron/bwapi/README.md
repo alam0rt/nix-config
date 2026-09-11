@@ -22,44 +22,28 @@ So:
 They share a version (1.16.1) and nothing else. If you want a bot in a PvPGN
 lobby, someone has to drive the menus by hand.
 
-## One-time setup
+## Setup
 
-BWAPI needs StarCraft **1.16.1** exactly — 1.18 added anti-cheat that breaks it,
-and Blizzard's free download is 1.18+ with no supported downgrade. The game is
-supplied by you, as a nix `requireFile` package, not fetched by this repo.
+Nothing. `pkgs/starcraft-1161` fetches the game, so a switch is all it takes.
 
-Blizzard still serves the official 1.16.1 *patches* (verified 2026-09-12):
+BWAPI requires StarCraft **1.16.1** exactly — patch 1.18 added anti-cheat that
+breaks it, and Blizzard's free download is 1.18+ with no supported downgrade, so
+"StarCraft is free now" does not get you there. What the package fetches is the
+ICCup-derived install SSCAIT's tutorial has always pointed at, "hosted with
+permission from Activision Blizzard", now at `davechurchill.ca` rather than the
+`cs.mun.ca` URL SSCAIT still links (that one 404s).
 
-```
-http://ftp.blizzard.com/pub/broodwar/patches/PC/BW-1161.exe    26.5 MB
-http://ftp.blizzard.com/pub/starcraft/patches/PC/SC-1161.exe   10.7 MB
-```
+It is pinned by hash and was cross-checked against PvPGN's own version table
+before pinning: `conf/versioncheck.json.in` expects
+`StarCraft.exe 01/09/09 22:57:43 1220608` for SEXP revision 0xd3 (Brood War
+1.16.1), and the exe in the zip is exactly that.
 
-They are PE wrappers around an MPQ of the 1.16.1 binaries — they patch an
-existing install and contain none of the ~500 MB of game data. The community
-mirrors that used to host a complete 1.16.1 install are all gone:
-`files.theabyss.ru` (sc-docker's own) does not resolve, and
-`cs.mun.ca/~dchurchill/.../Starcraft_1161.zip` — the one SSCAIT's tutorial still
-links, "hosted with permission from Activision Blizzard" — 404s since those
-pages moved to `davechurchill.ca`.
-
-So: zip a 1.16.1 install with `StarCraft.exe`, `storm.dll`, `StarDat.mpq`,
-`BrooDat.mpq` and `patch_rt.mpq` at the top level, then:
-
-```console
-$ nix-store --add-fixed sha256 Starcraft_1161.zip
-$ sha256sum Starcraft_1161.zip
-```
-
-Set that hash as `gameHash` in `default.nix` and switch. Until you do, `gameHash`
-is `null` and the entire module is `mkIf`'d out — no units, no failures, no
-ladder.
-
-`bwapi-images.service` then pulls `ggaic/starcraft:java` (Wine + BWAPI 4.4.0 +
+`bwapi-images.service` pulls `ggaic/starcraft:java` (Wine + BWAPI 4.4.0 +
 bwheadless, published by the SSCAIT group) and builds `starcraft:game` on top.
 The base layers are pulled rather than rebuilt because sc-docker's dockerfiles
 are `FROM ubuntu:xenial` and `apt-get update` fails on an EOL release.
-`bwapi-install.service` then fetches the SSCAI map pack and BWTA caches.
+`bwapi-install.service` then fetches the SSCAI map pack and BWTA caches — without
+those, every bot re-analyses the map for the first minute of every game.
 
 ## Playing against a bot
 

@@ -18,8 +18,5 @@ pkgs: {
   bermuda = pkgs.callPackage ./bermuda {};
   pvpgn-server = pkgs.callPackage ./pvpgn-server {};
   scbw = pkgs.callPackage ./scbw {};
-  # starcraft-1161 is deliberately NOT exported here. requireFile asserts on a
-  # null hash at *eval* time, so an entry with a placeholder would break
-  # `nix build .#...` and any full-package enumeration for everyone who has not
-  # supplied the game. nixos/sauron/bwapi callPackages it directly instead.
+  starcraft-1161 = pkgs.callPackage ./starcraft-1161 {};
 }

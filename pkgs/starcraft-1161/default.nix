@@ -1,49 +1,40 @@
-# Blizzard's game data, present only because the operator already has a copy.
-# This repo never fetches it, never substitutes it and never redistributes it:
-# requireFile only ever reads a file you added to the store yourself.
 {
-  requireFile,
-  # sha256 of your own Starcraft_1161.zip. There is no default: the file is not
-  # redistributable, so the hash depends on which copy you have. See the message
-  # below, and nixos/sauron/bwapi/default.nix for where this gets set.
-  hash,
+  lib,
+  fetchurl,
 }:
-requireFile {
+# StarCraft: Brood War 1.16.1, as the BWAPI community distributes it.
+#
+# BWAPI requires 1.16.1 exactly: patch 1.18 added anti-cheat measures that break
+# it, and Blizzard's current free download is 1.18+ with no supported downgrade,
+# so the free re-release does not get you here. Blizzard's FTP still serves the
+# official 1.16.1 *patches* (ftp.blizzard.com/pub/broodwar/patches/PC/BW-1161.exe)
+# but those are PE wrappers around an MPQ of patched binaries and carry none of
+# the game data.
+#
+# This is the ICCup-derived install that SSCAIT's tutorial has always pointed at,
+# described there as "hosted with permission from Activision Blizzard". The host
+# moved from cs.mun.ca/~dchurchill to davechurchill.ca; SSCAIT still links the
+# old URL, which 404s.
+fetchurl {
   name = "Starcraft_1161.zip";
-  sha256 = hash;
+  url = "https://davechurchill.ca/starcraft/files/Starcraft_1161.zip";
+  hash = "sha256-G58L9bcZxZ7ERWO6Dfg0v8cIczIxXXqeZ7BzEmiukNw=";
 
-  # Recorded for provenance only — requireFile never fetches. This is the URL
-  # SSCAIT's tutorial still points at, described there as "hosted with
-  # permission from Activision Blizzard". It 404s as of 2026-09-12: Dave
-  # Churchill's pages moved from cs.mun.ca to davechurchill.ca and the files/
-  # directory did not survive the move.
-  url = "http://www.cs.mun.ca/~dchurchill/starcraftaicomp/files/Starcraft_1161.zip";
+  # Cross-checked against PvPGN's own version table before pinning: conf/
+  # versioncheck.json.in expects `StarCraft.exe 01/09/09 22:57:43 1220608` for
+  # SEXP revision 0xd3 (Brood War 1.16.1), and the StarCraft.exe in this zip is
+  # exactly 1220608 bytes with that timestamp. Contents are at the top level —
+  # StarCraft.exe, storm.dll, STARDAT.MPQ, BROODAT.MPQ, battle.snp, characters/,
+  # maps/ — which is the layout both consumers expect.
 
-  message = ''
-    BWAPI requires StarCraft: Brood War *1.16.1* specifically. Patch 1.18 added
-    anti-cheat measures that break BWAPI, and Blizzard's current free download
-    is 1.18+ with no supported way to downgrade — so the free re-release does
-    not get you there on its own.
-
-    What is still live, from Blizzard directly:
-
-      http://ftp.blizzard.com/pub/broodwar/patches/PC/BW-1161.exe   (26.5 MB)
-      http://ftp.blizzard.com/pub/starcraft/patches/PC/SC-1161.exe  (10.7 MB)
-
-    Those are patches, not installs: a PE wrapper around an MPQ holding the
-    1.16.1 binaries. They update an existing copy of the game, and carry none of
-    the ~500 MB of art and sound data.
-
-    So the zip has to be assembled from a copy of the game you have: a directory
-    containing StarCraft.exe, storm.dll, StarDat.mpq, BrooDat.mpq and
-    patch_rt.mpq at its root, patched to 1.16.1, zipped with those files at the
-    top level (not inside a wrapper directory).
-
-    Then add it to the store and record the hash:
-
-      sha256sum Starcraft_1161.zip
-      nix-store --add-fixed sha256 Starcraft_1161.zip
-
-    and set that hash as `gameHash` in nixos/sauron/bwapi/default.nix.
-  '';
+  meta = {
+    description = "StarCraft: Brood War 1.16.1 game files (BWAPI-compatible build)";
+    homepage = "https://davechurchill.ca/starcraft/";
+    # Blizzard's game data. Redistributed by the AI research community with
+    # Activision Blizzard's permission, but not under any license nixpkgs can
+    # express.
+    license = lib.licenses.unfree;
+    platforms = lib.platforms.all;
+    maintainers = [];
+  };
 }
