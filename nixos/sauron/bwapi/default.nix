@@ -6,12 +6,10 @@
 }: let
   stateDir = "/srv/data/bwapi";
 
-  # sha256 of your Starcraft_1161.zip, or null. Everything in this module is
-  # inert while it is null: no units are defined, nothing fails, nothing runs.
-  # `nix-store --add-fixed sha256 Starcraft_1161.zip` puts the file in the store
-  # and tells you the hash; pkgs/starcraft-1161 explains how to assemble the zip
-  # and why the free 1.18 download will not do.
-  gameHash = null;
+  # Shared with nixos/laptop/starcraft.nix — one hash, both consumers. While it
+  # is null this whole module is inert: no units are defined, nothing fails,
+  # nothing runs.
+  gameHash = import ../../../pkgs/starcraft-1161/hash.nix;
 
   gameConfigured = gameHash != null;
 

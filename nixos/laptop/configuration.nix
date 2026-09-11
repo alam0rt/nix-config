@@ -13,6 +13,7 @@
     ../config/home-manager.nix
     ../config/desktop-common.nix
     ./hardware-configuration.nix
+    ./starcraft.nix
   ];
 
   networking.hostName = "laptop"; # Define your hostname.
