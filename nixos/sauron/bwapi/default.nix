@@ -197,10 +197,15 @@
   #   strconv.Atoi: parsing "6111:6119": invalid syntax
   exposeFix = "s|^EXPOSE 6111:6119 6111:6119/udp$|EXPOSE 6111-6119 6111-6119/udp|";
 
+  # sc-docker's headful auto_launch helper invokes xdotool, but the upstream
+  # wine image does not install it. Without this, one host-side VNC session
+  # disappears when the first container reaches auto_launch.
+  xdotoolFix = "s|xvfb xauth x11vnc winehq-stable unzip cabextract|xvfb xauth x11vnc xdotool winehq-stable unzip cabextract|";
+
   # Identifies what starcraft:game was built from. Any change to the sc-docker
   # checkout, the game zip, or our patches above changes this, which is what
   # triggers a rebuild.
-  buildId = builtins.substring 0 12 (builtins.hashString "sha256" "${pkgs.scbw.src}:${pkgs.starcraft-1161}:${exposeFix}");
+  buildId = builtins.substring 0 12 (builtins.hashString "sha256" "${pkgs.scbw.src}:${pkgs.starcraft-1161}:${exposeFix}:${xdotoolFix}");
 
   # scbw insists on a VNC viewer in headful mode — game.py calls
   # check_vnc_exists() up front and then spawns `vncviewer <host>:<port>` per
@@ -358,6 +363,7 @@ in {
       cp -r ${pkgs.scbw.dockerContext}/. "$ctx"/
       chmod -R u+w "$ctx"
       sed -i '${exposeFix}' "$ctx/dockerfiles/bwapi.dockerfile"
+      sed -i '${xdotoolFix}' "$ctx/dockerfiles/wine.dockerfile"
 
       # No --build-arg: the dockerfiles default to STARCRAFT_UID=1000 and
       # BOT_UID=1001, whereas upstream's build_images.sh passes $(id -u), which
