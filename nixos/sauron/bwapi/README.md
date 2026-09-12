@@ -47,13 +47,43 @@ those, every bot re-analyses the map for the first minute of every game.
 
 ## Playing against a bot
 
+From the laptop:
+
 ```console
-$ sudo scbw --bots "Locutus" --human --map "sscai/(4)Circuit Breaker.scx"
+$ starcraft-vs Locutus
+$ starcraft-vs 'Iron bot' T
 ```
 
-This starts a headful container with a VNC server on `:5900`. Connect over the
-tailnet, pick your race, and the bot joins. Expect it to feel sluggish — you are
-playing over VNC into Wine.
+Then host an ordinary LAN game with the name it prints — Multiplayer → Local
+Area Network (UDP) → Create Game. The bot joins it.
+
+This does **not** go through PvPGN. `bwheadless --lan-sendto` hooks
+`ws2_32!sendto` and rewrites every outgoing destination to your address, so the
+bot unicasts at you instead of broadcasting; that is what carries it across the
+tailnet, which has no broadcast domain. The container runs with `--network
+host`, not scbw's `sc_net` bridge, because the bridge SNATs and breaks the
+return path from your client.
+
+## Watching two bots fight
+
+```console
+$ starcraft-watch Locutus Steamhammer
+```
+
+Starts a rendered game here and opens a VNC viewer per player on the laptop —
+5900 is the first bot, 5901 the second. There is no true observer mode, so each
+viewer shows that player's screen, fog of war and all.
+
+The VNC servers are unauthenticated (`x11vnc -nopw` inside the container), so
+the firewall exposes 5900-5901 on the tailnet only. Never widen that.
+
+`--auto_launch` is on, which drives the map-selection screen with xdotool to
+work around sc-docker's "Unable to distribute map" bug; without it a headful
+game sits in the lobby forever waiting for a human to pick the map.
+
+If live watching misbehaves, the headless path is more reliable: the hourly
+ladder saves a replay per game under
+`/srv/data/bwapi/.scbw/games/<game>/`, and those open in a normal StarCraft.
 
 ## The ladder
 

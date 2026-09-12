@@ -18,6 +18,9 @@
 
     # `starcraft-vs Locutus` — see pkgs/starcraft-vs.
     (pkgs.callPackage ../../pkgs/starcraft-vs {botHost = "sauron";})
+
+    # `starcraft-watch Locutus Steamhammer` — bot vs bot, over VNC.
+    (pkgs.callPackage ../../pkgs/starcraft-watch {botHost = "sauron";})
   ];
 
   # StarCraft's own game traffic is peer-to-peer UDP on 6112 once a lobby starts

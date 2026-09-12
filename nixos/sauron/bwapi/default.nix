@@ -165,6 +165,50 @@
     '';
   };
 
+  # scbw insists on a VNC viewer in headful mode — game.py calls
+  # check_vnc_exists() up front and then spawns `vncviewer <host>:<port>` per
+  # container. sauron has no display, and we want to connect from elsewhere
+  # anyway, so satisfy the check with a shim that just reports the address.
+  vncShim = pkgs.writeShellScriptBin "vncviewer" ''
+    echo "watch this bot at vnc://$1"
+  '';
+
+  # Bot vs bot, rendered, with a VNC server per player.
+  watchScript = pkgs.writeShellApplication {
+    name = "bwapi-watch";
+    runtimeInputs = [pkgs.scbw pkgs.coreutils pkgs.tailscale vncShim];
+    text = ''
+      if [ $# -lt 2 ]; then
+        echo "usage: bwapi-watch <bot> <bot> [map]" >&2
+        exit 2
+      fi
+      one="$1"; two="$2"
+      map="''${3:-sscai/(2)Benzene.scx}"
+
+      export DOCKER_HOST=${podmanEnv.DOCKER_HOST}
+      export HOME=${stateDir}
+
+      # The address the VNC servers are advertised on. scbw only uses this to
+      # build the string it hands the viewer, which here is the shim above, so
+      # it is really just what gets printed for the operator to connect to.
+      host=$(tailscale ip -4)
+
+      # --show_all gives a VNC server per player rather than only the host, so
+      # both sides can be watched. --auto_launch drives the map-selection
+      # screen with xdotool, working around sc-docker's "Unable to distribute
+      # map" bug, which otherwise leaves headful games sitting in the lobby
+      # forever waiting for a human to pick the map.
+      exec scbw.play \
+        --bots "$one" "$two" \
+        --map "$map" \
+        --show_all \
+        --auto_launch \
+        --vnc_host "$host" \
+        --timeout 3600 \
+        --log_level INFO
+    '';
+  };
+
   ladderScript = pkgs.writeShellApplication {
     name = "bwapi-ladder-run";
     runtimeInputs = [pkgs.scbw pkgs.coreutils];
@@ -197,6 +241,11 @@ in {
   # is what enables it. dockerCompat in ../configuration.nix only provides the
   # `docker` CLI alias, which is a different thing entirely.
   virtualisation.podman.dockerSocket.enable = true;
+
+  # scbw publishes a VNC server per player at 5900 + player index. Tailnet only
+  # — these are unauthenticated (x11vnc -nopw inside the container), so they
+  # must never face the LAN, let alone the internet.
+  networking.firewall.interfaces.tailscale0.allowedTCPPorts = [5900 5901];
 
   systemd.tmpfiles.rules = [
     "d ${stateDir}        0750 root root - -"
@@ -295,7 +344,7 @@ in {
     };
   };
 
-  environment.systemPackages = [scbwWrapped joinScript];
+  environment.systemPackages = [scbwWrapped joinScript watchScript];
 
   # The laptop's `sc-vs` runs this over SSH, where an interactive password
   # prompt is not available. Scoped to this one wrapper rather than opening up
@@ -307,6 +356,10 @@ in {
       commands = [
         {
           command = "${lib.getExe joinScript}";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "${lib.getExe watchScript}";
           options = ["NOPASSWD"];
         }
       ];
