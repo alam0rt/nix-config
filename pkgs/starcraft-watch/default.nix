@@ -24,7 +24,8 @@ writeShellApplication {
     fi
 
     echo "starting $1 vs $2 on ${botHost}"
-    ssh -f ${botHost} sudo bwapi-watch "$1" "$2" ''${3:+"$3"}
+    remote_cmd=$(printf '%q ' sudo bwapi-watch "$1" "$2" ''${3:+"$3"})
+    ssh -f ${botHost} "$remote_cmd"
 
     # The containers need to boot Wine and StarCraft before anything is
     # listening; connecting too early just fails.
