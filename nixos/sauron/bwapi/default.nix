@@ -46,9 +46,27 @@
     HOME = stateDir;
   };
 
+  # Bind mounts are consumed by the image's fixed UID 1000 / GID users. Repair
+  # existing map, BWAPI-cache and game trees before every launch; tmpfiles and
+  # the service umask handle directories created afterward.
+  fixPermissions = pkgs.writeShellApplication {
+    name = "bwapi-fix-permissions";
+    runtimeInputs = [pkgs.coreutils];
+    text = ''
+      for path in "${scbwHome}/maps" "${scbwHome}/bwapi-data" "${scbwHome}/games"; do
+        if [ -e "$path" ]; then
+          chgrp -R users "$path"
+          chmod -R g+rwX "$path"
+        fi
+      done
+    '';
+  };
+
   # Wrapper so `scbw.play ...` works from a root shell on sauron with the same
   # environment the units use — this is how you start a human-vs-bot game.
   scbwWrapped = pkgs.writeShellScriptBin "scbw" ''
+    umask 0002
+    ${lib.getExe fixPermissions}
     export DOCKER_HOST=${podmanEnv.DOCKER_HOST}
     export HOME=${stateDir}
     exec ${pkgs.scbw}/bin/scbw.play "$@"
@@ -94,8 +112,10 @@
   # which has no broadcast domain.
   joinScript = pkgs.writeShellApplication {
     name = "bwapi-join";
-    runtimeInputs = [pkgs.podman pkgs.coreutils scbwPython];
+    runtimeInputs = [pkgs.podman pkgs.coreutils scbwPython fixPermissions];
     text = ''
+      umask 0002
+      ${lib.getExe fixPermissions}
       bot=""; sendto=""; game="vs-bot"; race=""
       while [ $# -gt 0 ]; do
         case "$1" in
@@ -193,8 +213,10 @@
   # Bot vs bot, rendered, with a VNC server per player.
   watchScript = pkgs.writeShellApplication {
     name = "bwapi-watch";
-    runtimeInputs = [pkgs.scbw pkgs.coreutils pkgs.tailscale vncShim];
+    runtimeInputs = [pkgs.scbw pkgs.coreutils pkgs.tailscale vncShim fixPermissions];
     text = ''
+      umask 0002
+      ${lib.getExe fixPermissions}
       if [ $# -lt 2 ]; then
         echo "usage: bwapi-watch <bot> <bot> [map]" >&2
         exit 2
@@ -228,8 +250,10 @@
 
   ladderScript = pkgs.writeShellApplication {
     name = "bwapi-ladder-run";
-    runtimeInputs = [pkgs.scbw pkgs.coreutils];
+    runtimeInputs = [pkgs.scbw pkgs.coreutils fixPermissions];
     text = ''
+      umask 0002
+      ${lib.getExe fixPermissions}
       export DOCKER_HOST=${podmanEnv.DOCKER_HOST}
       export HOME=${stateDir}
 
@@ -264,16 +288,31 @@ in {
   # must never face the LAN, let alone the internet.
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [5900 5901];
 
-  # 0755, not 0750: the containers run as root and everything under here is bot
-  # binaries, maps and game logs — nothing private. When a game fails the only
-  # evidence is in games/<name>/logs_N/, and needing root to read it turns every
-  # diagnosis into a round trip.
+  # The container image runs as UID 1000 with the Ubuntu `users` group (GID
+  # 100), not as root. Root owns the service state, but setgid directories and
+  # a 0002 umask keep bind-mounted logs, crashes, replays and bot write data
+  # writable by that matching container group.
+  #
+  # `z` repairs ownership and mode on paths created by earlier generations;
+  # `d` also creates them on a fresh host. The parent `games` directory is
+  # setgid so each per-game directory inherits group `users`.
   systemd.tmpfiles.rules = [
-    "d ${stateDir}        0755 root root - -"
-    "d ${scbwHome}        0755 root root - -"
-    "d ${scbwHome}/bots   0755 root root - -"
-    "d ${scbwHome}/maps   0755 root root - -"
-    "d ${scbwHome}/games  0755 root root - -"
+    "d ${stateDir}             2775 root users - -"
+    "d ${scbwHome}             2775 root users - -"
+    "d ${scbwHome}/bots        2775 root users - -"
+    "d ${scbwHome}/maps        2775 root users - -"
+    "d ${scbwHome}/games       2775 root users - -"
+    "d ${scbwHome}/bwapi-data  2775 root users - -"
+    "d ${scbwHome}/bwapi-data/BWTA  2775 root users - -"
+    "d ${scbwHome}/bwapi-data/BWTA2 2775 root users - -"
+    "z ${stateDir}             2775 root users - -"
+    "z ${scbwHome}             2775 root users - -"
+    "z ${scbwHome}/bots        2775 root users - -"
+    "z ${scbwHome}/maps        2775 root users - -"
+    "z ${scbwHome}/games       2775 root users - -"
+    "z ${scbwHome}/bwapi-data  2775 root users - -"
+    "z ${scbwHome}/bwapi-data/BWTA  2775 root users - -"
+    "z ${scbwHome}/bwapi-data/BWTA2 2775 root users - -"
   ];
 
   # One-time image bootstrap, converged on every switch. The game comes from
@@ -356,7 +395,9 @@ in {
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      UMask = "0002";
       ExecStart = "${pkgs.scbw}/bin/scbw.play --install";
+      ExecStartPost = lib.getExe fixPermissions;
     };
   };
 
@@ -368,6 +409,7 @@ in {
 
     serviceConfig = {
       Type = "oneshot";
+      UMask = "0002";
       ExecStart = lib.getExe ladderScript;
 
       # A game is two Wine containers each running a full StarCraft; on a box
