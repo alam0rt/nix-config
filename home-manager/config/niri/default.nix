@@ -126,6 +126,31 @@
     }
   ];
 
+  # Mod+Q. niri's close-window sends xdg_toplevel.close and stops there, which
+  # is enough for every well-behaved client but not for gamescope: it ignores
+  # the event entirely, so the StarCraft window would stay up with no way to
+  # dismiss it short of killing the process by hand. Signal that one by PID and
+  # let everything else take the normal path.
+  closeScript = pkgs.writeShellScriptBin "niri-close" ''
+    set -eu
+    info=$(${niri} msg --json focused-window 2>/dev/null) || exit 0
+    [ -n "$info" ] || exit 0
+
+    appid=$(${pkgs.jq}/bin/jq -r '.app_id // ""' <<< "$info")
+    pid=$(${pkgs.jq}/bin/jq -r '.pid // 0' <<< "$info")
+
+    case "$appid" in
+      gamescope)
+        # SIGTERM takes the nested compositor down, and it kills its child, so
+        # wine and StarCraft go with it.
+        [ "$pid" -gt 0 ] && kill "$pid"
+        ;;
+      *)
+        ${niri} msg action close-window
+        ;;
+    esac
+  '';
+
   # A wl-paste watcher feeding one MIME type into the cliphist store.
   cliphistWatch = type: {
     Unit = {
@@ -245,5 +270,6 @@ in {
     wl-clipboard # wl-copy / wl-paste, also the clipboard history watchers above
     cliphist # clipboard history store, picked through fuzzel on Mod+P
     playerctl # the XF86Audio* binds in config.kdl call this
+    closeScript # Mod+Q
   ];
 }

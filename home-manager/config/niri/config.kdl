@@ -326,6 +326,20 @@ window-rule {
     default-column-width {}
 }
 
+// gamescope hosts StarCraft (see pkgs/starcraft). It is a nested compositor
+// already drawing its own scaled output, so any focus ring or border niri puts
+// around it is pure decoration over a game that fills the screen.
+window-rule {
+    match app-id=r#"^gamescope$"#
+    open-fullscreen true
+    focus-ring {
+        off
+    }
+    border {
+        off
+    }
+}
+
 // Open the Firefox picture-in-picture player as floating by default.
 window-rule {
     // This app-id regular expression will work for both:
@@ -414,7 +428,11 @@ binds {
     // or do a four-finger swipe up on a touchpad.
     Mod+O repeat=false { toggle-overview; }
 
-    Mod+Q repeat=false { close-window; }
+    // niri-close, not close-window: gamescope ignores xdg_toplevel.close
+    // outright (verified — the window stays up and the process keeps running),
+    // so a plain close-window can never shut the game down. The wrapper falls
+    // back to close-window for every other app.
+    Mod+Q repeat=false { spawn "niri-close"; }
 
     Mod+Left  { focus-column-left; }
     Mod+Down  { focus-window-down; }
