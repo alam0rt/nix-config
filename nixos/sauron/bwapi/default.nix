@@ -350,7 +350,13 @@ in {
   # prompt is not available. Scoped to this one wrapper rather than opening up
   # podman or systemctl: it takes four arguments, all of which end up as
   # container env, and the worst it can do is start a StarCraft container.
-  security.sudo.extraRules = [
+  # mkAfter is load-bearing. sudoers is last-match-wins, and the generic
+  # `%wheel ALL=(ALL:ALL) SETENV: ALL` rule that wheelNeedsPassword generates
+  # matches these commands too. Without forcing this rule after it, `sudo -l`
+  # reports the command as allowed NOPASSWD while actually running it still
+  # demands a password — which over `ssh` with no tty fails outright with
+  # "a terminal is required to read the password".
+  security.sudo.extraRules = lib.mkAfter [
     {
       groups = ["wheel"];
       commands = [
