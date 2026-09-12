@@ -165,6 +165,10 @@
     '';
   };
 
+  # Identifies what starcraft:game was built from. Any change to the sc-docker
+  # checkout or the game zip changes this, which is what triggers a rebuild.
+  buildId = builtins.substring 0 12 (builtins.hashString "sha256" "${pkgs.scbw.src}:${pkgs.starcraft-1161}");
+
   # scbw insists on a VNC viewer in headful mode — game.py calls
   # check_vnc_exists() up front and then spawns `vncviewer <host>:<port>` per
   # container. sauron has no display, and we want to connect from elsewhere
@@ -276,10 +280,19 @@ in {
     };
 
     script = ''
-      if podman image exists starcraft:game; then
-        echo "starcraft:game already built, nothing to do"
+      # Keyed on the inputs, not on mere existence. `podman image exists` was
+      # not enough: it happily kept a stale image built from the old Docker Hub
+      # base, so a changed definition here silently never took effect. The
+      # label carries a hash of the sc-docker checkout and the game zip, so any
+      # change to either rebuilds, and an image predating the label rebuilds too.
+      want="${buildId}"
+      have=$(podman image inspect --format '{{ index .Labels "sc-build" }}' \
+               starcraft:game 2>/dev/null || true)
+      if [ "$have" = "$want" ]; then
+        echo "starcraft:game is up to date ($want)"
         exit 0
       fi
+      echo "rebuilding starcraft:game (want $want, have ''${have:-none})"
 
       # Build the whole chain from basil-ladder/sc-docker rather than pulling
       # the images the SSCAIT group published in 2018. Those are frozen at wine
@@ -308,7 +321,9 @@ in {
       trap 'rm -rf "$ctx" "$gctx"' EXIT
       cp ${pkgs.scbw.gameDockerContext}/* "$gctx"/
       cp ${pkgs.starcraft-1161} "$gctx"/starcraft.zip
-      podman build -f "$gctx"/game.dockerfile -t starcraft:game "$gctx"
+      podman build -f "$gctx"/game.dockerfile \
+        --label "sc-build=$want" \
+        -t starcraft:game "$gctx"
     '';
   };
 
