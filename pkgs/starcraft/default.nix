@@ -91,11 +91,21 @@
       # Override per launch: SC_DISPLAY=gamescope starcraft
       case "''${SC_DISPLAY:-${defaultDisplay}}" in
         gamescope)
-          # -w/-h are the game's resolution, -W/-H the output, -f fullscreen.
-          # Integer scaling with nearest-neighbour keeps 1998 pixel art sharp
-          # instead of smearing it; 640x480 doubles cleanly to 1280x960.
-          exec gamescope -w 640 -h 480 -S integer -F nearest -f -- \
-            wine StarCraft.exe "$@"
+          # -w/-h are the game's own resolution, -f fullscreen. gamescope takes
+          # the 640x480 output and scales it to the display, which is the whole
+          # point: without it StarCraft renders 640x480 into the middle of the
+          # screen and leaves the rest black, because under XWayland the
+          # DirectDraw mode change does not resize the actual output.
+          #
+          # scaler "fit" fills as much of the screen as 4:3 allows (1440x1080 on
+          # a 1080p panel) and pillarboxes the rest. "integer" is sharper — whole
+          # pixels, 2x to 1280x960 — but noticeably smaller. Try both:
+          #   SC_SCALER=integer SC_FILTER=nearest starcraft
+          exec gamescope \
+            -w 640 -h 480 \
+            -S "''${SC_SCALER:-fit}" \
+            -F "''${SC_FILTER:-linear}" \
+            -f -- wine StarCraft.exe "$@"
           ;;
         desktop)
           exec wine explorer /desktop=StarCraft,640x480 StarCraft.exe "$@"
