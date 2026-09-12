@@ -350,13 +350,20 @@ in {
   # prompt is not available. Scoped to this one wrapper rather than opening up
   # podman or systemctl: it takes four arguments, all of which end up as
   # container env, and the worst it can do is start a StarCraft container.
-  # mkAfter is load-bearing. sudoers is last-match-wins, and the generic
-  # `%wheel ALL=(ALL:ALL) SETENV: ALL` rule that wheelNeedsPassword generates
-  # matches these commands too. Without forcing this rule after it, `sudo -l`
-  # reports the command as allowed NOPASSWD while actually running it still
-  # demands a password — which over `ssh` with no tty fails outright with
-  # "a terminal is required to read the password".
-  security.sudo.extraRules = lib.mkAfter [
+  # Both the profile symlink and the store path it points at, because sudo does
+  # not resolve symlinks when matching a command: naming only the store path
+  # means `sudo bwapi-watch` (which PATH resolves to /run/current-system/sw/bin)
+  # falls through to wheel's catch-all and demands a password, failing over ssh
+  # with "a terminal is required to read the password".
+  #
+  # Note that `sudo -l <cmd>` is no use for checking this — it answers "may sam
+  # run this at all", which wheel's `(ALL:ALL) SETENV: ALL` already permits, so
+  # it reports success whether or not the NOPASSWD rule matches. `sudo -n <cmd>`
+  # is the test that distinguishes them.
+  #
+  # The symlink is root-owned and root-managed, so allowing it is no weaker than
+  # allowing the store path.
+  security.sudo.extraRules = [
     {
       groups = ["wheel"];
       commands = [
@@ -365,7 +372,15 @@ in {
           options = ["NOPASSWD"];
         }
         {
+          command = "/run/current-system/sw/bin/bwapi-join";
+          options = ["NOPASSWD"];
+        }
+        {
           command = "${lib.getExe watchScript}";
+          options = ["NOPASSWD"];
+        }
+        {
+          command = "/run/current-system/sw/bin/bwapi-watch";
           options = ["NOPASSWD"];
         }
       ];
