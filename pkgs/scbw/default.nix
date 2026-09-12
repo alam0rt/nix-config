@@ -62,6 +62,13 @@ python3Packages.buildPythonApplication rec {
   # than digging them out of site-packages.
   passthru.gameDockerContext = "${src}/scbw/local_docker";
 
+  # Tournament-module DLLs, one per BWAPI version. play_bot.sh does
+  # `cp $TM_DIR/$BOT_BWAPI.dll` and dies under `set -e` if the version it wants
+  # is missing — which is what happens with the 2018 base image, whose spec
+  # lists only BWAPI 3.7.4, 3.7.5, 4.1.2 and 4.2.0 while every current SSCAIT
+  # bot is 4.4.0.
+  passthru.tmModules = "${src}/docker/tm";
+
   meta = {
     description = "Launcher for StarCraft: Brood War BWAPI bot games in Docker containers";
     homepage = "https://github.com/basil-ladder/sc-docker";

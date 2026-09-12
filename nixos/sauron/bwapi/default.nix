@@ -85,6 +85,14 @@
     '';
   };
 
+  tmDockerfile = pkgs.writeText "tm.dockerfile" ''
+    FROM starcraft:game-base
+    USER root
+    COPY tm/ /app/tm/
+    RUN chown -R starcraft:users /app/tm
+    USER starcraft
+  '';
+
   # Play a human on another machine. The bot joins a game that StarCraft on the
   # far end is hosting, over LAN/UDP — not over PvPGN, which BWAPI cannot use
   # (see README.md). bwheadless --lan-sendto hooks ws2_32!sendto and rewrites
@@ -276,7 +284,8 @@ in {
     };
 
     script = ''
-      if podman image exists starcraft:game; then
+      if podman image exists starcraft:game && podman run --rm starcraft:game \
+           test -f /app/tm/4.4.0.dll; then
         echo "starcraft:game already built, nothing to do"
         exit 0
       fi
@@ -290,13 +299,27 @@ in {
         podman tag docker.io/ggaic/starcraft:java starcraft:java
       fi
 
-      # game.dockerfile is the only layer that has to be built here: it unpacks
-      # the game over the base image and writes the Blizzard registry keys.
+      # game.dockerfile unpacks the game over the base image and writes the
+      # Blizzard registry keys.
       ctx=$(mktemp -d)
       trap 'rm -rf "$ctx"' EXIT
       cp ${pkgs.scbw.gameDockerContext}/* "$ctx"/
       cp ${pkgs.starcraft-1161} "$ctx"/starcraft.zip
-      podman build -f "$ctx"/game.dockerfile -t starcraft:game "$ctx"
+      podman build -f "$ctx"/game.dockerfile -t starcraft:game-base "$ctx"
+
+      # Then refresh the tournament modules. The 2018 base image ships TM DLLs
+      # for BWAPI 3.7.4 through 4.2.0 only, but every current SSCAIT bot is
+      # 4.4.0, and play_bot.sh does an unguarded `cp $TM_DIR/$BOT_BWAPI.dll`
+      # under `set -e`:
+      #
+      #   + cp /app/tm/4.4.0.dll /app/sc/tm.dll
+      #   cp: cannot stat '/app/tm/4.4.0.dll': No such file or directory
+      #
+      # so the container exits 1 before writing a single line to its log dir,
+      # and scbw reports only "some containers exited prematurely".
+      mkdir -p "$ctx"/tm
+      cp ${pkgs.scbw.tmModules}/*.dll "$ctx"/tm/
+      podman build -f ${tmDockerfile} -t starcraft:game "$ctx"
     '';
   };
 
