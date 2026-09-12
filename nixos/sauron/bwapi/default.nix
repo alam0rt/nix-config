@@ -165,9 +165,22 @@
     '';
   };
 
+  # Upstream writes the StarCraft port range with a colon:
+  #
+  #   EXPOSE 6111:6119 6111:6119/udp
+  #
+  # Dockerfile ranges use a hyphen. Docker accepts the colon form and ignores
+  # it, so nobody upstream notices; buildah stores the string verbatim and
+  # podman then fails at container-create, not at build:
+  #
+  #   container create: unable to convert image EXPOSE: invalid port number:
+  #   strconv.Atoi: parsing "6111:6119": invalid syntax
+  exposeFix = "s|^EXPOSE 6111:6119 6111:6119/udp$|EXPOSE 6111-6119 6111-6119/udp|";
+
   # Identifies what starcraft:game was built from. Any change to the sc-docker
-  # checkout or the game zip changes this, which is what triggers a rebuild.
-  buildId = builtins.substring 0 12 (builtins.hashString "sha256" "${pkgs.scbw.src}:${pkgs.starcraft-1161}");
+  # checkout, the game zip, or our patches above changes this, which is what
+  # triggers a rebuild.
+  buildId = builtins.substring 0 12 (builtins.hashString "sha256" "${pkgs.scbw.src}:${pkgs.starcraft-1161}:${exposeFix}");
 
   # scbw insists on a VNC viewer in headful mode — game.py calls
   # check_vnc_exists() up front and then spawns `vncviewer <host>:<port>` per
@@ -272,7 +285,7 @@ in {
     wantedBy = ["multi-user.target"];
     after = ["podman.socket" "network-online.target"];
     wants = ["podman.socket" "network-online.target"];
-    path = [pkgs.podman pkgs.coreutils];
+    path = [pkgs.podman pkgs.coreutils pkgs.gnused];
 
     serviceConfig = {
       Type = "oneshot";
@@ -305,6 +318,7 @@ in {
       trap 'rm -rf "$ctx"' EXIT
       cp -r ${pkgs.scbw.dockerContext}/. "$ctx"/
       chmod -R u+w "$ctx"
+      sed -i '${exposeFix}' "$ctx/dockerfiles/bwapi.dockerfile"
 
       # No --build-arg: the dockerfiles default to STARCRAFT_UID=1000 and
       # BOT_UID=1001, whereas upstream's build_images.sh passes $(id -u), which
