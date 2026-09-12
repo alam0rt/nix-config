@@ -4,6 +4,7 @@
   makeDesktopItem,
   symlinkJoin,
   wineWow64Packages,
+  gamescope,
   unzip,
   coreutils,
   # The Starcraft_1161.zip derivation from ../starcraft-1161.
@@ -11,12 +12,14 @@
   # PvPGN server to pre-register as a Battle.net gateway.
   serverAddress ? "sauron",
   serverTitle ? "WankNet",
+  # native | desktop | gamescope — see the case statement below.
+  defaultDisplay ? "native",
 }: let
   wine = wineWow64Packages.stable;
 
   launcher = writeShellApplication {
     name = "starcraft";
-    runtimeInputs = [wine unzip coreutils];
+    runtimeInputs = [wine unzip coreutils gamescope];
     text = ''
       prefix="''${XDG_DATA_HOME:-$HOME/.local/share}/starcraft"
       gamedir="$prefix/game"
@@ -51,14 +54,45 @@
       # Battle.net gateway list. StarCraft 1.16.1 keeps it as a REG_MULTI_SZ
       # whose first element selects the active gateway and whose remaining
       # elements are (address, timezone, title) triples — the format pvpgn's
-      # own "Universal Battle.net Gateway Installer" writes. Re-applied on every
-      # launch so a change here takes effect without rebuilding the prefix.
+      # own "Universal Battle.net Gateway Installer" writes.
+      #
+      # The separator is given explicitly with /s rather than relying on
+      # reg.exe's default. Wine's reg.exe mangles the literal "\0" form: passing
+      # /d '1001\0sauron\01\0WankNet' stored "1001", "0001uron", "1", "WankNet",
+      # which StarCraft could not parse at all — it showed an empty gateway list.
+      # With /s '|' it round-trips correctly. Re-applied on every launch so a
+      # change here takes effect without rebuilding the prefix.
       wine reg add 'HKEY_CURRENT_USER\Software\Battle.net\Configuration' \
-        /v 'Battle.net Gateways' /t REG_MULTI_SZ \
-        /d '1001\0${serverAddress}\01\0${serverTitle}' /f >/dev/null 2>&1
+        /v 'Battle.net Gateways' /t REG_MULTI_SZ /s '|' \
+        /d '1001|${serverAddress}|1|${serverTitle}' /f >/dev/null 2>&1
 
       cd "$gamedir"
-      exec wine StarCraft.exe "$@"
+
+      # StarCraft is a fixed 640x480 DirectDraw game with no windowed mode of its
+      # own, so "windowed" has to come from outside it.
+      #
+      #   native    (default) real fullscreen; the game changes the display mode
+      #   desktop   a Wine virtual desktop — a plain window, no mode change, but
+      #             only as large as the game's own 640x480
+      #   gamescope a nested compositor that upscales 640x480 to the whole
+      #             screen; this is the "fullscreen windowed" one
+      #
+      # Override per launch: SC_DISPLAY=gamescope starcraft
+      case "''${SC_DISPLAY:-${defaultDisplay}}" in
+        gamescope)
+          # -w/-h are the game's resolution, -W/-H the output, -f fullscreen.
+          # Integer scaling with nearest-neighbour keeps 1998 pixel art sharp
+          # instead of smearing it; 640x480 doubles cleanly to 1280x960.
+          exec gamescope -w 640 -h 480 -S integer -F nearest -f -- \
+            wine StarCraft.exe "$@"
+          ;;
+        desktop)
+          exec wine explorer /desktop=StarCraft,640x480 StarCraft.exe "$@"
+          ;;
+        *)
+          exec wine StarCraft.exe "$@"
+          ;;
+      esac
     '';
   };
 
