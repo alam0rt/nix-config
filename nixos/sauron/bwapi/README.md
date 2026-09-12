@@ -54,6 +54,15 @@ prematurely". Building from the fork gets 4.4.0 in-tree.
 `bwapi-install.service` then fetches the SSCAI map pack and BWTA caches — without
 those, every bot re-analyses the map for the first minute of every game.
 
+It is supposed to do that once. `pkgs/scbw` patches `_image_version_up_to_date()`
+in `cli.py` to make that true: it compared image tags against the bare
+`starcraft:game`, but podman reports a locally built image as
+`localhost/starcraft:game`, so the check never matched and *every* `scbw.play`
+re-ran the whole installer first — both map packs and both BWTA caches off
+GitHub, about 7MB a game. It never failed, because `check_for_game_image()`
+inside the installer found the image fine; it only ever showed up as a
+`re-installing scbw package` warning in the journal.
+
 ## Playing against a bot
 
 From the laptop:
@@ -103,6 +112,43 @@ chosen bots on a random map. Replays and per-game logs land under
 `--read_overwrite` is on, so bots that learn between games (most of the good
 ones keep opponent-model data in their `read`/`write` directories) actually
 accumulate knowledge instead of starting cold every time.
+
+## Disk and retention
+
+An untouched game directory is about 1.3MB, and almost none of it is the result:
+
+| | Share of 21 games |
+|---|---|
+| `player_{0,1}.rep` | 56% |
+| `write_{0,1}/` | 29% |
+| `logs_*/unit_events.csv` | 11% |
+| `logs_*/frames.csv` | 3% |
+| `result.json` + `scores.json` | **0.09%** (30KB total) |
+
+Bot replays are much larger than human ones — ~430KB average, 1.1MB for a long
+game — because a `.rep` is a command stream and these bots sustain ~450 APM
+each. At 24 games a day that is ~11GB a year.
+
+`bwapi-prune` runs as the ladder's `ExecStopPost` and sweeps the whole tree:
+
+- **finished game** — drops `player_1.rep` (the same game from the other seat;
+  replays hold no per-player fog, so it is worth nothing), `write_{0,1}` and
+  `logs_*/unit_events.csv`. Leaves ~400KB: one replay, `frames.csv`, the logs
+  and the JSON.
+- **finished, past 30 days** — drops the replay and logs too, keeping
+  `result.json` and both `scores.json`. ~1.4KB, so every game's outcome is kept
+  forever and the ladder table stays computable.
+- **no `result.json`, past 7 days** — deleted. These are runs that died before
+  scbw wrote a result (the journal has the failure) and `bwapi-join` /
+  `bwapi-watch` directories, which never get one.
+
+Deleting `write_{0,1}` is safe because `result.json` is written in `run_game`
+only *after* `wait_for_containers` has done the `--read_overwrite` copy into
+`bots/<name>/read`. A directory with a result has already had its learning data
+folded back. `crashes_{0,1}` is removed with `rmdir`, never `rm -r`, so a real
+crash dump survives.
+
+Run it by hand with `bwapi-prune`; it is idempotent.
 
 ## Choosing bots
 

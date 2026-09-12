@@ -253,6 +253,76 @@
     '';
   };
 
+  # How long a game's replay is kept before it collapses to just its result,
+  # and how long a directory with no result at all is kept.
+  replayRetentionDays = 30;
+  failedRetentionDays = 7;
+
+  # What a finished game is worth keeping. A game directory is ~1.3MB, of which
+  # result.json and the two scores.json are 1.4KB; almost all the rest is
+  # redundant. player_0.rep and player_1.rep are the same game recorded from
+  # each seat (a replay holds no per-player fog, so the second is worth
+  # nothing), write_N is a copy of learning data that --read_overwrite has
+  # already folded back into bots/<name>/read, and unit_events.csv is a
+  # per-unit event log nothing here reads. Bot replays are fat — ~430KB
+  # average, 1.1MB for a long game — because a .rep is a command stream and
+  # these bots sustain ~450 APM each, so at 24 games a day the untouched tree
+  # grows about 11GB a year.
+  #
+  # Three tiers, applied by one idempotent sweep:
+  #
+  #   finished                          one replay, frames.csv, logs   ~400KB
+  #   finished, past the replay window  result.json and scores.json    ~1.4KB
+  #   no result, past its window        deleted
+  #
+  # The second tier keeps every game's outcome forever, so the ladder table
+  # stays computable, while capping watchable replays at a month. Having a
+  # result.json is what makes a directory safe to prune: scbw writes it in
+  # run_game only after wait_for_containers has done the read_overwrite copy,
+  # so its presence means the learning data is already out of write_N.
+  pruneScript = pkgs.writeShellApplication {
+    name = "bwapi-prune";
+    runtimeInputs = [pkgs.coreutils pkgs.findutils];
+    text = ''
+      games=${lib.escapeShellArg "${scbwHome}/games"}
+      [ -d "$games" ] || exit 0
+
+      for dir in "$games"/*/; do
+        # An empty games directory leaves the glob unexpanded.
+        [ -d "$dir" ] || continue
+        name=$(basename "$dir")
+
+        if [ ! -e "$dir/result.json" ]; then
+          # Either a game in flight or a run that died before scbw wrote a
+          # result. The journal already has the failure, so the half-written
+          # tree is only worth a week. bwapi-join and bwapi-watch directories
+          # never get a result.json either, and age out the same way.
+          if [ -n "$(find "$dir" -maxdepth 0 -mtime +${toString failedRetentionDays})" ]; then
+            echo "prune: removing unfinished $name"
+            rm -rf "$dir"
+          fi
+          continue
+        fi
+
+        # Tier 1, always: the duplicate replay, the folded-back learning data
+        # and the per-unit event logs.
+        rm -f "$dir"/player_1.rep
+        rm -rf "$dir"/write_0 "$dir"/write_1
+        rm -f "$dir"/logs_0/unit_events.csv "$dir"/logs_1/unit_events.csv
+
+        # Tier 2: past the replay window, keep only the outcome. rmdir rather
+        # than rm -r on crashes_N so a real crash dump is never thrown away.
+        if [ -n "$(find "$dir/result.json" -maxdepth 0 -mtime +${toString replayRetentionDays})" ]; then
+          rm -f "$dir"/player_0.rep
+          rm -f "$dir"/logs_0/frames.csv "$dir"/logs_1/frames.csv
+          rm -f "$dir"/logs_0/game.log "$dir"/logs_1/game.log
+          rm -f "$dir"/logs_0/bot.log "$dir"/logs_1/bot.log
+          rmdir --ignore-fail-on-non-empty "$dir"/crashes_0 "$dir"/crashes_1 2>/dev/null || true
+        fi
+      done
+    '';
+  };
+
   ladderScript = pkgs.writeShellApplication {
     name = "bwapi-ladder-run";
     runtimeInputs = [pkgs.scbw pkgs.coreutils fixPermissions];
@@ -418,6 +488,13 @@ in {
       UMask = "0002";
       ExecStart = lib.getExe ladderScript;
 
+      # ExecStopPost, not ExecStartPost: a run that fails still leaves a
+      # part-written game directory behind, and that is exactly the case the
+      # sweep's unfinished-directory tier exists for. The sweep is idempotent
+      # and walks the whole tree, so it also catches any backlog without the
+      # ladder needing to know which directory scbw just created.
+      ExecStopPost = lib.getExe pruneScript;
+
       # A game is two Wine containers each running a full StarCraft; on a box
       # that is also transcoding and serving media, keep them off the cores
       # that matter.
@@ -437,7 +514,7 @@ in {
     };
   };
 
-  environment.systemPackages = [scbwWrapped joinScript watchScript];
+  environment.systemPackages = [scbwWrapped joinScript watchScript pruneScript];
 
   # The laptop's `sc-vs` runs this over SSH, where an interactive password
   # prompt is not available. Scoped to this one wrapper rather than opening up

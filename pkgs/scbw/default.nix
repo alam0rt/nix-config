@@ -36,6 +36,22 @@ python3Packages.buildPythonApplication rec {
                         player.read_dir,
                         dirs_exist_ok=True,
                     )'
+
+    # _image_version_up_to_date() decides whether to re-run install(), and it
+    # compared image tags against the bare "starcraft:game". Podman reports a
+    # locally built image as "localhost/starcraft:game", so the comparison
+    # never matched and every single scbw.play invocation re-ran install() —
+    # re-downloading both SSCAI map packs and both BWTA caches from GitHub,
+    # ~7MB per game, before playing. check_for_game_image() inside install()
+    # then found the image perfectly well, which is why this only ever showed
+    # up as a "re-installing scbw package" warning and never as a failure.
+    #
+    # Matching on the tag suffix as well covers the registry prefix, and
+    # listing all images rather than filtering on the "starcraft" reference
+    # avoids depending on how podman's API interprets that filter.
+    substituteInPlace scbw/cli.py \
+      --replace-fail "return any(tag == SC_IMAGE for image in client.images.list('starcraft') for tag in image.tags)" \
+        'return any(tag == SC_IMAGE or tag.endswith("/" + SC_IMAGE) for image in client.images.list() for tag in image.tags)'
   '';
 
   propagatedBuildInputs = with python3Packages; [
