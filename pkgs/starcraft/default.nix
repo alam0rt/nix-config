@@ -7,6 +7,7 @@
   gamescope,
   unzip,
   coreutils,
+  gnugrep,
   # The Starcraft_1161.zip derivation from ../starcraft-1161.
   gameZip,
   # PvPGN server to pre-register as a Battle.net gateway.
@@ -19,7 +20,10 @@
 
   launcher = writeShellApplication {
     name = "starcraft";
-    runtimeInputs = [wine unzip coreutils gamescope];
+    # niri/wlr-randr are looked up on the inherited PATH rather than pinned:
+    # they are whatever compositor the user is actually running, and the
+    # resolution probe falls back to 1920x1080 if neither answers.
+    runtimeInputs = [wine unzip coreutils gamescope gnugrep];
     text = ''
       prefix="''${XDG_DATA_HOME:-$HOME/.local/share}/starcraft"
       gamedir="$prefix/game"
@@ -101,8 +105,26 @@
           # a 1080p panel) and pillarboxes the rest. "integer" is sharper — whole
           # pixels, 2x to 1280x960 — but noticeably smaller. Try both:
           #   SC_SCALER=integer SC_FILTER=nearest starcraft
+          # -W/-H (output size) are not optional. Without them gamescope sizes
+          # its output to -w/-h, i.e. to the game's own 640x480, and there is
+          # nothing left to scale into — the log gives it away with
+          # "edid: Patching res <native> -> 640x480".
+          res="''${SC_OUTPUT:-}"
+          if [ -z "$res" ]; then
+            res=$(niri msg outputs 2>/dev/null \
+              | grep -m1 -oE 'Current mode: [0-9]+x[0-9]+' \
+              | grep -oE '[0-9]+x[0-9]+' || true)
+          fi
+          if [ -z "$res" ]; then
+            res=$(wlr-randr 2>/dev/null \
+              | grep -m1 -oE '[0-9]+x[0-9]+ px' \
+              | grep -oE '[0-9]+x[0-9]+' || true)
+          fi
+          res="''${res:-1920x1080}"
+
           exec gamescope \
             -w 640 -h 480 \
+            -W "''${res%x*}" -H "''${res#*x}" \
             -S "''${SC_SCALER:-fit}" \
             -F "''${SC_FILTER:-linear}" \
             -f -- wine StarCraft.exe "$@"
