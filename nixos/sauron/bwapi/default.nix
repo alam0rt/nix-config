@@ -54,6 +54,117 @@
     exec ${pkgs.scbw}/bin/scbw.play "$@"
   '';
 
+  # scbw as an importable library, not just a CLI. Resolving a bot needs its
+  # code: bwapi_version is derived from the md5 of the bot's BWAPI.dll matched
+  # against a known-versions table, and the SSCAIT downloader handles the
+  # fuzzy name matching. Reimplementing either would be a second source of truth.
+  scbwPython = pkgs.python3.withPackages (ps: [(ps.toPythonModule pkgs.scbw)]);
+
+  resolveBot = pkgs.writeTextFile {
+    name = "resolve-bot.py";
+    text = ''
+      """Print shell-evalable metadata for a bot, downloading it if needed."""
+      import shlex
+      import sys
+
+      from scbw.bot_storage import LocalBotStorage, SscaitBotStorage
+
+      bot_dir, name = sys.argv[1], sys.argv[2]
+      bot = LocalBotStorage(bot_dir).find_bot(name) or SscaitBotStorage(bot_dir).find_bot(name)
+      if bot is None:
+          sys.exit(f"no bot matching {name!r}")
+
+      for key, value in [
+          ("BOT_NAME", bot.name),
+          ("BOT_FILE", bot.bot_basefilename),
+          ("BOT_BWAPI", bot.bwapi_version),
+          ("BOT_RACE", bot.race.value),
+          ("BOT_PATH", bot.bot_dir),
+      ]:
+          print(f"{key}={shlex.quote(str(value))}")
+    '';
+  };
+
+  # Play a human on another machine. The bot joins a game that StarCraft on the
+  # far end is hosting, over LAN/UDP — not over PvPGN, which BWAPI cannot use
+  # (see README.md). bwheadless --lan-sendto hooks ws2_32!sendto and rewrites
+  # every outgoing destination to the given address, so the bot unicasts to the
+  # player instead of broadcasting, and the player's client replies to the
+  # container's source address. That is what makes this work across the tailnet,
+  # which has no broadcast domain.
+  joinScript = pkgs.writeShellApplication {
+    name = "bwapi-join";
+    runtimeInputs = [pkgs.podman pkgs.coreutils scbwPython];
+    text = ''
+      bot=""; sendto=""; game="vs-bot"; race=""
+      while [ $# -gt 0 ]; do
+        case "$1" in
+          --bot)    bot="$2"; shift 2 ;;
+          --sendto) sendto="$2"; shift 2 ;;
+          --game)   game="$2"; shift 2 ;;
+          --race)   race="$2"; shift 2 ;;
+          *) echo "unknown argument: $1" >&2; exit 2 ;;
+        esac
+      done
+      [ -n "$bot" ] || { echo "--bot is required" >&2; exit 2; }
+      [ -n "$sendto" ] || { echo "--sendto <player ip> is required" >&2; exit 2; }
+
+      export HOME=${stateDir}
+      bots="${scbwHome}/bots"
+
+      # Downloads from SSCAIT on first use, same store the ladder populates.
+      eval "$(python3 ${resolveBot} "$bots" "$bot")"
+      [ -n "''${race}" ] || race="$BOT_RACE"
+
+      echo "$BOT_NAME ($race) joining game '$game' hosted at $sendto"
+
+      rundir="${scbwHome}/games/$game"
+      mkdir -p "$rundir"/{logs,write,errors}
+
+      # --network host, not scbw's sc_net bridge: the bridge SNATs, which breaks
+      # the return path from the player's client back into the container.
+      exec podman run --rm --network host \
+        --name "bwapi-join-$game" \
+        -e PLAYER_NAME="$BOT_NAME" \
+        -e PLAYER_RACE="$race" \
+        -e NTH_PLAYER=1 \
+        -e NUM_PLAYERS=2 \
+        -e GAME_NAME="$game" \
+        -e MAP_NAME=/app/sc/maps/sscai/'(2)Benzene.scx' \
+        -e GAME_TYPE=MELEE \
+        -e SPEED_OVERRIDE=0 \
+        -e SEED_OVERRIDE=0 \
+        -e HIDE_NAMES=0 \
+        -e DROP_PLAYERS=1 \
+        -e BOT_FILE="$BOT_FILE" \
+        -e BOT_BWAPI="$BOT_BWAPI" \
+        -e TM_LOG_RESULTS=../logs/scores.json \
+        -e TM_LOG_FRAMETIMES=../logs/frames.csv \
+        -e TM_LOG_UNIT_EVENTS=../logs/unit_events.csv \
+        -e TM_SPEED_OVERRIDE=0 \
+        -e TM_SEED_OVERRIDE=0 \
+        -e TM_ALLOW_USER_INPUT=0 \
+        -e TM_TIME_OUT_AT_FRAME=-1 \
+        -e EXIT_CODE_REALTIME_OUTED=2 \
+        -e CAPTURE_MOUSE_MOVEMENT=0 \
+        -e HEADFUL_AUTO_LAUNCH=0 \
+        -e JAVA_DEBUG=0 \
+        -e JAVA_DEBUG_PORT="" \
+        -e JAVA_OPTS="" \
+        -v "$rundir/logs":/app/logs:rw \
+        -v "$rundir/write":/app/sc/bwapi-data/write:rw \
+        -v "$rundir/errors":/app/sc/Errors:rw \
+        -v "$BOT_PATH":/app/bot:ro \
+        -v "${scbwHome}/maps":/app/sc/maps:rw \
+        -v "${scbwHome}/bwapi-data/BWTA":/app/sc/bwapi-data/BWTA:rw \
+        -v "${scbwHome}/bwapi-data/BWTA2":/app/sc/bwapi-data/BWTA2:rw \
+        starcraft:game \
+        /app/play_bot.sh \
+          --game "$game" --name "$BOT_NAME" --race "$race" \
+          --lan --join --lan-sendto "$sendto"
+    '';
+  };
+
   ladderScript = pkgs.writeShellApplication {
     name = "bwapi-ladder-run";
     runtimeInputs = [pkgs.scbw pkgs.coreutils];
@@ -184,5 +295,21 @@ in {
     };
   };
 
-  environment.systemPackages = [scbwWrapped];
+  environment.systemPackages = [scbwWrapped joinScript];
+
+  # The laptop's `sc-vs` runs this over SSH, where an interactive password
+  # prompt is not available. Scoped to this one wrapper rather than opening up
+  # podman or systemctl: it takes four arguments, all of which end up as
+  # container env, and the worst it can do is start a StarCraft container.
+  security.sudo.extraRules = [
+    {
+      groups = ["wheel"];
+      commands = [
+        {
+          command = "${lib.getExe joinScript}";
+          options = ["NOPASSWD"];
+        }
+      ];
+    }
+  ];
 }

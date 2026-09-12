@@ -10,6 +10,9 @@
       serverAddress = "sauron";
       serverTitle = "WankNet";
     })
+
+    # `starcraft-vs Locutus` — see pkgs/starcraft-vs.
+    (pkgs.callPackage ../../pkgs/starcraft-vs {botHost = "sauron";})
   ];
 
   # StarCraft's own game traffic is peer-to-peer UDP on 6112 once a lobby starts

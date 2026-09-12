@@ -51,20 +51,31 @@
         wineboot -u >/dev/null 2>&1
       fi
 
-      # Battle.net gateway list. StarCraft 1.16.1 keeps it as a REG_MULTI_SZ
-      # whose first element selects the active gateway and whose remaining
-      # elements are (address, timezone, title) triples — the format pvpgn's
-      # own "Universal Battle.net Gateway Installer" writes.
+      # Battle.net gateway list, as a REG_MULTI_SZ. The format is pvpgn's own
+      # "Universal Battle.net Gateway Installer" format, and the header is TWO
+      # elements, not one: a literal "1001" and a zero-padded index selecting
+      # the active gateway. Its :selectserver does `set str=!str:~8!` — strip
+      # exactly the 8 characters of "1001\000" — then re-emits
+      # `1001\0<NN><rest>`. Gateways follow as (address, timezone, title)
+      # triples.
+      #
+      # Getting this wrong is silent: with the index element missing, StarCraft
+      # reads the address as the index and then hits a truncated triple, and
+      # shows an entirely empty gateway list rather than any error.
       #
       # The separator is given explicitly with /s rather than relying on
       # reg.exe's default. Wine's reg.exe mangles the literal "\0" form: passing
       # /d '1001\0sauron\01\0WankNet' stored "1001", "0001uron", "1", "WankNet",
       # which StarCraft could not parse at all — it showed an empty gateway list.
-      # With /s '|' it round-trips correctly. Re-applied on every launch so a
-      # change here takes effect without rebuilding the prefix.
+      # With /s '|' it round-trips correctly.
+      #
+      # Written unconditionally on every launch, which is idempotent by
+      # construction — the same value each time — and self-healing if the key
+      # is ever left malformed. The cost is that an in-game gateway selection
+      # does not survive a relaunch, which is moot with a single gateway.
       wine reg add 'HKEY_CURRENT_USER\Software\Battle.net\Configuration' \
         /v 'Battle.net Gateways' /t REG_MULTI_SZ /s '|' \
-        /d '1001|${serverAddress}|1|${serverTitle}' /f >/dev/null 2>&1
+        /d '1001|01|${serverAddress}|1|${serverTitle}' /f >/dev/null 2>&1
 
       cd "$gamedir"
 
