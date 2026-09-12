@@ -52,8 +52,16 @@
   bnetdConf = toConf {
     servername = serverName;
 
-    # stdout, so the journal is the only log. bnetd writes its own timestamps.
-    logfile = "stdout";
+    # A real file, because bnetd gives us no choice. src/bnetd/main.cpp sets the
+    # event stream to stderr, then unconditionally replaces it with
+    # eventlog_open(prefs_get_logfile()) and exits fatally if no logfile is set —
+    # and eventlog_open is a plain fopen(filename, "a") with no special case for
+    # "stdout" or "-". Pointing it at /dev/stderr does not work either: under
+    # StandardError=journal fd 2 is an AF_UNIX socket, and opening
+    # /proc/self/fd/2 on a socket fails with ENXIO (verified). So the journal
+    # carries only systemd's own lines for this unit; the server's own log is
+    # here, and logrotate below keeps it bounded.
+    logfile = "${stateDir}/bnetd.log";
     loglevels = "fatal,error,warn,info";
 
     # One SQLite file rather than the default plain-file account tree: accounts
@@ -221,6 +229,10 @@ in {
       if [ ! -e ${stateDir}/bnban.conf ]; then
         install -m 0644 ${pvpgn}/etc/pvpgn/bnban.conf ${stateDir}/bnban.conf
       fi
+
+      # Generation 746 briefly ran with logfile = "stdout", which bnetd took
+      # literally and created as a file in its working directory. Remove it.
+      rm -f ${stateDir}/stdout
     '';
 
     serviceConfig = {
@@ -289,6 +301,20 @@ in {
       allowedTCPPorts = [6112];
       allowedUDPPorts = [6112];
     };
+  };
+
+  services.logrotate.settings.bnetd = {
+    files = "${stateDir}/bnetd.log";
+    frequency = "weekly";
+    rotate = 8;
+    compress = true;
+    notifempty = true;
+    missingok = true;
+    su = "pvpgn pvpgn";
+    create = "0640 pvpgn pvpgn";
+    # bnetd holds the file open and has no reopen signal, so rotating out from
+    # under it would leave it writing to the renamed inode forever.
+    copytruncate = true;
   };
 
   # bnbot/bnchat are handy for testing botlogin accounts from sauron itself.
