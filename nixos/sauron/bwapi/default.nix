@@ -247,12 +247,16 @@ in {
   # must never face the LAN, let alone the internet.
   networking.firewall.interfaces.tailscale0.allowedTCPPorts = [5900 5901];
 
+  # 0755, not 0750: the containers run as root and everything under here is bot
+  # binaries, maps and game logs — nothing private. When a game fails the only
+  # evidence is in games/<name>/logs_N/, and needing root to read it turns every
+  # diagnosis into a round trip.
   systemd.tmpfiles.rules = [
-    "d ${stateDir}        0750 root root - -"
-    "d ${scbwHome}        0750 root root - -"
-    "d ${scbwHome}/bots   0750 root root - -"
-    "d ${scbwHome}/maps   0750 root root - -"
-    "d ${scbwHome}/games  0750 root root - -"
+    "d ${stateDir}        0755 root root - -"
+    "d ${scbwHome}        0755 root root - -"
+    "d ${scbwHome}/bots   0755 root root - -"
+    "d ${scbwHome}/maps   0755 root root - -"
+    "d ${scbwHome}/games  0755 root root - -"
   ];
 
   # One-time image bootstrap, converged on every switch. The game comes from
