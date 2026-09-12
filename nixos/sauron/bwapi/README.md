@@ -38,10 +38,19 @@ before pinning: `conf/versioncheck.json.in` expects
 `StarCraft.exe 01/09/09 22:57:43 1220608` for SEXP revision 0xd3 (Brood War
 1.16.1), and the exe in the zip is exactly that.
 
-`bwapi-images.service` pulls `ggaic/starcraft:java` (Wine + BWAPI 4.4.0 +
-bwheadless, published by the SSCAIT group) and builds `starcraft:game` on top.
-The base layers are pulled rather than rebuilt because sc-docker's dockerfiles
-are `FROM ubuntu:xenial` and `apt-get update` fails on an EOL release.
+`bwapi-images.service` builds the whole image chain — wine, bwapi, play, java,
+then game — from [basil-ladder/sc-docker](https://github.com/basil-ladder/sc-docker),
+the fork BASIL itself runs. Its dockerfiles are `FROM ubuntu:22.04` with
+`winehq-stable`.
+
+Do not be tempted by the prebuilt `ggaic/starcraft:*` images on Docker Hub. They
+are from 2018, frozen at wine 2.20, and carry tournament modules for BWAPI
+3.7.4-4.2.0 only. Every current SSCAIT bot is 4.4.0, and `play_bot.sh` runs
+under `set -e` with an unguarded `cp $TM_DIR/$BOT_BWAPI.dll`, so a bot would die
+with `cp: cannot stat '/app/tm/4.4.0.dll'` before writing a single line to its
+log directory — leaving scbw to report only "some containers exited
+prematurely". Building from the fork gets 4.4.0 in-tree.
+
 `bwapi-install.service` then fetches the SSCAI map pack and BWTA caches — without
 those, every bot re-analyses the map for the first minute of every game.
 

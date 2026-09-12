@@ -69,6 +69,10 @@ python3Packages.buildPythonApplication rec {
   # bot is 4.4.0.
   passthru.tmModules = "${src}/docker/tm";
 
+  # Build context for the wine/bwapi/play/java image chain. Everything those
+  # dockerfiles COPY is relative to this directory.
+  passthru.dockerContext = "${src}/docker";
+
   meta = {
     description = "Launcher for StarCraft: Brood War BWAPI bot games in Docker containers";
     homepage = "https://github.com/basil-ladder/sc-docker";

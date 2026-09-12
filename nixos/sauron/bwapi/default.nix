@@ -85,14 +85,6 @@
     '';
   };
 
-  tmDockerfile = pkgs.writeText "tm.dockerfile" ''
-    FROM starcraft:game-base
-    USER root
-    COPY tm/ /app/tm/
-    RUN chown -R starcraft:users /app/tm
-    USER starcraft
-  '';
-
   # Play a human on another machine. The bot joins a game that StarCraft on the
   # far end is hosting, over LAN/UDP — not over PvPGN, which BWAPI cannot use
   # (see README.md). bwheadless --lan-sendto hooks ws2_32!sendto and rewrites
@@ -284,42 +276,39 @@ in {
     };
 
     script = ''
-      if podman image exists starcraft:game && podman run --rm starcraft:game \
-           test -f /app/tm/4.4.0.dll; then
+      if podman image exists starcraft:game; then
         echo "starcraft:game already built, nothing to do"
         exit 0
       fi
 
-      # The base layers (Wine, BWAPI, bwheadless, the tournament modules) come
-      # from the images the SSCAIT group published in 2018. Rebuilding them from
-      # sc-docker's own dockerfiles is not an option: they are FROM ubuntu:xenial
-      # and apt-get update against an EOL release fails.
-      if ! podman image exists starcraft:java; then
-        podman pull docker.io/ggaic/starcraft:java
-        podman tag docker.io/ggaic/starcraft:java starcraft:java
-      fi
-
-      # game.dockerfile unpacks the game over the base image and writes the
-      # Blizzard registry keys.
+      # Build the whole chain from basil-ladder/sc-docker rather than pulling
+      # the images the SSCAIT group published in 2018. Those are frozen at wine
+      # 2.20 and ship tournament modules for BWAPI 3.7.4-4.2.0 only, so every
+      # current SSCAIT bot — all of which are 4.4.0 — died on an unguarded
+      # `cp /app/tm/4.4.0.dll` before writing a line of log. The fork's
+      # dockerfiles are FROM ubuntu:22.04 with winehq-stable, and carry the
+      # 4.4.0 module in-tree.
       ctx=$(mktemp -d)
       trap 'rm -rf "$ctx"' EXIT
-      cp ${pkgs.scbw.gameDockerContext}/* "$ctx"/
-      cp ${pkgs.starcraft-1161} "$ctx"/starcraft.zip
-      podman build -f "$ctx"/game.dockerfile -t starcraft:game-base "$ctx"
+      cp -r ${pkgs.scbw.dockerContext}/. "$ctx"/
+      chmod -R u+w "$ctx"
 
-      # Then refresh the tournament modules. The 2018 base image ships TM DLLs
-      # for BWAPI 3.7.4 through 4.2.0 only, but every current SSCAIT bot is
-      # 4.4.0, and play_bot.sh does an unguarded `cp $TM_DIR/$BOT_BWAPI.dll`
-      # under `set -e`:
-      #
-      #   + cp /app/tm/4.4.0.dll /app/sc/tm.dll
-      #   cp: cannot stat '/app/tm/4.4.0.dll': No such file or directory
-      #
-      # so the container exits 1 before writing a single line to its log dir,
-      # and scbw reports only "some containers exited prematurely".
-      mkdir -p "$ctx"/tm
-      cp ${pkgs.scbw.tmModules}/*.dll "$ctx"/tm/
-      podman build -f ${tmDockerfile} -t starcraft:game "$ctx"
+      # No --build-arg: the dockerfiles default to STARCRAFT_UID=1000 and
+      # BOT_UID=1001, whereas upstream's build_images.sh passes $(id -u), which
+      # would be 0 here and try to create a second uid-0 user.
+      for image in wine bwapi play java; do
+        echo "building starcraft:$image"
+        podman build -f "$ctx/dockerfiles/$image.dockerfile" -t "starcraft:$image" "$ctx"
+      done
+
+      # game.dockerfile is separate: it unpacks the game over starcraft:java and
+      # writes the Blizzard registry keys, and its context is the one directory
+      # holding the zip and the player profile files.
+      gctx=$(mktemp -d)
+      trap 'rm -rf "$ctx" "$gctx"' EXIT
+      cp ${pkgs.scbw.gameDockerContext}/* "$gctx"/
+      cp ${pkgs.starcraft-1161} "$gctx"/starcraft.zip
+      podman build -f "$gctx"/game.dockerfile -t starcraft:game "$gctx"
     '';
   };
 
