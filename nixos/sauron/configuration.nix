@@ -1,5 +1,6 @@
 {
   config,
+  lib,
   pkgs,
   ...
 }: {
@@ -174,9 +175,12 @@
     enable = true;
   };
 
-  systemd.slices = {
-    # todo: use substitution
-    "user-${toString config.users.users.raf.uid}" = {
+  # Cap interactive users' sessions (user-<uid>.slice) so no single login can
+  # starve services. Only covers processes in the login session — anything run
+  # via sudo or as a system service escapes the slice.
+  systemd.slices = lib.listToAttrs (map (name: {
+    name = "user-${toString config.users.users.${name}.uid}";
+    value = {
       overrideStrategy = "asDropin";
       # https://www.freedesktop.org/software/systemd/man/latest/systemd.resource-control.html
       sliceConfig = {
@@ -188,7 +192,10 @@
         "IOWeight" = "20";
       };
     };
-  };
+  }) ["raf" "sam"]);
+
+  # Pinned so the user-<uid>.slice name above resolves (matches the live uid).
+  users.users.sam.uid = 1000;
 
   users.groups.emma = {};
   users.groups.raf = {};
