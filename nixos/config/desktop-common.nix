@@ -117,10 +117,19 @@
     niri
     kdePackages.dolphin
     kdePackages.dolphin-plugins
+    kdePackages.kio-extras
     pavucontrol # PulseAudio-compatible volume control (works with PipeWire)
     pwvucontrol # native PipeWire volume control
     jmtpfs # MTP file manager for Android devices
   ];
+
+  # Dolphin opens MTP devices (Kindle, phones) through kmtpd, a module loaded
+  # by kiod6, which D-Bus starts on demand. Outside Plasma nothing registers
+  # those services, so Dolphin just reports "udi=.../1-7 does not exist".
+  # kiod6 is D-Bus activated without Dolphin's wrapper, so it also needs
+  # QT_PLUGIN_PATH (set by qt.enable) to find kio-extras' kmtpd.so.
+  services.dbus.packages = with pkgs.kdePackages; [kio kio-extras];
+  qt.enable = true;
 
   # KDE Connect ports (set up in home-manager/linux.nix for user services.kdeconnect.enable)
   networking.firewall = rec {
