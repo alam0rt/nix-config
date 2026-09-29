@@ -533,7 +533,7 @@ in {
               labels.severity = "warning";
               annotations = {
                 summary = "UPS telemetry is unavailable";
-                description = "No UPS status is being reported. upsmon cannot trigger a clean shutdown on power loss — check `upsc sauron@localhost` and `systemctl status nut-driver-*`.";
+                description = "No UPS status is being reported. upsmon cannot trigger a clean shutdown on power loss — check `upsc sauron@localhost` and `systemctl status upsdrv` (this host uses the single upsdrv unit, not nut-driver@ instances), and `lsusb` to see whether the UPS is enumerated at all.";
               };
             }
             {
@@ -630,13 +630,21 @@ in {
               };
             }
             {
+              # Full swap alone is normal here: cold pages from long-running
+              # services get swapped out and never paged back in, leaving swap at
+              # 100% with half of RAM still available. It only matters once RAM
+              # is also short, so both conditions must hold.
               alert = "SwapNearlyFull";
-              expr = ''(node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) < 0.10'';
+              expr = ''
+                (node_memory_SwapFree_bytes / node_memory_SwapTotal_bytes) < 0.10
+                and on (instance)
+                (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) < 0.20
+              '';
               for = "15m";
               labels.severity = "warning";
               annotations = {
                 summary = "Swap nearly exhausted on {{ $labels.instance }}";
-                description = "Less than 10% swap free for 15m. Once swap fills, the next pressure spike goes straight to OOM kills.";
+                description = "Less than 10% swap free and less than 20% RAM available for 15m. The next pressure spike goes straight to OOM kills.";
               };
             }
           ];
@@ -742,22 +750,22 @@ in {
           rules = [
             {
               alert = "SonarrQueueStuck";
-              expr = "sonarr_queue_total > 0";
+              expr = ''sum(sonarr_queue_total{download_status!="ok"}) > 0'';
               for = "6h";
               labels.severity = "warning";
               annotations = {
-                summary = "Sonarr queue has been non-empty for 6 hours";
-                description = "Sonarr has {{ $value }} items stuck in queue.";
+                summary = "Sonarr has queue items in a warning or error state";
+                description = "{{ $value }} Sonarr queue items have been non-ok for 6h (stalled, failed, or importPending with a warning). Healthy in-progress downloads are excluded. Check Activity → Queue for the reason and use Manual Import.";
               };
             }
             {
               alert = "RadarrQueueStuck";
-              expr = "radarr_queue_total > 0";
+              expr = ''sum(radarr_queue_total{download_status!="ok"}) > 0'';
               for = "6h";
               labels.severity = "warning";
               annotations = {
-                summary = "Radarr queue has been non-empty for 6 hours";
-                description = "Radarr has {{ $value }} items stuck in queue.";
+                summary = "Radarr has queue items in a warning or error state";
+                description = "{{ $value }} Radarr queue items have been non-ok for 6h (stalled, failed, or importPending with a warning). Healthy in-progress downloads are excluded. Check Activity → Queue for the reason and use Manual Import.";
               };
             }
             {

@@ -283,6 +283,11 @@ in {
       {
         job_name = "nut";
         scrape_interval = "30s";
+        # nut_exporter serves UPS data on /ups_metrics; /metrics is only the
+        # exporter's own process stats. Scraping the default path left every
+        # network_ups_tools_* rule dead and UpsDataStale permanently firing.
+        metrics_path = "/ups_metrics";
+        params.ups = ["sauron"];
         static_configs = [
           {
             targets = [
