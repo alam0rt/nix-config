@@ -57,15 +57,16 @@ This is a NixOS + home-manager flake managing multiple hosts and a shared home e
 - **`flake.nix`** — defines inputs, NixOS configurations for `sauron`, `desktop`, `laptop`, and a default dev shell with `agenix-rekey`
 - **`overlays/`** — three overlays applied everywhere: `additions` (custom pkgs), `modifications` (package patches), `unstable-packages` (exposes `pkgs.unstable` from nixpkgs-unstable)
 - **`pkgs/`** — custom package derivations imported via the `additions` overlay
-- **`modules/nixos`** and **`modules/home-manager`** — reusable exported modules (e.g. `vllm`)
+- **`modules/nixos`** and **`modules/home-manager`** — reusable exported modules (e.g. `vllm`, `reclaimer`)
 
 ### NixOS layer (`nixos/`)
 - **`nixos/configuration.nix`** — shared base: overlays, nix settings, SSH, boot loader, zsh, agenix
 - **`nixos/config/common/`** — nix GC/optimise, users, server defaults
 - **`nixos/config/secrets/`** — agenix-rekey configuration; rekeyed secrets stored in `secrets/rekeyed/<hostname>/`
 - **`nixos/<hostname>/configuration.nix`** — host-specific config that imports the shared base plus host services
-- `sauron` is the primary server. Enabled services are exactly the uncommented imports in `nixos/sauron/configuration.nix` — currently fail2ban, maubot, mumble (murmur), borg, tailscale, vaultwarden, qbittorrent, NAS, unifi, mail, media (Jellyfin + *arrs), tdarr, nginx, syncthing, monitoring, UPS, home-assistant, pvpgn and bwapi. Some module directories are parked with their import commented out (`models`, `llama-cpp`); check the import list before assuming a service is live.
+- `sauron` is the primary server. Enabled services are exactly the uncommented imports in `nixos/sauron/configuration.nix` — currently fail2ban, maubot, mumble (murmur), borg, tailscale, vaultwarden, qbittorrent, NAS, unifi, mail, media (Jellyfin + *arrs), tdarr, nginx, syncthing, monitoring, UPS, home-assistant, pvpgn, bwapi and reclaimer. Some module directories are parked with their import commented out (`models`, `llama-cpp`); check the import list before assuming a service is live.
 - `nixos/sauron/pvpgn` is a Battle.net server emulator for StarCraft 1.16.1 and `nixos/sauron/bwapi` is a headless BWAPI bot ladder. They are *not* connected — BWAPI bots cannot join a PvPGN server. Each directory has a `README.md` explaining why.
+- `nixos/sauron/reclaimer` runs Halo 3 multiplayer servers (Project Reclaimer) using the exported `modules/nixos/reclaimer.nix` (`services.reclaimer`): upstream's Wine container image, one podman container per server. Halo 3's game files are copied in by hand from an MCC install; see its `README.md`.
 - Not everything lives here. Matrix/Synapse, Keycloak and other services run on the `omar` Kubernetes cluster in the sibling `ops-kube` repo. `nixos/sauron/monitoring/alertmanager-matrix.nix` posts alerts *to* that Matrix — it is unrelated to hosting it.
 - `desktop` and `laptop` are workstation configs
 

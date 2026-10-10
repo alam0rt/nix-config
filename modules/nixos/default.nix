@@ -3,4 +3,5 @@
 {
   # List your module files here
   vllm = import ./vllm.nix;
+  reclaimer = import ./reclaimer.nix;
 }

@@ -100,6 +100,7 @@
           inputs.agenix.nixosModules.default
           inputs.agenix-rekey.nixosModules.default
           self.nixosModules.vllm
+          self.nixosModules.reclaimer
         ];
       };
       desktop = nixpkgs.lib.nixosSystem {

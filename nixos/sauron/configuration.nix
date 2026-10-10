@@ -29,6 +29,7 @@
     ./home-assistant
     ./pvpgn
     ./bwapi
+    ./reclaimer
     # ./models
     # ./llama-cpp
   ];
