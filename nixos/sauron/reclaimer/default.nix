@@ -117,14 +117,14 @@ in {
             map = "Sandtrap";
             game = "Assault";
           }
+          # Workshop mod (workshopItems), named by its title: a workshop:
+          # reference would make the server try to download it.
           {
-            map = "Standoff";
-            game = "Territories";
-          }
-          {
-            map = "Avalanche";
+            map = "Hugegrass";
             game = "Capture the Flag";
+            weight = 2;
           }
+          (teamSlayer "Hugegrass")
         ];
       };
     };
