@@ -146,23 +146,10 @@ in {
       # for 2-6; 32 is on purpose.
       gravattack = {
         name = "WankNet GravAttack";
-        port = 49179;
+        port = 49178;
         map = "Maps/GravAttack_09.mvar";
         game = "Slayer";
         max_players = 32;
-        extraOptions = ["--memory=3g"];
-      };
-
-      coop = {
-        name = "WankNet Co-op";
-        port = 49178;
-        max_players = 4;
-        # Starts at Sierra 117 and carries on through every mission it has;
-        # needs the campaign maps (README.md).
-        campaign = {
-          mission = 3010;
-          difficulty = "heroic";
-        };
         extraOptions = ["--memory=3g"];
       };
     };

@@ -10,8 +10,7 @@ container per server, as upstream's own `compose.yaml` does.
 | ------------------ | ----------------------------- | --------- | --------------------------------------------------- |
 | WankNet Rotation   | `podman-reclaimer-rotation`   | 49176/udp | `rotation` playlist, 16 players                     |
 | WankNet Big Team   | `podman-reclaimer-big-team`   | 49177/udp | `big-team` playlist, 24 players, waits for 4        |
-| WankNet Co-op      | `podman-reclaimer-coop`       | 49178/udp | campaign from Sierra 117 on Heroic, 4 players       |
-| WankNet GravAttack | `podman-reclaimer-gravattack` | 49179/udp | GravAttack 09 only, free-for-all Slayer, 32 players |
+| WankNet GravAttack | `podman-reclaimer-gravattack` | 49178/udp | GravAttack 09 only, free-for-all Slayer, 32 players |
 | discovery master   | (first container up)          | 49175/tcp | the machine's Server Browser listing                |
 
 Players find the servers in the in-game Server Browser (every server reports
@@ -61,7 +60,7 @@ rsync -a --info=progress2 --relative \
 ```
 
 That copies every map, multiplayer and campaign, with their `.mapinfo`
-files: what the playlists and the co-op server need, plus `campaign.map`
+files: what the servers need, plus `campaign.map`
 and `040_voi.map` for Forge maps with campaign vehicles and AI. The servers
 play no sound, so `halo3/fmod` is not needed. The same folder is on the
 `public` SMB/NFS share if that is easier than rsync.
@@ -79,7 +78,7 @@ journalctl -fu podman-reclaimer-rotation
 
 ## Router
 
-Open on the UniFi gateway, forwarded to sauron: UDP 49176-49179 and TCP
+Open on the UniFi gateway, forwarded to sauron: UDP 49176-49178 and TCP
 49175. sauron's own firewall already allows them (`openFirewall`).
 
 Since 0.9.8 the public masters can hole-punch players through a router that
@@ -109,7 +108,7 @@ sudo reclaimer ban <player ID|IP|CIDR> --reason "…" [--for 7d]
 sudo reclaimer unban <target>
 sudo reclaimer bans
 sudo reclaimer vpn allow <player ID>           # VPN blocking is on by default
-sudo reclaimer -s coop status                  # one server's own view
+sudo reclaimer -s gravattack status            # one server's own view
 sudo reclaimer reload                          # apply dedicated.toml/playlist edits now
 ```
 
