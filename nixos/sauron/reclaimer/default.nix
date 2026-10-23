@@ -22,6 +22,12 @@ in {
     # they can be copied in over SMB/NFS from a machine with MCC installed.
     dataDir = "/srv/data/reclaimer";
     gameDir = "/srv/share/public/games/halo3-reclaimer";
+    # Workshop mods, for the same reason: gigabytes each.
+    # `reclaimer-fetch-workshop <steam account>` (as sam) fills it.
+    modsDir = "/srv/share/public/games/halo3-reclaimer-mods";
+    workshopItems = [
+      "2984061723" # Hugegrass
+    ];
 
     # Game ports are meant for the internet; the router forwards them too
     # (see README.md). RCON is not opened: it listens on 127.0.0.1 only.
@@ -163,6 +169,7 @@ in {
   # (nobody) → games (sam), an "unsafe path transition".
   systemd.services.reclaimer-config.preStart = ''
     install -d -m 2755 -o sam -g nogroup /srv/share/public/games/halo3-reclaimer
+    install -d -m 2755 -o sam -g nogroup /srv/share/public/games/halo3-reclaimer-mods
   '';
 
   # The executable copies auto-update keeps (one per container) are

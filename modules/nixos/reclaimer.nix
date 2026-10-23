@@ -115,6 +115,37 @@
     '';
   };
 
+  # Workshop mods into `modsDir`, one folder per item named by its ID, as
+  # Steam lays out steamapps/workshop/content/976730. The image has no
+  # Steam, so the servers can't download them themselves.
+  fetchWorkshop = pkgs.writeShellApplication {
+    name = "reclaimer-fetch-workshop";
+    runtimeInputs = [pkgs.depotdownloader];
+    text = ''
+      if [ $# -lt 1 ]; then
+        echo "usage: reclaimer-fetch-workshop <Steam account> [item ID...]" >&2
+        echo "Downloads Workshop items into ${toString cfg.modsDir}; with no IDs, the configured ones:" >&2
+        echo "  ${lib.concatStringsSep " " cfg.workshopItems}" >&2
+        echo "Restart the servers using a mod after it changes." >&2
+        exit 2
+      fi
+      dir=${lib.escapeShellArg (toString cfg.modsDir)}
+      if [ ! -w "$dir" ]; then
+        echo "reclaimer-fetch-workshop: $dir is not writable by $(id -un); run it as the folder's owner" >&2
+        exit 1
+      fi
+      account=$1
+      shift
+      items=("$@")
+      [ ''${#items[@]} -gt 0 ] || items=(${lib.escapeShellArgs cfg.workshopItems})
+      for id in "''${items[@]}"; do
+        echo "== Workshop item $id"
+        DepotDownloader -app 976730 -pubfile "$id" \
+          -username "$account" -remember-password -dir "$dir/$id"
+      done
+    '';
+  };
+
   bansSeed = json.generate "bans.json" {
     players = [];
     ips = [];
@@ -230,6 +261,28 @@ in {
       type = lib.types.path;
       default = "/var/cache/reclaimer";
       description = "Mounted at /cache: the Forge object library (about 340 MB, rebuilt after each update).";
+    };
+
+    modsDir = lib.mkOption {
+      type = lib.types.nullOr lib.types.path;
+      default = null;
+      example = "/srv/games/halo3-mods";
+      description = ''
+        Mod folders, one per mod, mounted read-only over /server/content/Mods
+        in place of the one in `dataDir`: Workshop mods run to gigabytes.
+        `reclaimer-fetch-workshop <Steam account>`, run as the folder's
+        owner, downloads `workshopItems` into it. Players get Workshop mods
+        through their own Steam, and can't join while their copy and the
+        server's differ, so fetch again when an author updates one and
+        restart the servers that use it.
+      '';
+    };
+
+    workshopItems = lib.mkOption {
+      type = lib.types.listOf lib.types.str;
+      default = [];
+      example = ["2984061723"];
+      description = "Steam Workshop item IDs `reclaimer-fetch-workshop` downloads into `modsDir`.";
     };
 
     user = lib.mkOption {
@@ -431,11 +484,13 @@ in {
         # the pull fails, so a `latest` image follows releases without
         # making the servers depend on ghcr being up.
         pull = "newer";
-        volumes = [
-          "${cfg.dataDir}:/server"
-          "${cfg.gameDir}:/server/game:ro"
-          "${cfg.cacheDir}:/cache"
-        ];
+        volumes =
+          [
+            "${cfg.dataDir}:/server"
+            "${cfg.gameDir}:/server/game:ro"
+            "${cfg.cacheDir}:/cache"
+          ]
+          ++ lib.optional (cfg.modsDir != null) "${cfg.modsDir}:/server/content/Mods:ro";
         environment = {
           # Picks this container's [[server]], by game port.
           RECLAIMER_DEDICATED_ONLY = toString s.port;
@@ -514,6 +569,6 @@ in {
       allowedTCPPorts = lib.optional cfg.settings.master.enabled cfg.settings.master.port;
     };
 
-    environment.systemPackages = [cli fetchGame];
+    environment.systemPackages = [cli fetchGame] ++ lib.optional (cfg.modsDir != null) fetchWorkshop;
   };
 }

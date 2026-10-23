@@ -138,6 +138,12 @@ within a second.
   in a playlist entry. On switch it lands in `content/Maps` and the servers
   take it up from their next vote. A client's saved maps are under
   `Documents\My Games\Project Reclaimer\Maps`.
-- Mods: copy mod folders into `/srv/data/reclaimer/content/Mods` and set
-  `defaults.share_mods = true`. The image has no Steam, so `workshop:`
-  references cannot download; name mod maps by name.
+- Workshop mods: add the item ID to `workshopItems`, switch, then as sam run
+  `reclaimer-fetch-workshop <steam account>`. Mods land in
+  `/srv/share/public/games/halo3-reclaimer-mods/<item ID>`, mounted
+  read-only as `content/Mods`. Restart the servers after adding or
+  updating one (`sudo systemctl restart podman-reclaimer-big-team`).
+  In playlists, name a mod map by its name, never `workshop:<id>/…`: that
+  form makes the server try to download it, which fails without Steam.
+  Players get mods through their own Steam and can't join while their copy
+  differs from the server's, so re-fetch when an author updates one.
