@@ -42,6 +42,12 @@ in {
       };
     };
 
+    # sam's Forge maps. Each plays on whichever base map it was made on,
+    # which the game folder already has (every multiplayer map).
+    content = {
+      "Maps/GravAttack_09.mvar" = ./maps/GravAttack_09.mvar;
+    };
+
     playlists = {
       rotation = {
         version = 2;
@@ -70,6 +76,12 @@ in {
           {
             map = "Construct";
             game = "Oddball";
+          }
+          {
+            # Forge map for 2-6 players: free-for-all.
+            map = "Maps/GravAttack_09.mvar";
+            game = "Slayer";
+            name = "GravAttack";
           }
           {
             map = "Guardian";

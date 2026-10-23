@@ -133,6 +133,11 @@ within a second.
   agenix secret and pass its path in `services.reclaimer.environmentFiles`;
   it then listens on 127.0.0.1 at each game port (TCP), so use
   `sudo reclaimer -s rotation rcon players` or an SSH tunnel.
+- Forge maps: drop the `.mvar` (or `.json`) in `maps/` here, list it in
+  `services.reclaimer.content` as `"Maps/<file>"`, and name it the same way
+  in a playlist entry. On switch it lands in `content/Maps` and the servers
+  take it up from their next vote. A client's saved maps are under
+  `Documents\My Games\Project Reclaimer\Maps`.
 - Mods: copy mod folders into `/srv/data/reclaimer/content/Mods` and set
   `defaults.share_mods = true`. The image has no Steam, so `workshop:`
   references cannot download; name mod maps by name.

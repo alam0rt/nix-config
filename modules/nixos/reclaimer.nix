@@ -55,7 +55,7 @@
         vpn = lib.filterAttrs (n: _: lib.elem n ["lists" "asns"]) (cfg.settings.vpn or {});
       })
     ]
-    else [configFile] ++ lib.attrValues playlistFiles;
+    else [configFile] ++ lib.attrValues playlistFiles ++ lib.attrValues cfg.content;
 
   installConfig = let
     put = src: dst: "put ${src} ${lib.escapeShellArg dst}\n";
@@ -64,11 +64,12 @@
     # half written or reload for nothing.
     put() {
       if ! cmp -s "$1" "$2"; then
+        install -d -m 0750 -o ${lib.escapeShellArg cfg.user} -g ${lib.escapeShellArg cfg.group} "$(dirname "$2")"
         install -m 0640 -o ${lib.escapeShellArg cfg.user} -g ${lib.escapeShellArg cfg.group} "$1" "$2.nix-new"
         mv -f "$2.nix-new" "$2"
       fi
     }
-    ${put configFile "${cfg.dataDir}/dedicated.toml"}${lib.concatStrings (lib.mapAttrsToList (name: file: put file "${cfg.dataDir}/playlists/${name}") playlistFiles)}
+    ${put configFile "${cfg.dataDir}/dedicated.toml"}${lib.concatStrings (lib.mapAttrsToList (name: file: put file "${cfg.dataDir}/playlists/${name}") playlistFiles)}${lib.concatStrings (lib.mapAttrsToList (name: file: put file "${cfg.dataDir}/content/${name}") cfg.content)}
   '';
 
   # Halo 3's server files from MCC (app 976730) on Steam: every depot the
@@ -343,6 +344,20 @@ in {
       '';
     };
 
+    content = lib.mkOption {
+      type = lib.types.attrsOf lib.types.path;
+      default = {};
+      example = lib.literalExpression ''{"Maps/my_arena.mvar" = ./my_arena.mvar;}'';
+      description = ''
+        Files for the shared content folder, /server/content, by their path
+        under it: saved maps and Forge map variants in Maps/ (.mvar, .json),
+        saved game types in Game Modes/. Copied in on every switch and boot,
+        beside whatever else is there; running servers take up new and
+        changed ones by themselves. A playlist or server names a saved map
+        as "Maps/<file>", or by the name stored in it.
+      '';
+    };
+
     servers = lib.mkOption {
       type = lib.types.attrsOf (lib.types.submodule serverModule);
       default = {};
@@ -436,7 +451,7 @@ in {
     systemd.services =
       {
         reclaimer-config = {
-          description = "Project Reclaimer dedicated.toml and playlists";
+          description = "Project Reclaimer dedicated.toml, playlists and content";
           wantedBy = ["multi-user.target"];
           after = ["systemd-tmpfiles-setup.service" "systemd-tmpfiles-resetup.service"];
           path = [pkgs.diffutils];
