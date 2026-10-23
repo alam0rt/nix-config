@@ -157,9 +157,12 @@ in {
   };
 
   # Somewhere for the game files to land, writable by sam over the share.
-  systemd.tmpfiles.rules = [
-    "d /srv/share/public/games/halo3-reclaimer 2755 sam nogroup - -"
-  ];
+  # Made before the containers start, which can't mount a missing folder.
+  # Not tmpfiles: it refuses to create anything under /srv/share/public
+  # (nobody) → games (sam), an "unsafe path transition".
+  systemd.services.reclaimer-config.preStart = ''
+    install -d -m 2755 -o sam -g nogroup /srv/share/public/games/halo3-reclaimer
+  '';
 
   # The executable copies auto-update keeps (one per container) are
   # re-downloaded on demand. Server and chat logs are already excluded by

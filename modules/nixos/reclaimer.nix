@@ -69,6 +69,15 @@
         mv -f "$2.nix-new" "$2"
       fi
     }
+    # The same empty list `dedicated init` writes, only when there is none:
+    # the servers and `reclaimer ban` edit it in place. Not a tmpfiles C+z,
+    # which leaves it root's: tmpfiles won't chown a root-owned file in a
+    # folder that isn't root's ("unsafe path transition").
+    bans=${lib.escapeShellArg "${cfg.dataDir}/bans.json"}
+    [ -e "$bans" ] || cp ${bansSeed} "$bans"
+    chown ${lib.escapeShellArg "${cfg.user}:${cfg.group}"} "$bans"
+    chmod 0640 "$bans"
+
     ${put configFile "${cfg.dataDir}/dedicated.toml"}${lib.concatStrings (lib.mapAttrsToList (name: file: put file "${cfg.dataDir}/playlists/${name}") playlistFiles)}${lib.concatStrings (lib.mapAttrsToList (name: file: put file "${cfg.dataDir}/content/${name}") cfg.content)}
   '';
 
@@ -497,10 +506,6 @@ in {
       "d ${cfg.dataDir}/data 0750 ${cfg.user} ${cfg.group} - -"
       "d ${cfg.dataDir}/game 0750 ${cfg.user} ${cfg.group} - -"
       "d ${cfg.dataDir}/playlists 0750 ${cfg.user} ${cfg.group} - -"
-      # The same empty list `dedicated init` writes. C copies only when the
-      # file is missing; the servers and `reclaimer ban` edit it in place.
-      "C ${cfg.dataDir}/bans.json - - - - ${bansSeed}"
-      "z ${cfg.dataDir}/bans.json 0640 ${cfg.user} ${cfg.group} - -"
       "d ${cfg.cacheDir} 0750 ${cfg.user} ${cfg.group} - -"
     ];
 
