@@ -141,6 +141,18 @@ in {
         extraOptions = ["--memory=3g"];
       };
 
+      # Just GravAttack, over and over. A playlist needs three different
+      # games, so this is one map and game type instead. The map is made
+      # for 2-6; 32 is on purpose.
+      gravattack = {
+        name = "WankNet GravAttack";
+        port = 49179;
+        map = "Maps/GravAttack_09.mvar";
+        game = "Slayer";
+        max_players = 32;
+        extraOptions = ["--memory=3g"];
+      };
+
       coop = {
         name = "WankNet Co-op";
         port = 49178;
