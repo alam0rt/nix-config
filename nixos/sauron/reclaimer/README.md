@@ -9,7 +9,7 @@ container per server, as upstream's own `compose.yaml` does.
 | Server             | Container                     | Port      | Plays                                               |
 | ------------------ | ----------------------------- | --------- | --------------------------------------------------- |
 | WankNet Rotation   | `podman-reclaimer-rotation`   | 49176/udp | `rotation` playlist, 16 players                     |
-| WankNet Big Team   | `podman-reclaimer-big-team`   | 49177/udp | `big-team` playlist, 24 players, waits for 4        |
+| WankNet Big Team   | `podman-reclaimer-big-team`   | 49177/udp | `big-team` playlist, 127 players, waits for 4       |
 | WankNet GravAttack | `podman-reclaimer-gravattack` | 49178/udp | GravAttack 09 only, free-for-all Slayer, 32 players |
 | discovery master   | (first container up)          | 49175/tcp | the machine's Server Browser listing                |
 

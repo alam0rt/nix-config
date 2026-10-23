@@ -135,7 +135,9 @@ in {
         name = "WankNet Big Team";
         port = 49177;
         playlist = "playlists/big-team.playlist.json";
-        max_players = 24;
+        # Reclaimer's ceiling (since 0.9.6). Upstream hasn't measured a full
+        # 127; a 63-player game takes about a core and 30 Mbit/s up.
+        max_players = 127;
         # Valhalla with two people in it is not big team.
         min_players = 4;
         extraOptions = ["--memory=3g"];
