@@ -9,8 +9,9 @@
 #
 # The image holds no game files. Halo 3's files go in `gameDir` (halo3/halo3.dll,
 # halo3/maps/*.map and halo3/maps/info/*.mapinfo), copied from your own MCC
-# install; until they are there each container logs what is missing and
-# re-runs `dedicated check` every 15 seconds.
+# install or downloaded from Steam with `reclaimer-fetch-game <account>`; until
+# they are there each container logs what is missing and re-runs
+# `dedicated check` every 15 seconds.
 {
   config,
   lib,
@@ -33,11 +34,76 @@
       server = map serverToml (lib.attrValues enabledServers);
     });
 
-  playlistsDir = pkgs.linkFarm "reclaimer-playlists" (lib.mapAttrsToList (name: playlist: {
-      name = "${name}.playlist.json";
-      path = json.generate "${name}.playlist.json" playlist;
-    })
-    cfg.playlists);
+  playlistFiles = lib.mapAttrs' (name: playlist:
+    lib.nameValuePair "${name}.playlist.json" (json.generate "${name}.playlist.json" playlist))
+  cfg.playlists;
+
+  # From 0.9.18 the servers watch dedicated.toml and the playlists and apply
+  # edits without a restart (auto_reload, on by default), keeping players in
+  # and their games going. So both are copied into dataDir by a unit of their
+  # own rather than mounted from the store, which would put store paths in
+  # the containers' run lines and restart every server on any edit. Only the
+  # settings that apply when dedicated restarts restart the containers.
+  autoReload = cfg.settings.auto_reload or true;
+  restartTriggers =
+    if autoReload
+    then [
+      (json.generate "reclaimer-restart-settings.json" {
+        settings = lib.filterAttrs (n: _:
+          lib.elem n ["public_address" "auto_update" "auto_reload" "master" "workshop" "game" "content" "data"])
+        cfg.settings;
+        vpn = lib.filterAttrs (n: _: lib.elem n ["lists" "asns"]) (cfg.settings.vpn or {});
+      })
+    ]
+    else [configFile] ++ lib.attrValues playlistFiles;
+
+  installConfig = let
+    put = src: dst: "put ${src} ${lib.escapeShellArg dst}\n";
+  in ''
+    # Only when it differs, and by rename, so the servers never see a file
+    # half written or reload for nothing.
+    put() {
+      if ! cmp -s "$1" "$2"; then
+        install -m 0640 -o ${lib.escapeShellArg cfg.user} -g ${lib.escapeShellArg cfg.group} "$1" "$2.nix-new"
+        mv -f "$2.nix-new" "$2"
+      fi
+    }
+    ${put configFile "${cfg.dataDir}/dedicated.toml"}${lib.concatStrings (lib.mapAttrsToList (name: file: put file "${cfg.dataDir}/playlists/${name}") playlistFiles)}
+  '';
+
+  # Halo 3's server files from MCC (app 976730) on Steam: every depot the
+  # account owns, filtered down to what `gameDir` needs. Halo 3 is one of
+  # MCC's DLC depots; asking for the app rather than depot IDs finds it.
+  gameFileList = pkgs.writeText "reclaimer-game-files.txt" ''
+    regex:^halo3/halo3\.dll$
+    regex:^halo3/maps/
+  '';
+
+  fetchGame = pkgs.writeShellApplication {
+    name = "reclaimer-fetch-game";
+    runtimeInputs = [pkgs.depotdownloader];
+    text = ''
+      if [ $# -lt 1 ]; then
+        echo "usage: reclaimer-fetch-game <Steam account> [DepotDownloader options...]" >&2
+        echo "Downloads halo3/halo3.dll and halo3/maps from MCC into ${cfg.gameDir}." >&2
+        echo "Run it again to update; -validate re-checks every file." >&2
+        exit 2
+      fi
+      dir=${lib.escapeShellArg cfg.gameDir}
+      if [ ! -w "$dir" ]; then
+        echo "reclaimer-fetch-game: $dir is not writable by $(id -un); run it as the folder's owner" >&2
+        exit 1
+      fi
+      account=$1
+      shift
+      # MCC is Windows-only; DepotDownloader would otherwise skip every depot
+      # as not for Linux. -remember-password keeps a login token, never the
+      # password, so later runs skip Steam Guard.
+      exec DepotDownloader -app 976730 -os windows -osarch 64 \
+        -username "$account" -remember-password \
+        -dir "$dir" -filelist ${gameFileList} "$@"
+    '';
+  };
 
   bansSeed = json.generate "bans.json" {
     players = [];
@@ -114,7 +180,7 @@ in {
     image = lib.mkOption {
       type = lib.types.str;
       default = "ghcr.io/projectreclaimer/project-reclaimer-dedicated:latest";
-      example = "ghcr.io/projectreclaimer/project-reclaimer-dedicated:0.9.11";
+      example = "ghcr.io/projectreclaimer/project-reclaimer-dedicated:0.9.23";
       description = ''
         Container image. A server admits only players on exactly its own
         Project Reclaimer version, and releases come out several times a
@@ -145,6 +211,8 @@ in {
         campaign.map and 040_voi.map are needed for Forge maps with campaign
         vehicles and AI, and the campaign missions for co-op servers. About
         5.5 GB for every multiplayer map, 4 GB more for the campaign.
+        `reclaimer-fetch-game <Steam account>`, run as the folder's owner,
+        downloads all of it from Steam.
       '';
     };
 
@@ -196,6 +264,13 @@ in {
         [master], [rcon], [defaults], [workshop], [vpn]. See
         https://projectreclaimer.dev/host#the-configuration-file. Relative
         paths resolve against /server.
+
+        The file is copied to `dataDir`/dedicated.toml on every switch and
+        boot (hand edits there last until then). With `auto_reload` (on
+        unless set false) the servers apply most edits without a restart;
+        the containers restart only for settings that need it:
+        `public_address`, `auto_update`, `auto_reload`, [master], [workshop],
+        [vpn] `lists`/`asns`, `game`, `content`, `data`.
       '';
       example = lib.literalExpression ''
         {
@@ -261,8 +336,9 @@ in {
       description = ''
         Playlist files. `<name>` becomes /server/playlists/<name>.playlist.json,
         which a server uses with `playlist = "playlists/<name>.playlist.json"`.
-        When set, /server/playlists is this read-only set and nothing else.
-        A playlist needs 3 to 128 games with no repeats; see
+        They are copied into `dataDir`/playlists on every switch and boot,
+        replacing files of the same name; servers take up a changed playlist
+        from their next vote. A playlist needs 3 to 128 games with no repeats; see
         https://projectreclaimer.dev/host#custom-playlists.
       '';
     };
@@ -331,18 +407,11 @@ in {
         # the pull fails, so a `latest` image follows releases without
         # making the servers depend on ghcr being up.
         pull = "newer";
-        volumes =
-          [
-            "${cfg.dataDir}:/server"
-            "${cfg.gameDir}:/server/game:ro"
-            # The entrypoint only writes a dedicated.toml when there is none,
-            # and the servers never write it (RCON changes last until restart).
-            # Being a store path in the run line, an edit restarts the
-            # containers on switch.
-            "${configFile}:/server/dedicated.toml:ro"
-            "${cfg.cacheDir}:/cache"
-          ]
-          ++ lib.optional (cfg.playlists != {}) "${playlistsDir}:/server/playlists:ro";
+        volumes = [
+          "${cfg.dataDir}:/server"
+          "${cfg.gameDir}:/server/game:ro"
+          "${cfg.cacheDir}:/cache"
+        ];
         environment = {
           # Picks this container's [[server]], by game port.
           RECLAIMER_DEDICATED_ONLY = toString s.port;
@@ -363,6 +432,33 @@ in {
           ++ s.extraOptions;
       })
     enabledServers;
+
+    systemd.services =
+      {
+        reclaimer-config = {
+          description = "Project Reclaimer dedicated.toml and playlists";
+          wantedBy = ["multi-user.target"];
+          after = ["systemd-tmpfiles-setup.service" "systemd-tmpfiles-resetup.service"];
+          path = [pkgs.diffutils];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+          # The store paths in it re-run it on switch whenever they change.
+          script = installConfig;
+        };
+      }
+      // lib.mapAttrs' (id: _:
+        lib.nameValuePair "${config.virtualisation.oci-containers.backend}-${containerName id}" {
+          # Wants, not Requires: a Requires would pass the config unit's
+          # restart on to the containers, which is what this avoids. The
+          # entrypoint writes a default dedicated.toml when there is none, so
+          # ours must be in place first.
+          wants = ["reclaimer-config.service"];
+          after = ["reclaimer-config.service"];
+          inherit restartTriggers;
+        })
+      enabledServers;
 
     users.users = lib.mkIf (cfg.user == "reclaimer") {
       reclaimer = {
@@ -386,7 +482,6 @@ in {
       "d ${cfg.dataDir}/data 0750 ${cfg.user} ${cfg.group} - -"
       "d ${cfg.dataDir}/game 0750 ${cfg.user} ${cfg.group} - -"
       "d ${cfg.dataDir}/playlists 0750 ${cfg.user} ${cfg.group} - -"
-      "f ${cfg.dataDir}/dedicated.toml 0640 ${cfg.user} ${cfg.group} - -"
       # The same empty list `dedicated init` writes. C copies only when the
       # file is missing; the servers and `reclaimer ban` edit it in place.
       "C ${cfg.dataDir}/bans.json - - - - ${bansSeed}"
@@ -399,6 +494,6 @@ in {
       allowedTCPPorts = lib.optional cfg.settings.master.enabled cfg.settings.master.port;
     };
 
-    environment.systemPackages = [cli];
+    environment.systemPackages = [cli fetchGame];
   };
 }
