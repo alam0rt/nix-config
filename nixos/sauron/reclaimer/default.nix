@@ -8,6 +8,10 @@
 # share there. Both were checked with `dedicated playlist show` against
 # these game files and mods before going in.
 {...}: let
+  # Every server name and playlist starts with it; names stay within
+  # Reclaimer's 48 characters.
+  community = "Jim's Hosting Services";
+
   # Only the ten base game types are installed (until the fetch of
   # halo3/*_variants lands), so the popular named variants are rebuilt from
   # options: team play, BR starts and score limits.
@@ -45,8 +49,7 @@ in {
     openFirewall = true;
 
     settings = {
-      # Same name as the PvPGN server (nixos/sauron/pvpgn).
-      host_name = "WankNet";
+      host_name = community;
 
       # Player IDs (64 hex characters, in the client under Settings → Online
       # services → Your player ID) who may kick and ban on every server.
@@ -71,7 +74,7 @@ in {
       # that top small games.
       rotation = {
         version = 2;
-        name = "WankNet Rotation";
+        name = "${community} Rotation";
         vote_seconds = 20;
         games = [
           (game "Guardian" "Slayer" {weight = 3;})
@@ -121,7 +124,7 @@ in {
       # objective games on Valhalla, Avalanche and High Ground.
       big-team = {
         version = 2;
-        name = "WankNet Big Team";
+        name = "${community} Big Team";
         vote_seconds = 20;
         games = [
           # Workshop mod (workshopItems), named by its title: a workshop:
@@ -157,7 +160,7 @@ in {
 
     servers = {
       rotation = {
-        name = "WankNet Rotation";
+        name = "${community} Rotation";
         port = 49176;
         playlist = "playlists/rotation.playlist.json";
         # It hit a 3g cap 9,456 times in its first week (no OOM kill, but
@@ -166,7 +169,7 @@ in {
       };
 
       big-team = {
-        name = "WankNet Big Team";
+        name = "${community} Big Team";
         port = 49177;
         playlist = "playlists/big-team.playlist.json";
         # Reclaimer's ceiling (since 0.9.6). Upstream hasn't measured a full
@@ -183,7 +186,7 @@ in {
       # games, so this is one map and game type instead. The map is made
       # for 2-6; 32 is on purpose.
       gravattack = {
-        name = "WankNet GravAttack";
+        name = "${community} GravAttack";
         port = 49178;
         map = "Maps/GravAttack_09.mvar";
         game = "Slayer";
