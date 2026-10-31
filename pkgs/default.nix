@@ -5,7 +5,6 @@ pkgs: {
   sickle = pkgs.callPackage ./sickle {};
   rolecule = pkgs.callPackage ./rolecule {};
   scaffold = pkgs.callPackage ./scaffold {};
-  opuslib-next = pkgs.callPackage ./opuslib-next {};
   protobuf3 = pkgs.callPackage ./protobuf3 {};
   ghidra-psx-ldr = pkgs.callPackage ./ghidra-psx-ldr {};
   ghidra-mcp = pkgs.callPackage ./ghidra-mcp {};
