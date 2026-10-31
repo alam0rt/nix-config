@@ -42,6 +42,10 @@ in {
     workshopItems = [
       "2984061723" # Hugegrass: the most-played map of all, 18% of big games
       "3663541185" # Permafrost: the #2 mod map; joins big-team once fetched
+      # Rising on the Workshop in Oct 2026; join the playlists once fetched.
+      "3824657545" # Snowfort: 2Fort for 64-127 players → big-team
+      "3826615823" # Derelict: Halo CE remake → rotation
+      "3824246444" # Ascension: Halo 2 remake, all modes → rotation
     ];
 
     # Game ports are meant for the internet; the router forwards them too
