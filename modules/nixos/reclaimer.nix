@@ -84,9 +84,13 @@
   # Halo 3's server files from MCC (app 976730) on Steam: every depot the
   # account owns, filtered down to what `gameDir` needs. Halo 3 is one of
   # MCC's DLC depots; asking for the app rather than depot IDs finds it.
+  # The variant folders hold Halo 3's own and MCC's matchmaking game and map
+  # variants (Team SWAT, the HARDCORE and Big Team ones, ...), a few MB in
+  # all; without them playlists get only the ten base game types.
   gameFileList = pkgs.writeText "reclaimer-game-files.txt" ''
     regex:^halo3/halo3\.dll$
     regex:^halo3/maps/
+    regex:^halo3/(hopper_)?(game|map)_variants/
   '';
 
   fetchGame = pkgs.writeShellApplication {
