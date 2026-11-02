@@ -31,6 +31,7 @@
     ./pvpgn
     ./bwapi
     ./reclaimer
+    ./calibre
     # ./models
     # ./llama-cpp
   ];
