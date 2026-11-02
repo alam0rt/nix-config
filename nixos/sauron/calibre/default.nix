@@ -152,14 +152,23 @@ in {
     "d ${failed} 0777 ${cw.user} ${cw.group} -"
   ];
 
-  # Public, so the Kindle can reach it from any Wi-Fi. KOReader can't sit
-  # behind tailscaleAuth (it isn't on the tailnet), so calibre-web's own login
-  # gates everything — anonymous browsing stays off (the default), and OPDS
-  # then asks for HTTP basic auth.
+  # KOReader can't sit behind tailscaleAuth (the Kindle isn't on the tailnet),
+  # so calibre-web's own login gates everything — anonymous browsing stays off
+  # (the default), and OPDS then asks for HTTP basic auth.
+  #
+  # For now it is also home-only: the allow-list is the UniFi gateway, which is
+  # the source address of every LAN request that hairpins back in through the
+  # public IP. That only holds if books.iced.cool is a DNS-only (grey-cloud) A
+  # record to the WAN address, like pass.iced.cool. Under the proxied
+  # *.iced.cool wildcard, requests arrive from Cloudflare's edges and this
+  # denies everyone. Drop the allow/deny to open it to the internet.
   services.nginx.virtualHosts."books.iced.cool" = {
     forceSSL = true;
     useACMEHost = "iced.cool";
     extraConfig = ''
+      allow 192.168.1.1;
+      deny all;
+
       # Web uploads of whole PDFs/comics.
       client_max_body_size 500M;
     '';

@@ -27,13 +27,24 @@ Both `/srv/data` paths are in the hourly borg `srv-data` job.
    ```
 
    The build fails until `calibre-web-admin.age` exists. That's deliberate:
-   calibre-web ships with `admin` / `admin123` and the vhost is public, so
+   calibre-web ships with `admin` / `admin123` and the vhost faces the
+   internet, so
    every start sets the `admin` password from this secret. A password changed in
    the web UI is put back on the next restart, so change the secret instead.
    Read it with `edit-view`.
 
-2. Check that `books.iced.cool` resolves to sauron (nginx's `*.iced.cool`
-   wildcard vhost suggests the DNS is a wildcard too).
+2. In Cloudflare, add a **DNS-only (grey-cloud)** `A` record `books.iced.cool`
+   pointing at the WAN address, the same as `pass.iced.cool`. Without it, the
+   name falls under the proxied `*.iced.cool` wildcard.
+
+   **For now the site is home-only:** nginx allows only `192.168.1.1`. When a
+   LAN device goes to the public IP, the UniFi gateway hairpins the request
+   back in, and nginx sees the gateway as the source (`pass.iced.cool` shows up
+   that way in nginx's logs). Through Cloudflare's proxy, every request comes
+   from a Cloudflare edge, so the allow-list refuses everyone, the Kindle at
+   home included. The proxy would also cap uploads at 100 MB. Away from home,
+   the Kindle gets a 403 until the `allow`/`deny` lines in `default.nix` are
+   removed.
 
 3. Log in as `admin`. Under *Admin → Edit Basic Configuration → Feature
    Configuration*, leave **anonymous browsing off**: with it off, OPDS needs
@@ -111,3 +122,6 @@ to make an AZW3 (conversion is enabled), then in KOReader download the AZW3 into
   here. If conversions fail, check `journalctl -u calibre-web` first.
 - The inbox is on the guest-writable `public` share, so anyone on the LAN or
   tailnet can add books. Nobody outside can.
+- Allowing the gateway means allowing anything it hairpins, which is any device
+  on the LAN, not just the Kindle. Tailnet devices are not covered: a laptop on
+  Tailscale away from home gets a 403. Use it from home.
