@@ -6,6 +6,7 @@
 }: {
   imports = [
     ./hardware-configuration.nix
+    ./hardening.nix
     ../config/common
     ../config/network
     ../config/nvidia.nix
@@ -105,12 +106,6 @@
     "zswap.enabled=1"
     "zswap.compressor=zstd"
     "zswap.zpool=z3fold"
-
-    # Disable CPU speculative-execution mitigations. This is a single-tenant,
-    # trusted server (no untrusted local users / VMs), and the Spectre/Meltdown
-    # mitigations carry a real syscall + I/O throughput cost on this Zen-1 EPYC.
-    # Security trade-off accepted for performance.
-    "mitigations=off"
   ];
 
   # Proactive OOM killing driven by PSI signals — preempts the kernel's
