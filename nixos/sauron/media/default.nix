@@ -134,6 +134,10 @@ in {
 
   services.seerr = {
     enable = true;
+    # Public at requests.iced.cool with no tailscale auth in front. nixos-26.05
+    # is stuck on 3.2.0, which predates the /avatarproxy path traversal to RCE
+    # (GHSA-mc6w-69r3-62h8, fixed 3.4.0) and two user-data leaks (fixed 3.5.0).
+    package = pkgs.unstable.seerr;
     openFirewall = true;
   };
 
