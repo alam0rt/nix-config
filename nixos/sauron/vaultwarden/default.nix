@@ -1,4 +1,8 @@
-{config, ...}: let
+{
+  config,
+  pkgs,
+  ...
+}: let
   domain = "pass.iced.cool";
 in {
   services.nginx.virtualHosts.${domain} = {
@@ -20,6 +24,11 @@ in {
 
   services.vaultwarden = {
     enable = true;
+    # Track unstable so security releases land without waiting on a backport:
+    # 1.37.5 (GHSA-x9cq-f669-vrr4, GHSA-9pjj-f9g5-3x4c) failed to auto-backport
+    # to 26.05 because it also needs a newer web vault. Keep the two in step.
+    package = pkgs.unstable.vaultwarden;
+    webVaultPackage = pkgs.unstable.vaultwarden.webvault;
     backupDir = "/srv/data/vaultwarden";
     config = {
       ROCKET_ADDRESS = "127.0.0.1";
