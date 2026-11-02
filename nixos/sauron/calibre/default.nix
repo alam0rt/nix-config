@@ -11,6 +11,39 @@
   # /srv/data so the hourly borg srv-data job picks it up.
   library = "/srv/data/calibre/library";
 
+  # Home's public addresses, as seen by Cloudflare. IPv4 is the WAN address.
+  # IPv6: the interface IDs rotate (DHCPv6 lease, privacy addresses) but the
+  # delegated /48 has been stable since at least 2026-08. Both are set by the
+  # ISP: if either changes, the site 403s from home.
+  homeIPv4 = "202.153.220.8";
+  homeIPv6 = "2403:5804:66ea::/48";
+
+  # https://www.cloudflare.com/ips-v4 and /ips-v6, fetched 2026-11-03.
+  cloudflareRanges = [
+    "173.245.48.0/20"
+    "103.21.244.0/22"
+    "103.22.200.0/22"
+    "103.31.4.0/22"
+    "141.101.64.0/18"
+    "108.162.192.0/18"
+    "190.93.240.0/20"
+    "188.114.96.0/20"
+    "197.234.240.0/22"
+    "198.41.128.0/17"
+    "162.158.0.0/15"
+    "104.16.0.0/13"
+    "104.24.0.0/14"
+    "172.64.0.0/13"
+    "131.0.72.0/22"
+    "2400:cb00::/32"
+    "2606:4700::/32"
+    "2803:f800::/32"
+    "2405:b500::/32"
+    "2405:8100::/32"
+    "2a06:98c0::/29"
+    "2c0f:f248::/32"
+  ];
+
   # calibre-web's built-in administrator; see the ExecStartPre below.
   adminUser = "admin";
 
@@ -156,20 +189,25 @@ in {
   # so calibre-web's own login gates everything — anonymous browsing stays off
   # (the default), and OPDS then asks for HTTP basic auth.
   #
-  # For now it is also home-only: the allow-list is the UniFi gateway, which is
-  # the source address of every LAN request that hairpins back in through the
-  # public IP. That only holds if books.iced.cool is a DNS-only (grey-cloud) A
-  # record to the WAN address, like pass.iced.cool. Under the proxied
-  # *.iced.cool wildcard, requests arrive from Cloudflare's edges and this
-  # denies everyone. Drop the allow/deny to open it to the internet.
+  # For now it is also home-only: only our own public addresses are let in.
+  # books.iced.cool sits behind Cloudflare's proxy (the *.iced.cool wildcard),
+  # so the TCP peer is always a Cloudflare edge; the real client is in
+  # CF-Connecting-IP, trusted only when the peer is in Cloudflare's ranges.
+  # Anyone hitting the WAN IP directly with this Host header is judged on their
+  # own address and denied. Drop the allow/deny lines to open it up.
   services.nginx.virtualHosts."books.iced.cool" = {
     forceSSL = true;
     useACMEHost = "iced.cool";
     extraConfig = ''
-      allow 192.168.1.1;
+      ${lib.concatMapStrings (r: "set_real_ip_from ${r};\n") cloudflareRanges}
+      real_ip_header CF-Connecting-IP;
+
+      allow ${homeIPv4};
+      allow ${homeIPv6};
       deny all;
 
-      # Web uploads of whole PDFs/comics.
+      # Web uploads of whole PDFs/comics. Cloudflare's proxy caps request
+      # bodies at 100 MB on the free plan regardless.
       client_max_body_size 500M;
     '';
     locations."/" = {

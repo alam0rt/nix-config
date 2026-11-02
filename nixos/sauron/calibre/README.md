@@ -33,18 +33,16 @@ Both `/srv/data` paths are in the hourly borg `srv-data` job.
    the web UI is put back on the next restart, so change the secret instead.
    Read it with `edit-view`.
 
-2. In Cloudflare, add a **DNS-only (grey-cloud)** `A` record `books.iced.cool`
-   pointing at the WAN address, the same as `pass.iced.cool`. Without it, the
-   name falls under the proxied `*.iced.cool` wildcard.
+2. Nothing to do in DNS: `books.iced.cool` goes through the Cloudflare-proxied
+   `*.iced.cool` wildcard.
 
-   **For now the site is home-only:** nginx allows only `192.168.1.1`. When a
-   LAN device goes to the public IP, the UniFi gateway hairpins the request
-   back in, and nginx sees the gateway as the source (`pass.iced.cool` shows up
-   that way in nginx's logs). Through Cloudflare's proxy, every request comes
-   from a Cloudflare edge, so the allow-list refuses everyone, the Kindle at
-   home included. The proxy would also cap uploads at 100 MB. Away from home,
-   the Kindle gets a 403 until the `allow`/`deny` lines in `default.nix` are
-   removed.
+   **For now the site is home-only.** nginx allows only home's public
+   addresses: `202.153.220.8` and the `2403:5804:66ea::/48` IPv6 block. It
+   reads them from `CF-Connecting-IP`, and only when the request arrives from
+   one of Cloudflare's published ranges. Away from home, Tailscale included,
+   you get a 403. If the ISP changes either address, home gets a 403 too. To
+   open the site up, remove the `allow`/`deny` lines in `default.nix`.
+   Cloudflare's proxy caps uploads at 100 MB.
 
 3. Log in as `admin`. Under *Admin → Edit Basic Configuration → Feature
    Configuration*, leave **anonymous browsing off**: with it off, OPDS needs
@@ -122,6 +120,7 @@ to make an AZW3 (conversion is enabled), then in KOReader download the AZW3 into
   here. If conversions fail, check `journalctl -u calibre-web` first.
 - The inbox is on the guest-writable `public` share, so anyone on the LAN or
   tailnet can add books. Nobody outside can.
-- Allowing the gateway means allowing anything it hairpins, which is any device
-  on the LAN, not just the Kindle. Tailnet devices are not covered: a laptop on
-  Tailscale away from home gets a 403. Use it from home.
+- The allow-list lets in any device behind the home connection, not just the
+  Kindle. The Cloudflare ranges in `default.nix` are a snapshot (2026-11-03).
+  If Cloudflare adds a range, requests from it are seen as the Cloudflare edge
+  itself and refused, so the site fails closed.
