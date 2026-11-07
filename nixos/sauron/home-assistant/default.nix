@@ -67,11 +67,13 @@ in {
   # HA on localhost talks to the websocket.
   services.matter-server.enable = true;
 
-  # Matter finds devices over mDNS, and devices push subscription reports to
-  # the controller's UDP 5540 on their own schedule — long after conntrack has
-  # forgotten the session the controller opened — so both need to be open on
-  # the LAN. eno1 is the live NIC (see configuration.nix).
-  networking.firewall.interfaces.eno1.allowedUDPPorts = [5353 5540];
+  # Matter finds devices over mDNS, and their unsolicited announcements only get
+  # through with 5353 open. The controller itself does not need a port: it binds
+  # an ephemeral UDP port (not 5540, which is the device side), and mains-powered
+  # devices report at least every 60s (NODE_SUBSCRIPTION_CEILING_WIFI), inside
+  # conntrack's 120s nf_conntrack_udp_timeout_stream, so replies keep flowing.
+  # eno1 is the live NIC (see configuration.nix).
+  networking.firewall.interfaces.eno1.allowedUDPPorts = [5353];
 
   services.home-assistant = {
     enable = true;
