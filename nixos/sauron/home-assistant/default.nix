@@ -61,9 +61,23 @@ in {
     ];
   };
 
+  # Matter controller for HA's `matter` integration. Add the integration in the
+  # UI pointing at ws://localhost:5580/ws; devices are commissioned from the HA
+  # Companion app (the phone does the BLE part). openFirewall stays off — only
+  # HA on localhost talks to the websocket.
+  services.matter-server.enable = true;
+
+  # Matter finds devices over mDNS, and devices push subscription reports to
+  # the controller's UDP 5540 on their own schedule — long after conntrack has
+  # forgotten the session the controller opened — so both need to be open on
+  # the LAN. eno1 is the live NIC (see configuration.nix).
+  networking.firewall.interfaces.eno1.allowedUDPPorts = [5353 5540];
+
   services.home-assistant = {
     enable = true;
     extraComponents = [
+      # Talks to services.matter-server above.
+      "matter"
       # Components required to complete the onboarding
       "esphome"
       "met"
