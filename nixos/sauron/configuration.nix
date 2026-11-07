@@ -31,7 +31,7 @@
     ./pvpgn
     ./bwapi
     ./reclaimer
-    ./calibre
+    # ./calibre  # parked: needs an agenix rekey for calibre-web-admin
     # ./models
     # ./llama-cpp
   ];
