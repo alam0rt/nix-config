@@ -36,21 +36,39 @@ in {
     # ~7 GB of regenerable data, so they live on the public share.
     dataDir = "/srv/data/reclaimer";
     gameDir = "/srv/share/public/games/halo3-reclaimer";
-    # Workshop mods, for the same reason: gigabytes each.
-    # `reclaimer-fetch-workshop <steam account>` (as sam) fills it.
+    # Workshop mods, for the same reason: gigabytes each. Hand-fetched ones
+    # (`reclaimer-fetch-workshop <steam account>`, as sam) until SteamCMD is
+    # signed in; see README.md.
     modsDir = "/srv/share/public/games/halo3-reclaimer-mods";
-    workshopItems = [
-      "2984061723" # Hugegrass: the most-played map of all, 18% of big games
-      "3663541185" # Permafrost: the #2 mod map; joins big-team once fetched
-      # Rising on the Workshop in Oct 2026; join the playlists once fetched.
-      "3824657545" # Snowfort: 2Fort for 64-127 players → big-team
-      "3826615823" # Derelict: Halo CE remake → rotation
-      "3824246444" # Ascension: Halo 2 remake, all modes → rotation
-    ];
+    workshop = {
+      items = [
+        "2984061723" # Hugegrass: the most-played map of all, 18% of big games
+        "3663541185" # Permafrost: the #2 mod map; joins big-team once fetched
+        # Rising on the Workshop in Oct 2026; join the playlists once fetched.
+        "3824657545" # Snowfort: 2Fort for 64-127 players → big-team
+        "3826615823" # Derelict: Halo CE remake → rotation
+        "3824246444" # Ascension: Halo 2 remake, all modes → rotation
+      ];
+      # Where the servers' own Workshop downloads go once SteamCMD is on.
+      dir = "/srv/share/public/games/halo3-reclaimer-workshop";
+      # Off until SteamCMD has been signed in once as reclaimer (README.md,
+      # "Workshop mods"): with it on and no sign-in, the downloads fail and
+      # no server starts. Then set username and flip this.
+      steamcmd.enable = false;
+      # username = "<steam account>";
+    };
 
     # Game ports are meant for the internet; the router forwards them too
     # (see README.md). RCON is not opened: it listens on 127.0.0.1 only.
     openFirewall = true;
+
+    # Every server runs in reclaimer.service. Under 0.9 each had its own
+    # container capped at 6g (rotation, big-team) and 3g (gravattack): rotation
+    # hit 3g 9,456 times in its first week, and Hugegrass is a 2 GB map loaded
+    # while up to 127 play. 0.10.1 measured ~1.2 GB a server idle on sauron,
+    # so the ceiling is the old caps' sum plus headroom. sauron has ~36 GB
+    # free.
+    serviceConfig.MemoryMax = "18G";
 
     settings = {
       host_name = community;
@@ -131,12 +149,16 @@ in {
         name = "${community} Big Team";
         vote_seconds = 20;
         games = [
-          # Workshop mod (workshopItems), named by its title: a workshop:
-          # reference would make the server try to download it.
+          # Workshop mod (workshop.items), named by its title: a workshop:
+          # reference would make the server try to download it, which fails
+          # until workshop.steamcmd is on.
           (game "Hugegrass" "Capture the Flag" {weight = 6;})
           (teamSlayer "Hugegrass" {weight = 2;})
           (teamSlayer "Valhalla" {weight = 3;})
-          (game "Valhalla" "UNSC vs Covenant" {
+          # 0.10 replaced "UNSC vs Covenant" with its three-faction mode; a
+          # faction with no players sits the battle out. `dedicated playlist
+          # show` passes these on 0.10.1.
+          (game "Valhalla" "UNSC vs Covenant vs Flood" {
             weight = 2;
             name = "UNSC vs Covenant 50";
             rules.score_to_win = 50;
@@ -144,7 +166,7 @@ in {
           (game "Valhalla" "Capture the Flag" {weight = 2;})
           (game "Valhalla" "Assault" {})
           (teamSlayer "Sandtrap" {weight = 3;})
-          (game "Sandtrap" "UNSC vs Covenant" {
+          (game "Sandtrap" "UNSC vs Covenant vs Flood" {
             weight = 2;
             name = "UNSC vs Covenant 50";
             rules.score_to_win = 50;
@@ -167,9 +189,6 @@ in {
         name = "${community} Rotation";
         port = 49176;
         playlist = "playlists/rotation.playlist.json";
-        # It hit a 3g cap 9,456 times in its first week (no OOM kill, but
-        # 1.2 GB pushed to swap); sauron has ~36 GB free.
-        extraOptions = ["--memory=6g"];
       };
 
       big-team = {
@@ -182,8 +201,6 @@ in {
         # At 4 it never started a game in its first week: everyone who
         # joined arrived alone.
         min_players = 2;
-        # Hugegrass is a 2 GB map, loaded while up to 127 play.
-        extraOptions = ["--memory=6g"];
       };
 
       # Just GravAttack, over and over. A playlist needs three different
@@ -195,13 +212,12 @@ in {
         map = "Maps/GravAttack_09.mvar";
         game = "Slayer";
         max_players = 32;
-        extraOptions = ["--memory=3g"];
       };
     };
   };
 
   # Somewhere for the game files to land, writable by sam over the share.
-  # Made before the containers start, which can't mount a missing folder.
+  # Made before the servers start, which can't mount a missing mod folder.
   # Not tmpfiles: it refuses to create anything under /srv/share/public
   # (nobody) → games (sam), an "unsafe path transition".
   systemd.services.reclaimer-config.preStart = ''
@@ -209,11 +225,9 @@ in {
     install -d -m 2755 -o sam -g nogroup /srv/share/public/games/halo3-reclaimer-mods
   '';
 
-  # The executable copies auto-update keeps (one per container) are
-  # re-downloaded on demand. Server and chat logs are excluded by the *.log
-  # pattern; their rotated copies aren't.
+  # Server and chat logs (server.log, server.previous.log, chat/*.log) are
+  # excluded by the *.log pattern; the full log kept past 20 MB isn't.
   services.borgbackup.jobs.mordor-srv-data.exclude = [
-    "/srv/data/reclaimer/.reclaimer"
     "/srv/data/reclaimer/data/*/server.log.old"
   ];
 }

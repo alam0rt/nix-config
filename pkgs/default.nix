@@ -18,4 +18,7 @@ pkgs: {
   pvpgn-server = pkgs.callPackage ./pvpgn-server {};
   scbw = pkgs.callPackage ./scbw {};
   starcraft-1161 = pkgs.callPackage ./starcraft-1161 {};
+  project-reclaimer-dedicated = pkgs.callPackage ./project-reclaimer-dedicated {};
+  reclaimer-bot = pkgs.callPackage ./reclaimer-bot {};
+  reclaimer-rcon = pkgs.callPackage ./reclaimer-rcon {};
 }
