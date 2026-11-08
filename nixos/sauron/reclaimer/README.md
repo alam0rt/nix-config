@@ -8,12 +8,27 @@ Linux setup: one `reclaimer.service` whose supervisor starts each server as
 a process of its own, restarts any that stops, and runs the machine's
 discovery master.
 
-| Server                            | Port      | Plays                                                    |
-| --------------------------------- | --------- | -------------------------------------------------------- |
-| Jim's Hosting Services Rotation   | 49176/udp | `rotation` playlist (16 games), 16 players               |
-| Jim's Hosting Services Big Team   | 49177/udp | `big-team` playlist (17 games), 127 players, waits for 2 |
-| Jim's Hosting Services GravAttack | 49178/udp | GravAttack 09 only, free-for-all Slayer, 32 players      |
-| discovery master                  | 49175/tcp+udp | the machine's Server Browser listing, NAT introductions |
+| Server                                | Port          | Networking | Metrics | Plays                                                    |
+| ------------------------------------- | ------------- | ---------- | ------- | -------------------------------------------------------- |
+| Jim's Hosting Services Rotation       | 49176/udp     | classic    | :9310   | `rotation` playlist (24 games), 16 players               |
+| Jim's Hosting Services Big Team       | 49177/udp     | enhanced   | :9311   | `big-team` playlist (24 games), 127 players, waits for 2 |
+| Jim's Hosting Services GravAttack     | 49178/udp     | classic    | :9312   | GravAttack 09 only, free-for-all Slayer, 32 players      |
+| Jim's Hosting Services Every Halo     | 49179/udp     | classic    | :9313   | off: Halo 3, Reach, CE and Halo 2 maps in one rotation   |
+| Jim's Hosting Services ODST Firefight | 49180/udp     | (co-op)    | :9314   | off: ODST Firefight, Crater (Night), heroic, 16 players  |
+| discovery master                      | 49175/tcp+udp |            |         | the machine's Server Browser listing, NAT introductions  |
+
+Small servers play Halo 3's own (classic) networking; Big Team plays
+enhanced, built for big games. Every server greets players in chat as they
+join (`welcome`), records every game as a film, and serves Prometheus
+metrics on 127.0.0.1 (see "Monitoring").
+
+What the playlists hold beyond the 0.9 "best of": 0.10's own modes (Gun
+Game, One in the Chamber, Growth, Zone Control and Flood Infection on small
+maps; Conquest and Flood Infection on big ones), 0.10's three-faction "UNSC
+vs Covenant vs Flood" in place of 0.9's "UNSC vs Covenant", and the
+Workshop maps Derelict and Ascension (rotation), Permafrost and Snowfort
+("Avalanche 2Fort v1", big-team). `sudo reclaimer playlist show <name>`
+lists every game with its odds.
 
 Players find the servers in the in-game Server Browser (every server reports
 to the project's public masters) or with Direct Connect to
@@ -77,10 +92,24 @@ journalctl -fu reclaimer
 
 ## Router
 
-Open on the UniFi gateway, forwarded to sauron: UDP 49176-49178, and
-49175 on both TCP and UDP (0.10's master takes UDP too: server
-registration and NAT introductions). sauron's own firewall already allows
-them (`openFirewall`).
+The router is OpenWrt at 192.168.1.1 (`ssh root@192.168.1.1`). Its firewall
+redirect named `reclaimer` forwards WAN 49175-49178, TCP and UDP both (no
+`proto` set, fw4's default), to sauron (192.168.1.109). That already covers
+0.10's master, which takes UDP on 49175 too (server registration and NAT
+introductions), so nothing needs changing there for 0.10. sauron's own
+firewall allows the ports (`openFirewall`).
+
+A server past 49178 (Every Halo on 49179, ODST Firefight on 49180) needs
+the redirect widened:
+
+```sh
+ssh root@192.168.1.1
+uci show firewall | grep reclaimer        # finds the section, e.g. firewall.@redirect[3]
+uci set firewall.@redirect[3].src_dport=49175-49180
+uci set firewall.@redirect[3].dest_port=49175-49180
+uci commit firewall
+service firewall reload
+```
 
 The public masters can hole-punch players through a router that does not
 forward the game port, but not through every router and there is no relay,
@@ -143,10 +172,18 @@ within a second.
   `auto_update`, `[master]`, `[workshop]`, VPN lists, the folder paths,
   `coop_network` and the Forge palette settings restart reclaimer.service
   on switch.
-- Admins: add player IDs (client: Settings → Online services → Your player
-  ID) to `settings.admins`. Admins can `/kick` and `/ban` from chat. Since
-  0.10, `status` and RCON events show players' network keys; either ID works
-  in `admins` and bans.
+- Admins, moderators and VIPs: add player IDs (client: Settings → Online
+  services → Your player ID) to `settings.admins` (kick and ban on every
+  server, can't be vote-kicked), `settings.moderators` (the Mod role: kick,
+  mute, bans of up to an hour) or `settings.roles.vip.players` (the join
+  queue's VIP line on a full server). Admins and moderators can `/kick` and
+  `/ban` from chat. Since 0.10, `status` and RCON events show players'
+  network keys; either ID works in these lists and in bans. RCON's `admin
+  add` and `role add <player> <role>` change them live, kept in bans.json.
+- Films: every game is recorded to
+  `/srv/data/reclaimer/data/<server>/films`, a normal film any player's
+  Theater plays. Each server keeps its newest 10 within 1 GB
+  (`film_keep`, `film_max_mb`); borg skips them.
 - RCON is off. To turn it on, put `RECLAIMER_DEDICATED_RCON_PASSWORD=…` in an
   agenix secret and pass its path in `services.reclaimer.environmentFiles`;
   it then listens on 127.0.0.1 at each game port (TCP). `sudo reclaimer -s
@@ -158,6 +195,45 @@ within a second.
   take it up from their next vote. A client's saved maps are in its player
   folder's `Maps` (`%LOCALAPPDATA%\ProjectReclaimer` on Windows,
   `~/.local/share/ProjectReclaimer` on Linux).
+
+## Monitoring
+
+Each server answers `GET /health` (JSON: version, phase, players) and
+Prometheus `/metrics` on 127.0.0.1 at its `metrics_http` port (table
+above). The `reclaimer` scrape job in `nixos/sauron/monitoring` picks up
+every enabled server that sets one, labelled with its `server` name; the
+Grafana dashboard is `monitoring/dashboards/reclaimer.json`. Alerts:
+`ReclaimerServerDown` (no metrics for 10 minutes; a server's endpoint goes
+away while it restarts) and `ReclaimerFallingBehind` (under 54 frames a
+second with players on, for 15 minutes). By hand:
+`curl -s 127.0.0.1:9311/health`.
+
+## Other games (ODST, Reach, CE, Halo 2)
+
+Two servers are written but off: Every Halo (Halo 3, Reach, CE and Halo 2
+maps in one rotation, each by its own rules) and ODST Firefight. To turn one
+on:
+
+1. Check the share has room: `df -h /srv/share/public` (it is ~95% full;
+   ODST is about 3.5 GB, the others several GB each).
+2. In `default.nix` add the games to `services.reclaimer.fetchGames`
+   (`["halo3" "odst"]`, or `["halo3" "reach" "halo1" "halo2"]` for Every
+   Halo), switch, and run `reclaimer-fetch-game <steam account>` as sam.
+   The account must own those games in MCC.
+3. `sudo reclaimer check` until it lists the games as installed. The folder
+   patterns for Reach, CE and Halo 2 were read from the program, not tried:
+   if `check` names a missing file, add its folder to the module's
+   `gameFilePatterns` and fetch again.
+4. Set `everyHalo = true` or `odstFirefight = true` at the top of
+   `default.nix` (that also writes Every Halo's playlist), widen the router
+   redirect (see "Router"), and switch. Every Halo's playlist names maps
+   from upstream's guide that haven't been checked here: if `journalctl -u
+   reclaimer` shows the reload refused, `sudo reclaimer playlist show
+   every-halo` names the bad entry (and what was probably meant). A refused
+   reload changes nothing, so the other servers carry on meanwhile.
+
+Each one on adds a server of about 1.2 GB idle under the service's 18G
+`MemoryMax`, and up to 1 GB of films on `/srv/data`.
 
 ## Workshop mods
 
