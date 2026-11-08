@@ -10,8 +10,9 @@
 # Versions: a server admits only players on exactly its own release, and
 # releases come out several times a week. So the program runs from a writable
 # copy in `homeDir`/program, seeded from `package` (pkgs/project-reclaimer-dedicated)
-# and replaced in place by upstream's `auto_update`, through nix-ld. A newer
-# seed (bump the package) replaces the copy on the next start.
+# and replaced in place by upstream's `auto_update`, through nix-ld. A package
+# of a newer major.minor replaces the copy on the next start (any other
+# version with auto_update off); see `seed` below.
 #
 # Game files are not included. Halo 3's (halo3/halo3.dll, halo3/maps/...) go in
 # `gameDir`, copied from your own MCC install or downloaded from Steam with
@@ -110,10 +111,12 @@
   # read-write. Both hold gigabytes, so they live outside dataDir. Bind
   # mounts, not symlinks: the servers skip symlinks inside content/Mods, and
   # find mods a folder deeper (Fetched/<id>) fine (both checked on 0.10.1).
+  # The leading "-" skips a source that is missing instead of failing the
+  # unit: losing the mods is better than losing every server.
   modsMount = "${cfg.dataDir}/content/Mods/Fetched";
   workshopMount = "${cfg.dataDir}/content/Mods/Workshop";
-  bindReadOnlyPaths = lib.optional (cfg.modsDir != null) "${toString cfg.modsDir}:${modsMount}";
-  bindPaths = lib.optional (cfg.workshop.dir != null) "${toString cfg.workshop.dir}:${workshopMount}";
+  bindReadOnlyPaths = lib.optional (cfg.modsDir != null) "-${toString cfg.modsDir}:${modsMount}";
+  bindPaths = lib.optional (cfg.workshop.dir != null) "-${toString cfg.workshop.dir}:${workshopMount}";
 
   # The program is upstream's unpatched Linux build, run from a writable copy
   # through nix-ld. nix-ld's defaults (its ld.so and libraries under
@@ -129,25 +132,54 @@
   };
 
   programDir = "${cfg.homeDir}/program";
+  program = "${programDir}/project-reclaimer";
 
-  # Seeds the writable copy from `package` when there is none, or when the
-  # package is newer than the seed last copied (the marker). Then runs it.
-  # auto_update replaces the copy in place between seeds; a seed older than
-  # what auto_update installed is never copied, but a newer seed always is,
-  # even over a still newer update (auto_update brings that back within the
-  # hour).
-  run = pkgs.writeShellApplication {
-    name = "reclaimer-run";
-    runtimeInputs = [pkgs.coreutils];
+  # Seeds the writable copy from `package`; reclaimer.service's ExecStartPre,
+  # and nothing else (the `reclaimer` command only runs what is there), under
+  # a lock as well. The marker holds the seed version last copied; the copy's
+  # own `--version` can't stand in for it (0.10.1 prints 0.10.0).
+  #
+  # When to copy:
+  # - no copy yet: always;
+  # - with auto_update (the default): only when the package's major.minor is
+  #   newer than the marker's. auto_update keeps the copy at the newest
+  #   release in between, which a patch-level bump of the package would
+  #   otherwise downgrade (the marker never learns what auto_update
+  #   installed), leaving the servers on an older version than their players
+  #   until the next hourly check. A new minor release is a new network
+  #   protocol that auto_update may not cross by itself, so that is copied;
+  # - without auto_update: whenever the package differs from the marker, so
+  #   the package alone decides the version.
+  seed = pkgs.writeShellApplication {
+    name = "reclaimer-seed";
+    runtimeInputs = [pkgs.coreutils pkgs.util-linux];
     text = ''
       prog=${lib.escapeShellArg programDir}
       seed=${cfg.package}/share/project-reclaimer
       seed_version=${lib.escapeShellArg cfg.package.version}
       marker="$prog/.nix-seed-version"
+      auto_update=${lib.boolToString (settings.auto_update or false)}
+
+      exec 9>${lib.escapeShellArg "${cfg.homeDir}/program.lock"}
+      flock 9
+
       installed=$(cat "$marker" 2>/dev/null || echo 0)
-      newest=$(printf '%s\n%s\n' "$installed" "$seed_version" | sort -V | tail -n1)
-      if [ ! -x "$prog/project-reclaimer" ] || { [ "$newest" = "$seed_version" ] && [ "$installed" != "$seed_version" ]; }; then
-        echo "reclaimer: installing Project Reclaimer $seed_version into $prog" >&2
+      copy=0
+      if [ ! -x "$prog/project-reclaimer" ]; then
+        copy=1
+      elif [ "$auto_update" = true ]; then
+        seed_minor=$(echo "$seed_version" | cut -d. -f1,2)
+        installed_minor=$(echo "$installed" | cut -d. -f1,2)
+        newest=$(printf '%s\n%s\n' "$installed_minor" "$seed_minor" | sort -V | tail -n1)
+        if [ "$newest" = "$seed_minor" ] && [ "$installed_minor" != "$seed_minor" ]; then
+          copy=1
+        fi
+      elif [ "$installed" != "$seed_version" ]; then
+        copy=1
+      fi
+
+      if [ "$copy" = 1 ]; then
+        echo "reclaimer: installing Project Reclaimer $seed_version into $prog (seeded: $installed)" >&2
         rm -rf "$prog.new" "$prog.old"
         cp -r --no-preserve=mode,ownership "$seed" "$prog.new"
         chmod 0755 "$prog.new/project-reclaimer"
@@ -156,7 +188,19 @@
         mv "$prog.new" "$prog"
         rm -rf "$prog.old"
       fi
-      exec "$prog/project-reclaimer" "$@"
+    '';
+  };
+
+  # What the `reclaimer` command runs: the copy as it is, never seeding it, so
+  # it can't race the service over the folder.
+  runInstalled = pkgs.writeShellApplication {
+    name = "reclaimer-exec";
+    text = ''
+      if [ ! -x ${lib.escapeShellArg program} ]; then
+        echo "reclaimer: ${program} is not installed yet; start reclaimer.service first" >&2
+        exit 1
+      fi
+      exec ${lib.escapeShellArg program} "$@"
     '';
   };
 
@@ -289,9 +333,18 @@
     chown ${owner} "$bans"
     chmod 0640 "$bans"
 
-    # Mount points for the mod folders, and the Workshop folder itself, which
-    # may sit where tmpfiles refuses to go (a share owned by someone else).
-    ${lib.optionalString (cfg.modsDir != null) (dir modsMount)}${lib.optionalString (cfg.workshop.dir != null) ''
+    # 0.9's containers kept per-container copies of the Windows program in
+    # .reclaimer; 0.10's Docker image removes them, the native server doesn't,
+    # and borg would back them up.
+    rm -rf ${lib.escapeShellArg "${cfg.dataDir}/.reclaimer"}
+
+    # Mount points for the mod folders, and the mod and Workshop folders
+    # themselves, which may sit where tmpfiles refuses to go (a share owned
+    # by someone else). modsDir is only made when missing, keeping its owner
+    # (whoever fetches mods into it).
+    ${lib.optionalString (cfg.modsDir != null) ''
+      ${dir modsMount}[ -d ${lib.escapeShellArg (toString cfg.modsDir)} ] || install -d -m 0755 ${lib.escapeShellArg (toString cfg.modsDir)}
+    ''}${lib.optionalString (cfg.workshop.dir != null) ''
       ${dir workshopMount}install -d -m 0755 ${lib.escapeShellArg (toString cfg.workshop.dir)}
       chown ${owner} ${lib.escapeShellArg (toString cfg.workshop.dir)}
     ''}
@@ -300,9 +353,16 @@
 
   # `project-reclaimer dedicated <args>` as the service user, with the
   # service's environment and mod mounts, through systemd-run (so root is
-  # needed). Without -s it covers every server; -s <server> narrows it to one,
-  # as RECLAIMER_DEDICATED_ONLY does for a container per server.
-  serverPorts = lib.mapAttrs (_: s: toString s.port) enabledServers;
+  # needed). Without -s it covers every server; -s <server> (the attr name)
+  # narrows it to one with RECLAIMER_DEDICATED_ONLY=<port>, and for `rcon`
+  # also names it with `--server <name>`, which the console needs when the
+  # file holds more than one server.
+  serverCase = id: s: ''
+    ${lib.escapeShellArg id})
+      only=(--setenv=RECLAIMER_DEDICATED_ONLY=${toString s.port})
+      server_name=${lib.escapeShellArg s.name}
+      ;;
+  '';
   cli = pkgs.writeShellApplication {
     name = "reclaimer";
     runtimeInputs = [config.systemd.package];
@@ -314,14 +374,23 @@
         exit 2
       }
       only=()
+      server_name=
       if [ "''${1:-}" = "-s" ]; then
         [ $# -ge 2 ] || usage
         case "$2" in
-          ${lib.concatStrings (lib.mapAttrsToList (id: port: "${lib.escapeShellArg id}) only=(--setenv=RECLAIMER_DEDICATED_ONLY=${port}) ;;\n    ") serverPorts)}*) echo "reclaimer: no server '$2'" >&2; usage ;;
+          ${lib.concatStrings (lib.mapAttrsToList serverCase enabledServers)}
+          *)
+            echo "reclaimer: no server '$2'" >&2
+            usage
+            ;;
         esac
         shift 2
       fi
       [ $# -ge 1 ] || usage
+      if [ "$1" = rcon ] && [ -n "$server_name" ]; then
+        shift
+        set -- rcon --server "$server_name" "$@"
+      fi
       io=(--pipe)
       [ -t 0 ] && [ -t 1 ] && io=(--pty)
       exec systemd-run --quiet --wait --collect --service-type=exec "''${io[@]}" \
@@ -332,7 +401,7 @@
         ${lib.concatMapStrings (p: "--property=BindReadOnlyPaths=${lib.escapeShellArg p} ") bindReadOnlyPaths}\
         ${lib.concatMapStrings (p: "--property=BindPaths=${lib.escapeShellArg p} ") bindPaths}\
         "''${only[@]}" \
-        ${lib.getExe run} dedicated --config ${lib.escapeShellArg "${cfg.dataDir}/dedicated.toml"} "$@"
+        ${lib.getExe runInstalled} dedicated --config ${lib.escapeShellArg "${cfg.dataDir}/dedicated.toml"} "$@"
     '';
   };
 
@@ -402,7 +471,9 @@ in {
       description = ''
         Upstream's Linux server package, used only as the seed of the writable
         copy in `homeDir`/program that the servers run and `auto_update`
-        replaces. A newer package replaces that copy on the next start.
+        replaces. With `auto_update` a package of a newer major.minor replaces
+        that copy on the next start (patch releases are auto_update's job);
+        without it, any package version that differs does.
       '';
     };
 
@@ -808,7 +879,10 @@ in {
               User = cfg.user;
               Group = cfg.group;
               WorkingDirectory = cfg.dataDir;
-              ExecStart = "${lib.getExe run} dedicated --config ${cfg.dataDir}/dedicated.toml";
+              # The copy in homeDir, a real file: the supervisor re-executes its
+              # own file for each server, and auto_update replaces it in place.
+              ExecStartPre = lib.getExe seed;
+              ExecStart = "${program} dedicated --config ${cfg.dataDir}/dedicated.toml";
               # Upstream's unit: the supervisor stops every server cleanly on
               # SIGINT, closes forwarded ports, and is allowed 30 seconds.
               KillSignal = "SIGINT";
@@ -825,14 +899,11 @@ in {
               ProtectSystem = "strict";
               ReadWritePaths =
                 [cfg.dataDir cfg.homeDir cfg.cacheDir]
-                ++ lib.optional (cfg.workshop.dir != null) cfg.workshop.dir;
+                ++ lib.optional (cfg.workshop.dir != null) "-${toString cfg.workshop.dir}";
               ProtectHome = "read-only";
               PrivateTmp = true;
-              PrivateDevices = true;
               NoNewPrivileges = true;
-              ProtectKernelTunables = true;
               ProtectKernelModules = true;
-              ProtectKernelLogs = true;
               ProtectControlGroups = true;
               ProtectClock = true;
               ProtectHostname = true;
@@ -844,9 +915,20 @@ in {
               # No MemoryDenyWriteExecute: the engine is translated from
               # halo3.dll at run time.
             }
-            # SteamCMD runs through steam-run, a bubblewrap sandbox that needs
-            # user namespaces and the capabilities it holds in them.
+            # SteamCMD runs through steam-run, an unprivileged bubblewrap
+            # sandbox (NoNewPrivileges is fine for that). It needs user
+            # namespaces and the capabilities it holds in them, the host's
+            # /dev, and a /proc with nothing mounted over it to mount its own
+            # (ProtectKernelTunables and ProtectKernelLogs mount over parts of
+            # /proc, which makes the kernel refuse a new procfs in a user
+            # namespace). Without SteamCMD all of that stays locked down.
+            # UNTESTED: nothing has run SteamCMD under this unit yet; if a
+            # Workshop download fails with a bwrap error, check the journal
+            # and relax further here.
             // lib.optionalAttrs (!steamcmd) {
+              PrivateDevices = true;
+              ProtectKernelTunables = true;
+              ProtectKernelLogs = true;
               RestrictNamespaces = true;
               CapabilityBoundingSet = "";
             }
