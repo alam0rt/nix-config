@@ -53,7 +53,9 @@ in {
             }
             {
               alert = "HostDown";
-              expr = "up == 0";
+              # Halo 3 servers restart on their own (crashes, auto-updates,
+              # co-op ↔ multiplayer switches); ReclaimerServerDown covers them.
+              expr = ''up{job!="reclaimer"} == 0'';
               for = "2m";
               labels.severity = "critical";
               annotations = {
@@ -741,6 +743,49 @@ in {
               annotations = {
                 summary = "Alerting pipeline heartbeat";
                 description = "This alert always fires. If it stops arriving, the alerting pipeline itself is broken.";
+              };
+            }
+          ];
+        }
+        {
+          # Project Reclaimer's per-server /metrics (metrics_http). Every
+          # series carries the `server` and `tick_rate` labels the scrape
+          # job adds; the gauges themselves have none.
+          name = "reclaimer";
+          rules = [
+            {
+              # Each configured server runs a worker even with nobody on,
+              # and the supervisor restarts a crashed one within a minute;
+              # an auto-update or a co-op/multiplayer switch takes seconds.
+              alert = "ReclaimerServerDown";
+              expr = ''up{job="reclaimer"} == 0'';
+              for = "10m";
+              labels.severity = "warning";
+              annotations = {
+                summary = "Halo 3 server {{ $labels.server }} is down";
+                description = "{{ $labels.server }}'s metrics endpoint has not answered for 10 minutes: its worker is stopped or crash-looping, or reclaimer itself is down. Check `journalctl -u reclaimer` and data/<server>/server.log under the Reclaimer data folder.";
+              };
+            }
+            {
+              # reclaimer_frame_rate_hz averages the last minute with players
+              # on and reads 0 when nobody has played in it. 90% of the tick
+              # rate is upstream's own "Server falling behind" line (54 of
+              # 60, 27 of 30).
+              alert = "ReclaimerFallingBehind";
+              expr = ''
+                (
+                    (reclaimer_frame_rate_hz{tick_rate="60"} < 54)
+                  or
+                    (reclaimer_frame_rate_hz{tick_rate="30"} < 27)
+                )
+                and reclaimer_frame_rate_hz > 0
+                and on (server) reclaimer_players > 0
+              '';
+              for = "15m";
+              labels.severity = "warning";
+              annotations = {
+                summary = "Halo 3 server {{ $labels.server }} is falling behind";
+                description = "{{ $labels.server }} has averaged {{ $value | printf \"%.0f\" }} frames a second (tick rate {{ $labels.tick_rate }}) with players on for 15 minutes, so its players get fewer updates and see lag. Give it more CPU, fewer players, or tick_rate = 30.";
               };
             }
           ];
