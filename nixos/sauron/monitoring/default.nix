@@ -10,6 +10,29 @@
     sonarr = 9707;
     radarr = 9708;
   };
+
+  # Project Reclaimer (Halo 3): every server with `metrics_http` serves
+  # Prometheus gauges on /metrics itself, with no labels, so each target is
+  # labelled with its services.reclaimer.servers attribute name. tick_rate
+  # (60, or 30 to save CPU; co-op servers always run 60) is what the
+  # ReclaimerFallingBehind alert measures the frame rate against.
+  # Settings may be freeform or typed options defaulting to null; read both
+  # the same way.
+  reclaimer = config.services.reclaimer;
+  setting = attrs: name: attrs.${name} or null;
+  firstSet = lib.findFirst (v: v != null) null;
+  reclaimerTickRate = s:
+    if setting s "campaign" != null || setting s "odst" != null
+    then 60
+    else firstSet [(setting s "tick_rate") (setting (setting reclaimer.settings "defaults") "tick_rate") 60];
+  reclaimerTargets = lib.optionals reclaimer.enable (lib.mapAttrsToList (name: s: {
+    targets = [s.metrics_http];
+    labels = {
+      instance = "sauron";
+      server = name;
+      tick_rate = toString (reclaimerTickRate s);
+    };
+  }) (lib.filterAttrs (_: s: (s.enable or true) && setting s "metrics_http" != null) reclaimer.servers));
 in {
   imports = [
     ./alerts.nix
@@ -382,6 +405,11 @@ in {
             labels.instance = "sauron";
           }
         ];
+      }
+      {
+        job_name = "reclaimer";
+        scrape_interval = "15s";
+        static_configs = reclaimerTargets;
       }
       # {
       #   job_name = "qbittorrent";
