@@ -29,6 +29,21 @@
     proxy_set_header X-Webauth-Tailnet "$auth_tailnet";
     proxy_set_header X-Webauth-Profile-Picture "$auth_profile_picture";
   '';
+  # LAN clients get in without the tailnet; Home Assistant's own login is the
+  # gate for them. `satisfy any` passes a request when *either* the address
+  # check or the tailscale auth_request succeeds, so tailnet access is
+  # unchanged. The name resolves to the WAN IP and the router's NAT reflection
+  # masquerades hairpinned LAN clients as 192.168.1.1; real internet clients
+  # arrive with their public address and still need the tailnet.
+  #
+  # This must sit in the proxied locations, not at server level: the module's
+  # internal `/auth` location would inherit it, the auth subrequest would then
+  # 403 for every non-LAN client, and tailnet logins would break.
+  lanOrTailnet = ''
+    satisfy any;
+    allow 192.168.1.0/24;
+    deny all;
+  '';
 in {
   services.nginx.virtualHosts."home-assistant.${cfg.domain}" = {
     forceSSL = true;
@@ -37,12 +52,13 @@ in {
       proxyPass = "http://127.0.0.1:8123";
       proxyWebsockets = true;
       recommendedProxySettings = true;
+      extraConfig = lanOrTailnet;
     };
     locations."^~ /auth/" = {
       proxyPass = "http://127.0.0.1:8123";
       proxyWebsockets = true;
       recommendedProxySettings = true;
-      extraConfig = tailscaleAuthRequest;
+      extraConfig = lanOrTailnet + tailscaleAuthRequest;
     };
     extraConfig = ''
       proxy_buffering off;
